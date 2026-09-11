@@ -1,0 +1,1283 @@
+﻿<!DOCTYPE html>
+
+<html lang="ja">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<meta content="#1f3443" name="theme-color"/>
+<title>PKシーズン スタダナビゲーション</title>
+<style>
+:root{--paper:#f6f3ed;--surface:#fff;--ink:#202a30;--muted:#68747b;--navy:#1f3443;--navy2:#29495d;--gold:#b38a45;--gold-soft:#f1e8d7;--line:#dde2df;--warn:#9c443b;--warn-bg:#fff4f1;--ok:#3c6a56;--ok-bg:#eff7f3;--shadow:0 12px 30px rgba(24,39,48,.08);--radius:18px}
+*{box-sizing:border-box;min-width:0}
+html{scroll-behavior:smooth;scroll-padding-top:88px;overflow-x:hidden}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Hiragino Sans","Yu Gothic UI","Yu Gothic",Meiryo,sans-serif;line-height:1.78;overflow-x:hidden;-webkit-text-size-adjust:100%}
+a{color:inherit}
+button,input{font:inherit}
+img{display:block;max-width:100%;height:auto}
+.topbar{position:sticky;top:0;z-index:70;background:rgba(31,52,67,.97);color:#fff;padding-top:env(safe-area-inset-top);box-shadow:0 2px 14px rgba(0,0,0,.15)}
+.topbar-inner{max-width:1180px;margin:auto;height:64px;padding:0 14px;display:flex;align-items:center;gap:12px}
+.brand{display:flex;align-items:center;gap:10px;flex:1;min-width:0}
+.brand-mark{width:34px;height:34px;border:1px solid rgba(255,255,255,.35);border-radius:10px;display:grid;place-items:center;font-weight:900;color:#f2d9a8}
+.brand-text strong{display:block;font-size:15px;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brand-text small{display:block;color:#cfd9df;font-size:10px;margin-top:2px}
+.current-chip{border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.09);color:#fff;border-radius:999px;padding:7px 10px;font-size:11px;white-space:nowrap}
+.menu-btn{border:0;background:#fff;color:var(--navy);border-radius:11px;width:42px;height:42px;font-weight:900;cursor:pointer}
+.progress{height:4px;background:rgba(255,255,255,.14)}
+.progress i{display:block;height:100%;width:10%;background:#d9b06c;transition:width .25s ease}
+.layout{max-width:1180px;margin:auto;display:grid;grid-template-columns:260px 1fr;gap:26px;padding:26px 16px 100px}
+.sidebar{position:sticky;top:94px;align-self:start;max-height:calc(100vh - 112px);overflow:auto;padding-right:4px}
+.sidebar h2{font-size:12px;letter-spacing:.12em;color:var(--muted);margin:0 0 9px;text-transform:uppercase}
+.journey{display:grid;gap:6px}
+.journey-step{display:grid;grid-template-columns:30px 1fr;gap:9px;align-items:center;text-decoration:none;background:rgba(255,255,255,.55);border:1px solid transparent;border-radius:13px;padding:8px;transition:.15s}
+.journey-step:hover{background:#fff;border-color:var(--line)}
+.journey-step.active{background:#fff;border-color:#c4a56f;box-shadow:0 5px 16px rgba(31,52,67,.07)}
+.journey-num{width:28px;height:28px;border-radius:50%;background:#e8eceb;color:var(--navy);display:grid;place-items:center;font-weight:900;font-size:12px}
+.journey-step.active .journey-num{background:var(--navy);color:#fff}
+.journey-step strong{display:block;font-size:12px;line-height:1.3}
+.journey-step small{display:block;font-size:9px;color:var(--muted);line-height:1.35;margin-top:2px}
+.sidebar-help{margin-top:14px;border-top:1px solid #d8d9d4;padding-top:12px}
+.quick-link{display:flex;justify-content:space-between;text-decoration:none;font-size:11px;padding:7px 3px;color:#4b5960}
+.main{width:100%;min-width:0}
+.hero{background:linear-gradient(145deg,#1f3443,#31546a);color:#fff;border-radius:26px;padding:clamp(22px,4vw,42px);box-shadow:var(--shadow);position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;width:240px;height:240px;border:1px solid rgba(255,255,255,.09);border-radius:50%;right:-95px;top:-80px;box-shadow:0 0 0 40px rgba(255,255,255,.025),0 0 0 80px rgba(255,255,255,.02)}
+.eyebrow{font-size:11px;letter-spacing:.15em;color:#e8c98f;font-weight:800}
+.hero h1{font-size:clamp(28px,5vw,44px);line-height:1.15;margin:8px 0 14px;position:relative;z-index:1}
+.hero-content{position:relative;z-index:1;max-width:760px}
+.hero-content p{margin:8px 0;color:#edf1f3}
+.hero-content ul{padding-left:20px}
+.hero-content li{margin:4px 0}
+.hero-goal{margin-top:18px;display:flex;gap:10px;flex-wrap:wrap}
+.hero-goal span{background:rgba(255,255,255,.11);border:1px solid rgba(255,255,255,.16);padding:7px 10px;border-radius:999px;font-size:11px}
+.overview{margin-top:22px;background:#fff;border:1px solid var(--line);border-radius:22px;padding:18px;box-shadow:var(--shadow)}
+.overview-head{display:flex;align-items:end;justify-content:space-between;gap:12px;margin-bottom:14px}
+.overview h2{margin:0;font-size:18px}
+.overview p{margin:2px 0 0;color:var(--muted);font-size:12px}
+.overview-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.overview-step{text-decoration:none;border:1px solid var(--line);border-radius:14px;padding:11px;background:#fafaf8;position:relative}
+.overview-step strong{font-size:12px;display:block;margin-top:5px;line-height:1.35}
+.overview-step small{font-size:9px;color:var(--muted);display:block;margin-top:3px;line-height:1.35}
+.overview-no{font-size:10px;font-weight:900;color:var(--gold)}
+.stage{margin-top:34px;scroll-margin-top:88px}
+.stage-kicker{font-size:10px;letter-spacing:.14em;color:var(--gold);font-weight:900;margin-bottom:6px}
+.stage-title-row{display:grid;grid-template-columns:48px 1fr;gap:12px;align-items:center;margin-bottom:16px}
+.stage-badge{width:48px;height:48px;border-radius:15px;background:var(--navy);color:#fff;display:grid;place-items:center;font-weight:900;font-size:20px;box-shadow:0 6px 16px rgba(31,52,67,.16)}
+.stage-title-row h2{font-size:clamp(24px,4vw,32px);line-height:1.2;margin:0}
+.stage-title-row p{margin:4px 0 0;color:var(--muted);font-size:13px}
+.stage-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.content-card,.visual-card,.check-card,.compare-card,.principles{background:#fff;border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:0 7px 22px rgba(28,42,49,.045);overflow:hidden}
+.content-card+ .content-card{margin-top:12px}
+.content-card h3,.principles h3{font-size:18px;margin:0 0 12px;line-height:1.35}
+.content-card h4{font-size:15px;margin:20px 0 8px;padding-left:10px;border-left:3px solid var(--gold)}
+.content-card h5{font-size:14px;margin:18px 0 8px}
+.content-card p,.content-card li,.detail-body p,.detail-body li,.principles li{font-size:14px}
+.content-card p:first-of-type{margin-top:0}
+.content-card ul,.detail-body ul{padding-left:20px}
+.content-card strong,.detail-body strong{font-weight:800}
+.emphasis{border-top:4px solid var(--gold)}
+.key-card{border-left:5px solid var(--navy2)}
+.warning{background:var(--warn-bg);border-color:#e9c2bd}
+.principles{margin-top:12px}
+.principles > ul{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;list-style:none;padding:0;margin:0}
+.principles > ul > li{background:#f7f8f6;border:1px solid var(--line);border-radius:13px;padding:12px;font-weight:800}
+.detail-card{margin-top:12px;background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:0 6px 18px rgba(28,42,49,.035)}
+.detail-card summary{cursor:pointer;list-style:none;padding:15px 44px 15px 16px;font-weight:800;font-size:14px;position:relative;background:#fbfbf9}
+.detail-card summary::-webkit-details-marker{display:none}
+.detail-card summary:after{content:"＋";position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:19px;color:var(--gold)}
+.detail-card[open] summary:after{content:"−"}
+.detail-body{padding:4px 16px 18px;border-top:1px solid var(--line)}
+.detail-body h3,.detail-body h4{font-size:15px;margin:18px 0 8px}
+.visual-card{margin-top:12px;background:linear-gradient(180deg,#fff,#faf9f5)}
+.visual-card.important{border:2px solid #c9aa72;background:#fffdf8}
+.visual-title{display:flex;align-items:baseline;gap:9px;margin-bottom:14px;flex-wrap:wrap}
+.visual-title span{font-size:10px;letter-spacing:.12em;color:var(--gold);font-weight:900}
+.visual-title strong{font-size:18px}
+.flow{display:flex;align-items:stretch;gap:8px;overflow:visible}
+.flow-step{flex:1;background:#fff;border:1px solid #d8deda;border-radius:14px;padding:12px;min-width:0;position:relative}
+.flow-step p{margin:0;font-size:12px;line-height:1.55}
+.flow-num{width:25px;height:25px;border-radius:50%;display:grid;place-items:center;background:var(--navy);color:#fff;font-size:11px;font-weight:900;margin-bottom:7px}
+.flow-arrow{display:grid;place-items:center;color:var(--gold);font-weight:900;font-size:18px}
+.flow-note{margin-top:12px;color:var(--muted);font-size:12px}
+.flow-note p{font-size:12px;margin:0}
+.microcopy{font-size:10px!important;color:var(--muted);margin:10px 0 0}
+.inline-image{margin:14px 0 4px}
+.image-zoom{display:block;width:100%;padding:0;border:0;background:transparent;border-radius:14px;overflow:hidden;cursor:zoom-in}
+.image-zoom img{width:100%;max-height:720px;object-fit:contain;background:#f2f2ef;border:1px solid var(--line);border-radius:14px}
+.table-scroll{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;margin:12px 0}
+table{border-collapse:collapse;min-width:520px;width:100%;background:#fff}
+th,td{border:1px solid #dfe4e1;padding:8px 9px;font-size:12px;vertical-align:top;text-align:left}
+th{background:#eef1ef}
+.route-picker{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0 12px}
+.route-tab{border:1px solid var(--line);background:#fff;border-radius:14px;padding:12px 8px;font-weight:800;color:var(--ink);cursor:pointer}
+.route-tab.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+.route-panel{display:none}
+.route-panel.active{display:block}
+.route-label{display:inline-flex;background:var(--ok-bg);color:var(--ok);border:1px solid #cae0d5;border-radius:999px;padding:5px 9px;font-size:11px;font-weight:800;margin:2px 0 8px}
+.route-label.supportive{background:#fff7e9;color:#7e6234;border-color:#ead9b9}
+.decision-banner{background:linear-gradient(145deg,#203949,#2f5c70);color:#fff;border-radius:20px;padding:20px;text-align:center;margin-bottom:12px;box-shadow:var(--shadow)}
+.decision-banner span,.decision-banner small{display:block;color:#dce7eb;font-size:12px}
+.decision-banner strong{display:block;font-size:27px;margin:3px 0}
+.compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.compare-card{box-shadow:none}
+.compare-label{font-size:16px;font-weight:900;color:var(--navy);padding-bottom:10px;border-bottom:1px solid var(--line);margin-bottom:10px}
+.decision-split{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+.decision-split>div{border-radius:16px;padding:14px;background:#fff;border:1px solid var(--line)}
+.decision-split span{display:block;color:var(--muted);font-size:11px}
+.decision-split strong{display:block;font-size:15px;margin-top:3px;color:var(--navy)}
+.check-card{background:#fffdf8;border:2px solid #ceb17b}
+.checklist{display:grid;gap:8px}
+.checklist label{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--line);border-radius:13px;padding:12px;cursor:pointer}
+.checklist input{width:20px;height:20px;accent-color:var(--ok)}
+.checklist input:checked+span{text-decoration:line-through;color:var(--muted)}
+.end-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.next-card{margin-top:18px;display:flex;align-items:center;justify-content:space-between;text-decoration:none;background:var(--navy);color:#fff;border-radius:17px;padding:15px 17px;box-shadow:0 7px 20px rgba(31,52,67,.14)}
+.next-card span{font-size:10px;color:#cbd7dd;letter-spacing:.12em}
+.next-card strong{font-size:15px}
+.drawer-backdrop{position:fixed;inset:0;background:rgba(15,25,31,.45);z-index:89;display:none}
+.drawer-backdrop.open{display:block}
+.drawer{position:fixed;z-index:90;left:0;right:0;bottom:0;transform:translateY(110%);transition:.24s ease;background:#fff;border-radius:24px 24px 0 0;max-height:min(78vh,720px);overflow:auto;padding:14px 14px calc(20px + env(safe-area-inset-bottom));box-shadow:0 -18px 60px rgba(0,0,0,.2)}
+.drawer.open{transform:translateY(0)}
+.drawer-handle{width:44px;height:4px;background:#d6dbda;border-radius:999px;margin:0 auto 10px}
+.drawer-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 2px 10px}
+.drawer-head h2{font-size:18px;margin:0}
+.close-btn{border:0;background:#eef1f0;border-radius:10px;width:38px;height:38px;font-size:19px;display:flex;align-items:center;justify-content:center;line-height:1;padding:0;text-decoration:none;color:var(--ink)}
+.mobile-bottom{display:none}
+.lightbox{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:120;display:none;align-items:center;justify-content:center;padding:18px}
+.lightbox.open{display:flex}
+.lightbox img{max-width:100%;max-height:92vh;object-fit:contain}
+.lightbox-close{position:absolute;right:14px;top:calc(14px + env(safe-area-inset-top));width:44px;height:44px;border:0;border-radius:50%;background:#fff;color:#111;font-size:22px}
+@media(max-width:1000px){
+ .layout{grid-template-columns:1fr;padding:18px 12px calc(92px + env(safe-area-inset-bottom))}
+ .sidebar{display:none}
+ .overview-grid{grid-template-columns:repeat(2,1fr)}
+ .stage-grid,.compare-grid,.decision-split,.end-grid{grid-template-columns:1fr}
+ .principles>ul{grid-template-columns:1fr}
+ .mobile-bottom{position:fixed;z-index:65;left:0;right:0;bottom:0;padding:8px 10px calc(8px + env(safe-area-inset-bottom));background:rgba(255,255,255,.96);border-top:1px solid var(--line);display:grid;grid-template-columns:1fr 1.15fr 1fr;gap:7px;-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+ .mobile-bottom button{min-height:46px;border:1px solid var(--line);background:#fff;border-radius:12px;font-size:11px;font-weight:800;color:var(--navy)}
+ .mobile-bottom .center{background:var(--navy);color:#fff;border-color:var(--navy)}
+}
+@media(max-width:650px){
+ .topbar-inner{height:58px;padding-left:max(10px,env(safe-area-inset-left));padding-right:max(10px,env(safe-area-inset-right))}
+ .brand-text small{display:none}
+ .current-chip{display:none}
+ .hero{border-radius:20px;padding:22px 17px}
+ .hero h1{font-size:29px}
+ .overview{padding:14px;border-radius:18px}
+ .overview-grid{grid-template-columns:1fr 1fr;gap:7px}
+ .overview-step{padding:10px}
+ .overview-step small{display:none}
+ .stage{margin-top:30px}
+ .stage-title-row{grid-template-columns:42px 1fr;gap:10px}
+ .stage-badge{width:42px;height:42px;border-radius:13px;font-size:17px}
+ .stage-title-row h2{font-size:24px}
+ .content-card,.visual-card,.check-card,.compare-card,.principles{padding:15px;border-radius:16px}
+ .content-card p,.content-card li,.detail-body p,.detail-body li,.principles li{font-size:14px}
+ .route-picker{grid-template-columns:1fr}
+ .flow{display:grid;grid-template-columns:1fr;gap:5px}
+ .flow-arrow{height:20px}
+ .flow-step{padding:12px}
+ .image-zoom img{max-height:none}
+}
+@media(max-width:390px){
+ .layout{padding-left:max(9px,env(safe-area-inset-left));padding-right:max(9px,env(safe-area-inset-right))}
+ .overview-grid{grid-template-columns:1fr}
+}
+
+
+/* targeted revision: keep mobile_first visual system */
+.hero-objective{margin-top:18px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.17);border-radius:14px;overflow:hidden}
+.hero-objective>summary{cursor:pointer;list-style:none;padding:13px 15px;font-weight:850;font-size:14px;display:flex;align-items:center;justify-content:space-between}
+.hero-objective>summary::-webkit-details-marker{display:none}.hero-objective>summary:after{content:"＋";font-size:18px;color:#e6d4ae}.hero-objective[open]>summary:after{content:"－"}
+.hero-objective-body{padding:0 15px 13px;color:#edf2f4}.hero-objective-body p,.hero-objective-body li{font-size:13px}
+.attention-note{border-left:4px solid var(--warn);background:var(--warn-bg);padding:11px 12px 11px 40px;border-radius:10px;position:relative;color:var(--ink)}
+.attention-note:before{content:"⚠";position:absolute;left:13px;top:10px;font-size:17px}
+.flow-arrow:before{content:"→"}.long-flow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:stretch;gap:8px}.long-flow>.flow-arrow{display:none}.long-flow>.flow-step{min-height:92px}
+.bottom-nav-link{min-height:46px;border:1px solid var(--line);background:#fff;border-radius:12px;font-size:11px;font-weight:800;color:var(--navy);display:flex;align-items:center;justify-content:center;text-decoration:none;padding:6px}
+.mobile-bottom .bottom-nav-link.center{background:var(--navy);color:#fff;border-color:var(--navy)}
+.drawer:target{transform:translateY(0)}.drawer:target~*{} 
+.compact-detail{margin-top:10px}
+table thead th{text-align:center;vertical-align:middle;white-space:nowrap}
+@media(max-width:650px){
+ .flow-arrow:before{content:"↓"}
+ .long-flow{grid-template-columns:1fr 1fr;gap:7px}.long-flow>.flow-step{min-height:0}
+ .overview-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+}
+@media(max-width:390px){.overview-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}.overview-step strong{font-size:11px}}
+</style>
+</head>
+<body id="top">
+<header class="topbar">
+<div class="topbar-inner">
+<div class="brand"><div class="brand-mark">S</div><div class="brand-text"><strong>PKシーズン スタダナビ</strong><small>48時間を、迷わず進める</small></div></div>
+<div class="current-chip" id="currentChip">STEP 1 / 10　前シーズン準備</div>
+<button aria-label="進行ナビを開く" class="menu-btn" id="openMenu">☰</button>
+</div>
+<div class="progress"><i id="progressBar"></i></div>
+</header>
+<div class="layout">
+<aside class="sidebar">
+<h2>現在地 / 進行ナビ</h2>
+<nav class="journey"><a class="journey-step" data-stage-link="prep" href="#prep"><span class="journey-num">1</span><span><strong>前シーズン準備</strong><small>心得・勲功・編成・小判を準備</small></span></a><a class="journey-step" data-stage-link="start" href="#start"><span class="journey-num">2</span><span><strong>開始直後</strong><small>戦法経験値を確保し、1軍の体力を温存</small></span></a><a class="journey-step" data-stage-link="lv4" href="#lv4"><span class="journey-num">3</span><span><strong>Lv4土地挑戦</strong><small>レベル目安と土地難易度を確認</small></span></a><a class="journey-step" data-stage-link="lv5" href="#lv5"><span class="journey-num">4</span><span><strong>Lv5土地挑戦</strong><small>Lv4の感触を見て、無理せずLv5へ</small></span></a><a class="journey-step" data-stage-link="castle6" href="#castle6"><span class="journey-num">5</span><span><strong>天守6</strong><small>石を集め、徴発→報酬で上限突破</small></span></a><a class="journey-step" data-stage-link="castle7" href="#castle7"><span class="journey-num">6</span><span><strong>天守7</strong><small>進行状況に合わせて3ルートから選ぶ</small></span></a><a class="journey-step" data-stage-link="switch" href="#switch"><span class="journey-num">7</span><span><strong>本命へ一部入替</strong><small>練兵場育成とスタダ武将を組み合わせる</small></span></a><a class="journey-step" data-stage-link="lv6" href="#lv6"><span class="journey-num">8</span><span><strong>Lv6土地</strong><small>まず石Lv6を1か所だけ確保</small></span></a><a class="journey-step" data-stage-link="castle8" href="#castle8"><span class="journey-num">9</span><span><strong>天守8</strong><small>兵損を見て兵舎との優先順位を判断</small></span></a><a class="journey-step" data-stage-link="finish" href="#finish"><span class="journey-num">10</span><span><strong>終了前</strong><small>本命移行・侍大将・外し忘れを確認</small></span></a></nav>
+<div class="sidebar-help"><h2>困ったとき</h2><a class="quick-link" href="#lv5">Lv5に挑戦できる？<span>→</span></a><a class="quick-link" href="#castle7">天守7が遅れた<span>→</span></a><a class="quick-link" href="#switch">徴兵が足りない<span>→</span></a><a class="quick-link" href="#lv6">Lv6へ行く？<span>→</span></a><a class="quick-link" href="#castle8">天守8か兵舎か<span>→</span></a><a class="quick-link" href="#switch">本命への入替<span>→</span></a><a class="quick-link" href="#finish">終了前チェック<span>→</span></a></div>
+</aside>
+<main class="main">
+<section class="hero">
+<div class="hero-content"><div class="eyebrow">PK SEASON START DASH GUIDE</div><h1>スタダナビゲーション</h1><details class="hero-objective"><summary>スタダの目標・目的</summary><div class="hero-objective-body"><p>スタダでは、48時間限定の各種恩恵を活用しながら、できるだけ効率よく土地・内政・武将育成を進めます。</p>
+<p>ひとつの大きな目標が、48時間以内の天守8到達です。</p>
+<p>ただし、手持ちの武将や戦法、予測できない兵損、確保できる時間などによって進行速度は大きく変わります。天守8に届かなければスタダ失敗、というわけではありません。</p>
+<p>大切なのは、無理な土地攻略で資源を失わず、その後の本命1軍へスムーズにつなげることです。</p>
+<p>その目標を達成し、さらなる高みを目指す場合、基準として以下のような指針もあります。</p>
+<ul>
+<li>威信6000を達成し、侍大将に上げる（資源収入5000/ｈ、土地枠+10、国衆進上+1 がつく）</li>
+<li>コスト19（軍策所2）まで上げる</li>
+</ul>
+</div></details></div>
+</section>
+<section class="overview"><div class="overview-head"><div><h2>全体の流れ</h2><p>いま自分がいる段階を選んでください。</p></div></div><div class="overview-grid"><a class="overview-step" href="#prep"><span class="overview-no">STEP 1</span><strong>前シーズン準備</strong><small>心得・勲功・編成・小判を準備</small></a><a class="overview-step" href="#start"><span class="overview-no">STEP 2</span><strong>開始直後</strong><small>戦法経験値を確保し、1軍の体力を温存</small></a><a class="overview-step" href="#lv4"><span class="overview-no">STEP 3</span><strong>Lv4土地挑戦</strong><small>レベル目安と土地難易度を確認</small></a><a class="overview-step" href="#lv5"><span class="overview-no">STEP 4</span><strong>Lv5土地挑戦</strong><small>Lv4の感触を見て、無理せずLv5へ</small></a><a class="overview-step" href="#castle6"><span class="overview-no">STEP 5</span><strong>天守6</strong><small>石を集め、徴発→報酬で上限突破</small></a><a class="overview-step" href="#castle7"><span class="overview-no">STEP 6</span><strong>天守7</strong><small>進行状況に合わせて3ルートから選ぶ</small></a><a class="overview-step" href="#switch"><span class="overview-no">STEP 7</span><strong>本命へ一部入替</strong><small>練兵場育成とスタダ武将を組み合わせる</small></a><a class="overview-step" href="#lv6"><span class="overview-no">STEP 8</span><strong>Lv6土地</strong><small>まず石Lv6を1か所だけ確保</small></a><a class="overview-step" href="#castle8"><span class="overview-no">STEP 9</span><strong>天守8</strong><small>兵損を見て兵舎との優先順位を判断</small></a><a class="overview-step" href="#finish"><span class="overview-no">STEP 10</span><strong>終了前</strong><small>本命移行・侍大将・外し忘れを確認</small></a></div></section>
+<section class="stage" data-stage="1" id="prep">
+<div class="stage-kicker">STEP 1 / 10</div>
+<div class="stage-title-row"><span class="stage-badge">1</span><div><h2>前シーズン準備</h2><p>心得・勲功・編成・小判を準備</p></div></div>
+<div class="stage-grid">
+<section class="content-card emphasis"><h3>シーズン終わりまでにやること</h3><h3>銀銭でガチャを回し、心得を貯めておく</h3>
+<p>星4武将の心得をできるだけ貯めておき、スタダの開始と同時に20個くらい残してすべて戦法経験値に変換します。小判で倍に変換するのが理想ですが、小判消費が大きいので必須ではありません。</p>
+<h3>勲功ポイントを稼ぐ</h3>
+<p>勲功ポイントは中間評定と最終評定のときに決定します。</p>
+<figure class="inline-image"><button aria-label="シーズン中間評定報酬を拡大" class="image-zoom" type="button"><img alt="シーズン中間評定報酬" loading="lazy" src="images/season-mid-evaluation-reward.png"/></button></figure>
+<p>中間評定では、全員の貢献ポイントに応じて勲功ポイントが決められます。</p>
+<p>最終評定では、下記の項目の合計で勲功ポイントが決まります。</p>
+<ul>
+<li>守備軍撃破数：攻城で駐城部隊を撃破した数</li>
+<li>耐久度削減量：敵建物の耐久度を減らした量</li>
+<li>戦場撃破数：戦功</li>
+<li>土地占領数：占領した敵プレイヤーの土地数</li>
+<li>シーズン実績：シーズン実績ポイント</li>
+</ul>
+<p>このうち、重視されるのがシーズン実績と戦場撃破数です。</p>
+<p>シーズン実績ポイントは特に重要で、できるだけすべてのシーズン実績を解除できるよう意識しましょう。</p>
+<p>戦功はこれまでの傾向では250万がほぼ上限で、それ以上獲得してもあまり変わりません。</p>
+<p>シーズン実績の「海商取引を累計20回実行」や「武芸技を30個習得」、「対戦を通して銅銭を累計15000獲得」など、銅銭や気力を消費するものは1日で達成することはできません。駐城部隊を100万殲滅も意識的に終わらせるようにしましょう。</p>
+<figure class="inline-image"><button aria-label="シーズン実績一覧を拡大" class="image-zoom" type="button"><img alt="シーズン実績一覧" loading="lazy" src="images/season-achievements-list.png"/></button></figure>
+</section>
+<section class="content-card"><h3>スタダ部隊を決める</h3><p>スタダ部隊を組む際に考えるべきことは、</p>
+<ul>
+<li>どれだけ兵損を減らせるか</li>
+<li>安定したダメージソース</li>
+<li>早期決着</li>
+</ul>
+<p>PKシーズンのスタダでは兵損を大きくなりがちです。兵損をどれだけ少なくできるかが重要なことから、発動率の高い戦法や通常攻撃を主体とした、早期決着が好まれます。そのため、スタダ部隊に本願寺顕如や松永久秀といった尻上がりタイプはあまり使われません。</p>
+<p>そして、4つの編成についてもあらかじめ考えておきましょう。</p>
+<ul>
+<li>最終編成</li>
+<li>スタダ部隊</li>
+<li>初動軍</li>
+<li>自爆部隊</li>
+</ul>
+<h4>スタダ部隊</h4>
+<p>メインアタッカーが1名、サブアタッカーが1名、タンク・制御・回復が1名を基本とします。</p>
+<p>サブアタッカーはタンク、制御、回復を兼任します。</p>
+<p>おおよそどの編成でも用いられるコスト３のお市と加藤嘉明について、お市は回復兼制御として使い、加藤嘉明はサブアタッカーとして、下記のような編成での運用が多くなっています。</p>
+<ul>
+<li>メインアタッカー、加藤嘉明（サブアタッカー）、回復・制御・タンク</li>
+<li>メインアタッカー、サブアタッカー、お市</li>
+</ul>
+<h4>初動軍</h4>
+<p>後述するスタダ部隊の体力節約術で使用します。</p>
+<p>スタダ部隊と同様に、コスト15までで組んでおきますが、初動でLv3土地を攻略するためだけの部隊となります。</p>
+</section>
+<section class="content-card key-card"><h3>自爆部隊</h3><ul>
+<li>兵力を1だけ設定し、敵部隊よりも速度の高い武将を使って先に攻撃する部隊のことです。</li>
+<li>当然戦闘には負けますが、速度の速さを活かして1ターン目でわずかでもダメージを与えることで敵の兵力を削り、守備軍が回復する5分以内にスタダ部隊で戦闘を行います。</li>
+</ul>
+<p>スタダ部隊の兵損を抑えることが目的です。</p>
+<p>自爆部隊は負けても兵損が1であるため、リスクに対してリターンが大きい戦術です。</p>
+<p>PKシーズンのLv4土地、Lv5土地は安定しづらくなっていて、楽に勝てるときもあれば異様に兵損が出ることもあります。そのため初日のスタダ部隊では自爆部隊の運用を推奨しており、本来はすべての土地取得で自爆部隊を使いたいところです。少なくとも、その土地攻略が明らかに安定するまで、自爆部隊の運用を推奨します。</p>
+<p>ちなみに私は、初日のLv4土地、Lv5土地では自爆部隊をすべての土地で（速度で負けてない限り）使います。</p>
+<p>スタダ部隊の兵損が400減れば、総資源量が1.6万（木4000, 鉄4000, 米8000）、浮くことになります。</p>
+<p>毎度自爆部隊を使うのはつけたり外したりが面倒ですが、その分の資源リターンがありますので、手間を惜しまない方はぜひトライしてください。</p>
+<h4>自爆部隊の編成例</h4>
+<p>荒木村重　百戦錬磨／百錬成鋼</p>
+<p>榊原康政　乗勝追撃／理非曲直／矢石飛行</p>
+<p>（小山田茂誠　会盟の陣／甲斐弓騎兵／伊賀忍者）</p>
+<p>今川義元　乱世の華／岐阜侍従</p>
+<p>仙石権兵衛　乗勝追撃／理非曲直／矢石飛行</p>
+<p>その他、柴田勝家、柿崎景家、山県昌景もおすすめです。</p>
+<h4>注意点</h4>
+<ul>
+<li>偵察した土地を見ると敵部隊の速度がわかりますので、自爆部隊に採用する武将の速度が遅い場合には属性ポイントを速度に振ります。</li>
+<li>自爆後にスタダ部隊への戦法および戦法ポイントを戻し忘れないようにしてください。</li>
+</ul>
+<h4>参考になる動画URL</h4>
+<ul>
+<li><a href="https://www.youtube.com/watch?v=vApx1S2o7XI" rel="noopener noreferrer" target="_blank">https://www.youtube.com/watch?v=vApx1S2o7XI</a></li>
+<li><a href="https://www.youtube.com/watch?v=2NDY6Eyx2js" rel="noopener noreferrer" target="_blank">https://www.youtube.com/watch?v=2NDY6Eyx2js</a></li>
+</ul>
+</section>
+</div>
+<details class="detail-card"><summary>スタダ編成例を見る</summary><div class="detail-body"><h4>人気のスタダ編成</h4><p>この編成はスタダ人気の常連です。</p>
+<p>北条氏康の特性で、士気を高く維持できること、福島正則の安定したダメージが評価のポイントです。</p>
+<p>メインアタッカーが福島正則、サブアタッカー兼回復兼タンクが北条氏康、制御兼回復がお市というお手本通りの構成です。</p>
+<div class="table-scroll"><table>
+<thead>
+<tr><th>役割</th><th>武将名</th><th>戦法1</th><th>戦法2</th></tr>
+</thead>
+<tbody>
+<tr>
+<td>大将</td>
+<td>北条氏康</td>
+<td>回天転運</td>
+<td>草木皆兵</td>
+</tr>
+<tr>
+<td>副将</td>
+<td>福島正則</td>
+<td>一力当先</td>
+<td>縦横馳突</td>
+</tr>
+<tr>
+<td>副将</td>
+<td>お市</td>
+<td>気炎万丈</td>
+<td>会盟の陣</td>
+</tr>
+</tbody>
+</table></div>
+<p>これに似た編成として、お市を加藤嘉明に変更するパターンがあります。</p>
+<p>ただし、加藤嘉明はお市ほどは回復をさせられないことからサブアタッカーが変わり、</p>
+<p>メインアタッカーが福島正則、サブアタッカー兼制御が加藤嘉明、タンク・回復が北条氏康となります。</p>
+<p>気炎万丈はスタダ御用達の戦法で、千軍辟易は気炎万丈とのコンボが狙えます。</p>
+<div class="table-scroll"><table>
+<thead>
+<tr><th>役割</th><th>武将名</th><th>戦法1</th><th>戦法2</th></tr>
+</thead>
+<tbody>
+<tr>
+<td>大将</td>
+<td>北条氏康</td>
+<td>回天転運</td>
+<td>一行三昧</td>
+</tr>
+<tr>
+<td>副将</td>
+<td>福島正則</td>
+<td>一力当先</td>
+<td>縦横馳突</td>
+</tr>
+<tr>
+<td>副将</td>
+<td>加藤嘉明</td>
+<td>気炎万丈</td>
+<td>千軍辟易</td>
+</tr>
+</tbody>
+</table></div>
+<p>メインアタッカーを成田甲斐に変更するパターンもよく見られます。</p>
+<p>威風凛凛で被ダメがかなり減るので、気炎万丈よりも回復を持たせることが多いです。</p>
+<p>威風凛凛を持ってなくて、理非曲直などの突撃戦法に変更する場合は、北条氏康の戦法を回天転運と草木皆兵に変更し、お市の恵風和雨を気炎万丈にするなど、調整が必要です。</p>
+<div class="table-scroll"><table>
+<thead>
+<tr><th>役割</th><th>武将名</th><th>戦法1</th><th>戦法2</th></tr>
+</thead>
+<tbody>
+<tr>
+<td>大将</td>
+<td>北条氏康</td>
+<td>一行三昧</td>
+<td>荷駄崩し</td>
+</tr>
+<tr>
+<td>副将</td>
+<td>成田甲斐</td>
+<td>乗勝追撃</td>
+<td>威風凛凛</td>
+</tr>
+<tr>
+<td>副将</td>
+<td>お市</td>
+<td>恵風和雨</td>
+<td>会盟の陣</td>
+</tr>
+</tbody>
+</table></div>
+<p>武田信玄が1凸してる場合、信玄スタートも可能です。</p>
+<p>浦上宗景は5ターン目に信玄に混乱を入れてしまうので、それまでに早期決着したい編成です。</p>
+<div class="table-scroll"><table>
+<thead>
+<tr><th>役割</th><th>武将名</th><th>戦法1</th><th>戦法2</th></tr>
+</thead>
+<tbody>
+<tr>
+<td>大将</td>
+<td>武田信玄</td>
+<td>乱世の華／岐阜侍従</td>
+<td>百戦錬磨／百錬成鋼</td>
+</tr>
+<tr>
+<td>副将</td>
+<td>里見義堯</td>
+<td>前後挟撃</td>
+<td>境目奮戦／戦意崩壊</td>
+</tr>
+<tr>
+<td>副将</td>
+<td>浦上宗景</td>
+<td>気炎万丈</td>
+<td>回天転運／有備無患</td>
+</tr>
+</tbody>
+</table></div>
+<h4>運営推奨のスタダ編成</h4>
+<p>前田夫婦隊は完成形がコスト18なのでスタダ期間中に組み上がります。</p>
+<p>ただレベル20の覚醒までは前田利家の火力が足りず、なかなかしんどいです。</p>
+<div class="table-scroll"><table>
+<thead>
+<tr><th>役割</th><th>武将名</th><th>戦法1</th><th>戦法2</th><th>→</th><th>武将名</th><th>戦法1</th><th>戦法2</th></tr>
+</thead>
+<tbody>
+<tr>
+<td>大将</td>
+<td>前田利家</td>
+<td>一力当先<br/>矢石飛交</td>
+<td>縦横馳突<br/>千軍辟易</td>
+<td></td>
+<td>前田利家</td>
+<td>一力当先<br/>矢石飛交</td>
+<td>縦横馳突<br/>千軍辟易</td>
+</tr>
+<tr>
+<td>副将</td>
+<td>柴田勝家</td>
+<td>千軍辟易<br/>矢石飛交</td>
+<td>勇猛無比<br/>槍弾正</td>
+<td></td>
+<td>柴田勝家</td>
+<td>勇猛無比<br/>槍弾正</td>
+<td>千軍辟易<br/>戦意崩壊</td>
+</tr>
+<tr>
+<td>副将</td>
+<td>お市</td>
+<td>気炎万丈<br/>家中整序</td>
+<td>回天転運<br/>有備無患</td>
+<td></td>
+<td>お松</td>
+<td>気炎万丈<br/>家中整序</td>
+<td>回天転運<br/>有備無患</td>
+</tr>
+</tbody>
+</table></div>
+<p>伊達政宗がメインアタッカーの群雄編成です。</p>
+<p>PK2の武将と戦法を使っており、現時点でこの編成に決め打ちは難易度が高いです。</p>
+<div class="table-scroll"><table>
+<thead>
+<tr><th>役割</th><th>武将名</th><th>戦法1</th><th>戦法2</th><th>→</th><th>武将名</th><th>戦法1</th><th>戦法2</th></tr>
+</thead>
+<tbody>
+<tr>
+<td>大将</td>
+<td>伊達政宗</td>
+<td>攻其不備<br/>岐阜侍従</td>
+<td>乱世の華<br/>竜騎兵</td>
+<td></td>
+<td>伊達政宗</td>
+<td>乱世の華<br/>岐阜侍従</td>
+<td>紅蓮の炎<br/>竜騎兵</td>
+</tr>
+<tr>
+<td>副将</td>
+<td>津田算長</td>
+<td>戮力同心<br/>有備無患</td>
+<td>鉄砲僧兵<br/>甲州流軍学</td>
+<td></td>
+<td>龍造寺隆信</td>
+<td>立身の志<br/>殿軍奮戦</td>
+<td>堅忍不抜<br/>一念乱志</td>
+</tr>
+<tr>
+<td>副将</td>
+<td>吉岡妙林</td>
+<td>百戦錬磨<br/>一触即発</td>
+<td>気炎万丈<br/>警戒周到</td>
+<td></td>
+<td>島津義久</td>
+<td>深慮遠謀<br/>有備無患</td>
+<td>回天転運<br/>甲州流軍学</td>
+</tr>
+</tbody>
+</table></div>
+<p>メインアタッカーが伊達政宗の編成です。</p>
+<p>サブアタッカーに加藤嘉明、タンク兼回復兼制御が本多正信です。</p>
+<p>兵種戦法の竜騎兵は対NPCではやや使いづらいので、攻其不備、岐阜侍従で代用することがあります。</p>
+<p>スタダでは早期決着を狙うことから、尻上がりにダメージの上がる文武両道はあまり選ばれません。</p>
+<div class="table-scroll"><table>
+<thead>
+<tr><th>役割</th><th>武将名</th><th>戦法1</th><th>戦法2</th><th>→</th><th>武将名</th><th>戦法1</th><th>戦法2</th></tr>
+</thead>
+<tbody>
+<tr>
+<td>大将</td>
+<td>伊達政宗</td>
+<td>攻其不備<br/>岐阜侍従</td>
+<td>乱世の華<br/>竜騎兵</td>
+<td></td>
+<td>真田昌幸</td>
+<td>瞬速万変<br/>敵陣撹乱</td>
+<td>一行三昧<br/>一上一下</td>
+</tr>
+<tr>
+<td>副将</td>
+<td>本多正信</td>
+<td>気炎万丈<br/>有備無患</td>
+<td>回天転運<br/>甲州流軍学</td>
+<td></td>
+<td>伊達政宗</td>
+<td>乱世の華<br/>岐阜侍従</td>
+<td>紅蓮の炎<br/>竜騎兵</td>
+</tr>
+<tr>
+<td>副将</td>
+<td>加藤嘉明</td>
+<td>千軍辟易<br/>一触即発</td>
+<td>霹靂一撃<br/>所向無敵</td>
+<td></td>
+<td>本多正信</td>
+<td>会盟の陣</td>
+<td>回天転運<br/>帰還の凱歌</td>
+</tr>
+</tbody>
+</table></div>
+<p>福島正則と成田甲斐のダブルアタッカー編成です。</p>
+<p>最終編成では豊臣秀吉を使用する場合は豊臣秀吉が大将になります。</p>
+<div class="table-scroll"><table>
+<thead>
+<tr><th>役割</th><th>武将名</th><th>戦法1</th><th>戦法2</th><th>→</th><th>武将名</th><th>戦法1</th><th>戦法2</th></tr>
+</thead>
+<tbody>
+<tr>
+<td>大将</td>
+<td>福島正則</td>
+<td>縦横馳突<br/>奮戦</td>
+<td>一力当先<br/>一刀両断</td>
+<td></td>
+<td>福島正則</td>
+<td>縦横馳突<br/>奮戦</td>
+<td>一力当先<br/>一刀両断</td>
+</tr>
+<tr>
+<td>副将</td>
+<td>お市</td>
+<td>気炎万丈<br/>有備無患</td>
+<td>回天転運<br/>一触即発</td>
+<td></td>
+<td>豊臣秀吉<br/>お初</td>
+<td>気炎万丈<br/>敵陣撹乱</td>
+<td>伊賀忍者<br/>回天転運</td>
+</tr>
+<tr>
+<td>副将</td>
+<td>成田甲斐</td>
+<td>乗勝追撃<br/>槍の鈴</td>
+<td>威風凛凛<br/>一刀両断</td>
+<td></td>
+<td>成田甲斐</td>
+<td>乗勝追撃<br/>一触即発</td>
+<td>威風凛凛<br/>一触即発</td>
+</tr>
+</tbody>
+</table></div>
+<p>柿崎景家スタートして上杉家のコスト20に繋げる編成です。</p>
+<p>長野業正だけでなく上杉謙信でもよく使われている編成です。</p>
+<div class="table-scroll"><table>
+<thead>
+<tr><th>役割</th><th>武将名</th><th>戦法1</th><th>戦法2</th><th>→</th><th>武将名</th><th>戦法1</th><th>戦法2</th></tr>
+</thead>
+<tbody>
+<tr>
+<td>大将</td>
+<td>柿崎景家</td>
+<td>千軍辟易<br/>槍弾正</td>
+<td>勇猛無比<br/>所向無敵</td>
+<td></td>
+<td>柿崎景家</td>
+<td>一力当先<br/>矢石飛交</td>
+<td>縦横馳突<br/>千軍辟易</td>
+</tr>
+<tr>
+<td>副将</td>
+<td>千坂景親</td>
+<td>按甲休兵<br/>休養</td>
+<td>死中求活<br/>血戦奮闘</td>
+<td></td>
+<td>宇佐美定満</td>
+<td>直言極諫<br/>大智不智</td>
+<td>荷駄崩し<br/>追い崩し</td>
+</tr>
+<tr>
+<td>副将</td>
+<td>加藤嘉明</td>
+<td>気炎万丈<br/>家中整序</td>
+<td>回天転運<br/>有備無患</td>
+<td></td>
+<td>長野業正</td>
+<td>立身の志<br/>生死一顧</td>
+<td>戮力同心<br/>休養</td>
+</tr>
+</tbody>
+</table></div>
+<p>最終がコスト18の会盟編成です。</p>
+<p>運営によると、福島正則のレベル20までの戦法は乗勝追撃／槍の鈴が推奨となってます。</p>
+<p>レベル20以降は下記のとおりです。</p>
+<div class="table-scroll"><table>
+<thead>
+<tr><th>役割</th><th>武将名</th><th>戦法1</th><th>戦法2</th><th>→</th><th>武将名</th><th>戦法1</th><th>戦法2</th></tr>
+</thead>
+<tbody>
+<tr>
+<td>大将</td>
+<td>北条氏康</td>
+<td>回天転運<br/>有備無患</td>
+<td>一行三昧<br/>一上一下</td>
+<td></td>
+<td>伊達晴宗</td>
+<td>勇猛無比<br/>矢石飛交</td>
+<td>千軍辟易<br/>槍弾正</td>
+</tr>
+<tr>
+<td>副将</td>
+<td>福島正則</td>
+<td>縦横馳突<br/>奮戦</td>
+<td>一力当先<br/>一刀両断</td>
+<td></td>
+<td>福島正則</td>
+<td>縦横馳突<br/>奮戦</td>
+<td>一力当先<br/>一刀両断</td>
+</tr>
+<tr>
+<td>副将</td>
+<td>お市</td>
+<td>会盟の陣</td>
+<td>気炎万丈<br/>甲州流軍学</td>
+<td></td>
+<td>本多正信</td>
+<td>会盟の陣</td>
+<td>回天転運<br/>有備無患</td>
+</tr>
+</tbody>
+</table></div>
+<p>スタダ編成は、手持ちの武将と戦法、そして1軍を何にしたいかによっても変わってきます。</p>
+<p>なかなか決められない方は、Discordの編成・悩み相談チャンネルで相談してください。</p>
+<p>ご自身で組まれる場合、下記は公式が発表しているスタダに適した武将ですので参考にしてください。</p>
+<div class="table-scroll"><table>
+<thead>
+<tr><th>役割</th><th>コスト</th><th>武将</th></tr>
+</thead>
+<tbody>
+<tr>
+<td>アタッカー</td>
+<td>7</td>
+<td>柿崎景家、武田信玄、伊達政宗、佐竹義重</td>
+</tr>
+<tr>
+<td>アタッカー</td>
+<td>6</td>
+<td>成田甲斐、福島正則、柴田勝家、前田慶次、飯富虎昌、山本勘助、榊原康政、伊達晴宗、浅井長政</td>
+</tr>
+<tr>
+<td>アタッカー</td>
+<td>5</td>
+<td>小島弥太郎、森可成、十河一存</td>
+</tr>
+<tr>
+<td>サポーター</td>
+<td>6</td>
+<td>北条氏康、島津義久</td>
+</tr>
+<tr>
+<td>サポーター</td>
+<td>5</td>
+<td>毛利隆元、安宅冬康、本多正信、堀直政</td>
+</tr>
+<tr>
+<td>サポーター</td>
+<td>4</td>
+<td>里見義堯、浦上宗景</td>
+</tr>
+<tr>
+<td>サポーター</td>
+<td>3</td>
+<td>加藤嘉明、お市、吉岡妙林</td>
+</tr>
+</tbody>
+</table></div>
+
+<p>スタダ期間の48時間を超えると、レベル継承券を使用しても戦法経験値は80%しか返ってこないことから、スタダ部隊をできるだけそのまま1軍編成に移行できることが戦法経験値の損失を最も少なくする方法です。</p>
+<p>また、後述しますが、最序盤で1軍の体力を温存したい方は、使用するスタダ用の2軍の編成もあらかじめ決めておきます。</p>
+
+</div></details>
+<details class="detail-card"><summary>小判の使いどころと用意しておく量</summary><div class="detail-body"><p>スタダで使用する小判の優先順位と概算です。</p>
+<ol>
+<li>勲功商店での戦法経験値 小判500</li>
+<li>倉庫や天守、兵舎の即時完了　倉庫3~12、天守4~8、兵舎10とすると25x20で大体小判500くらい</li>
+<li>労力購入　3日分として200x3で小判600</li>
+</ol>
+<p>合計で小判1600くらいを見ておけば良いでしょう。</p>
+<p>以下は必要に応じてです。</p>
+<ol start="4">
+<li>資源や建設系の即時完了　その建設レベルが原因で行き詰まるなどあれば即時完了します。</li>
+<li>心得の小判変換　快適にスタダをしたければ使います。</li>
+</ol>
+<p>30分以上かかるような施設は小判で上げることを検討してください。</p>
+
+</div></details>
+<section class="principles"><h3>スタダで意識すること</h3><ul>
+<li><p>資源を溢れさせない</p>
+<p>資源が蔵の上限に触れるのは、上限突破のときの数秒だけです。どの資源もカツカツで回せている状態が、最も効率のよい資源の使い方です。</p>
+</li>
+<li><p>体力を溢れさせない</p>
+<p>武将の体力が100のまま放置されているのは、経験値を捨てていることと同じです。体力が溢れそうなら余裕のある土地Lvに対して掃討するか、次の獲得予定の資源地まで行軍させて士気を回復させておくなど、体力が溢れない工夫をします。</p>
+</li>
+<li><p>無理をしない</p>
+<p>PKシーズンは土地守備軍が強いので、「厳しいかな～？」と感じるときは立ち止まることも大切です。兵損が大きくなれば資源を大量消費するのはもちろんですが、徴兵に時間がかかるので本当に動けなくなってしまいます。掃討もできず、行軍させておくこともできず、練兵場送りにすることくらいしかやれることがなくなってしまいます。</p>
+</li>
+</ul>
+
+</section>
+</section><section class="stage" data-stage="2" id="start">
+<div class="stage-kicker">STEP 2 / 10</div>
+<div class="stage-title-row"><span class="stage-badge">2</span><div><h2>開始直後</h2><p>戦法経験値を確保し、1軍の体力を温存</p></div></div>
+<section class="content-card"><h3>戦法経験値</h3><p>戦法レベルはダメージや発動率、回復量に直結しますので、レベルが低いほど兵損に繋がります。PKシーズンは土地守備軍が強いので、戦法レベルが低いと兵損を抑えるどころか負けます。</p>
+<p>序盤に戦法経験値を獲得する手段は以下の3つです。</p>
+<p>スタダ編成を決める際、戦法をどこまで上げるかも事前に決めておくと良いです。</p>
+<h4>勲功商店</h4>
+<figure class="inline-image"><button aria-label="勲功商店の戦法経験値を拡大" class="image-zoom" type="button"><img alt="勲功商店の戦法経験値" loading="lazy" src="images/merit-shop-tactic-exp.png"/></button></figure>
+<ul>
+<li>勲功ポイント150 → 戦法経験値7,500</li>
+<li>小判500 → 戦法経験値10,000
+合計 17,500で、すべての交換が必須です。
+これがないとスタダが厳しすぎます。
+無課金でもこれは交換してください。</li>
+</ul>
+<h4>心得変換</h4>
+<p>前シーズンで貯めていた心得を変換します。</p>
+<p>スタダを快適にしたい場合、小判で2倍にします。</p>
+<h4>ガチャを回す</h4>
+<p>心得変換でも足りない場合、ガチャで補充します。</p>
+<p>銀銭のガチャでも戦法経験値は貯まります。</p>
+<h4>市場で購入</h4>
+<p>市場が解放されてからですが、戦法経験を小判で購入可能です。</p>
+<p>戦法経験に割引が入っているときは特にお得なので、購入を忘れないでください。</p>
+<h4>どの戦法から優先して上げるか</h4>
+<p>最低Lv5まではどの戦法にも振った上で、主力となるダメージ戦法のレベルから優先して上げてください。</p>
+<p>これはレベルの上げ方に正解があるわけではないので、大体こんな感じというイメージを掴んでください。</p>
+<details class="detail-card compact-detail"><summary>柿崎景家の場合</summary><div class="detail-body">
+<p>発動率の高い固有戦法が最もダメージを期待できるので、優先的に上げます。</p>
+<p>乗勝追撃は発動率が低いもののダメージは高く、前後挟撃も発動すれば通常攻撃と突撃戦法の発動機会を得られます。</p>
+<p>固有戦法 ＞ 乗勝追撃 ＝ 前後挟撃という優先順位で振り分けます。</p>
+<p>武将レベル5のスタート時点</p>
+<p>固有戦法（越後二天）：戦法レベル8</p>
+<p>第二戦法（前後挟撃）：戦法レベル8</p>
+<p>武将レベル20以降</p>
+<p>固有戦法（越後二天）：戦法レベル8</p>
+<p>第二戦法（乗勝追撃）：戦法レベル6</p>
+<p>第三戦法（前後挟撃）：戦法レベル6</p>
+
+</div></details></section>
+<section class="visual-card"><div class="visual-title"><span>進行フロー</span><strong>スタダ部隊の体力節約術</strong></div><div class="flow"><div class="flow-step"><span class="flow-num">1</span><div><p>スタダをスタートしたら、事前に決めておいた初動軍でLv3土地を取得していきます。</p>
+</div></div><div aria-hidden="true" class="flow-arrow"></div><div class="flow-step"><span class="flow-num">2</span><div><p>初動軍でLv3土地を8つほど取り、天守4まで上げ、国衆進上で石を選択します。</p>
+</div></div><div aria-hidden="true" class="flow-arrow"></div><div class="flow-step"><span class="flow-num">3</span><div><p>国衆進上の石を受け取り、天守5に上げ、任務4章、任務5章の報酬で武将経験値を受け取ります。</p>
+</div></div><div aria-hidden="true" class="flow-arrow"></div><div class="flow-step"><span class="flow-num">4</span><div><p>任務5章の経験値報酬を受け取ったら全武将がレベル7になりますので、スタダ部隊に切り替えます。</p>
+</div></div><div aria-hidden="true" class="flow-arrow"></div><div class="flow-step"><span class="flow-num">5</span><div><p>スタダ部隊はLv3土地を1つ取るだけでレベル8になり、次からLv4土地に移行することができます。</p>
+</div></div></div><div class="flow-note attention-note"><p>2軍でLv4土地を取らないこと。場合によっては兵損が大きくなりその後の徴兵が間に合わなくなる恐れがありますので、武将経験値を取るためだけに2軍を動かしていることを意識します。</p>
+
+</div></section>
+<details class="detail-card" open=""><summary>土地資源比率を見る</summary><div class="detail-body"><p>以下のような比率で土地を集めるよう意識してください。</p>
+<p><strong>木 : 鉄 : 石 : 米 = 1 : 1 : 2 : 0.5</strong></p>
+<p>ただ、厳密に守ろうとしなくても大丈夫です。</p>
+<p>おおよその取得比率のイメージです。</p>
+<figure class="inline-image"><button aria-label="土地ごとの資源産出量の例を拡大" class="image-zoom" type="button"><img alt="土地ごとの資源産出量の例" loading="lazy" src="images/land-resource-yield-example.png"/></button></figure>
+<p>6章任務に基本資源量 2500を超えるというものがあります。</p>
+<p>米は最低限そういった章任務をクリアする程度にとどめてください。</p>
+<figure class="inline-image"><button aria-label="基本資源産出量2500の任務を拡大" class="image-zoom" type="button"><img alt="基本資源産出量2500の任務" loading="lazy" src="images/mission-base-resource-2500.png"/></button></figure>
+<p>あまり石が見つからない場合、</p>
+<p><strong>木 : 鉄 : 石 : 米 = 1 : 1 : 1.5 : 0.5</strong></p>
+<p>くらいで進行することになります。</p>
+<figure class="inline-image"><button aria-label="勲功商店の兵糧を拡大" class="image-zoom" type="button"><img alt="勲功商店の兵糧" loading="lazy" src="images/merit-shop-provisions.png"/></button></figure>
+<p>米が不足しがちでもできるだけ土地は取らず、勲功商店で米を購入して補ってください。</p>
+<p>勲功ポイント140で米17.5万は安いです！</p>
+<p>とはいえ一気に買わず、一番安いものから必要に応じて購入してください。</p>
+
+</div></details>
+</section><section class="stage" data-stage="3" id="lv4">
+<div class="stage-kicker">STEP 3 / 10</div>
+<div class="stage-title-row"><span class="stage-badge">3</span><div><h2>Lv4土地挑戦</h2><p>レベル目安と土地難易度を確認</p></div></div>
+<section class="content-card"><h3>Lv4土地の攻略目安</h3>
+<p>難易度の低い敵を選び、自爆部隊を活用する場合：レベル8</p>
+<p>自爆部隊を使わず、スタダ部隊単独でクリアする場合：レベル10</p>
+</section>
+<section class="content-card"><h3>土地難易度</h3><p>公式が公開している難易度表を参考にすると良いです。</p>
+<p>できるだけ難易度の低い敵を狙い撃ちして土地取得を進めましょう。</p>
+<figure class="inline-image"><button aria-label="開荒TIPS・土地守軍の注意点を拡大" class="image-zoom" type="button"><img alt="開荒TIPS・土地守軍の注意点" loading="lazy" src="images/land-difficulty.png"/></button></figure>
+<p>まず、混乱・回避は大損害に繋がる恐れがあるので、できるだけ避け、その土地攻略に余裕が出てからにしましょう。</p>
+<p>また、ご自身のスタダ編成に応じて、福島正則であれば封撃を避ける、北条氏康であれば必中を避けるなど、相手を選んで戦うようにしましょう。</p>
+<p>難易度の高い守備軍がいたとしても、日付が変わり朝起きる頃には守備軍が変わりますので、再度偵察すれば難易度が低い守備軍になっている可能性があります。</p>
+
+</section>
+</section><section class="stage" data-stage="4" id="lv5">
+<div class="stage-kicker">STEP 4 / 10</div>
+<div class="stage-title-row"><span class="stage-badge">4</span><div><h2>Lv5土地挑戦</h2><p>Lv4の感触を見て、無理せずLv5へ</p></div></div>
+<section class="content-card"><h3>Lv5土地挑戦の目安</h3>
+<p>戦法レベル10で、難易度の低い敵を選び、自爆部隊を活用する場合：レベル16</p>
+<p>戦法レベルが低く、自爆部隊を使わず、スタダ部隊単独でクリアする場合：レベル20</p>
+<p>難易度の低い守備軍がいるLv5の石土地が理想ですが、近くにない場合、他の資源のLv5土地を取って、勲功商店で土地転換のアイテムを購入し、入れ替えます。変換に1時間かかりますが、これにより石Lv5土地の徴発が可能になります。</p>
+<p>戦法レベルや部隊強度が低い場合、レベル20で「覚醒」するまでLv4土地を取り続けます。 3つ目の戦法と装備を整えてから、 Lv5土地への挑戦を開始します。Lv20であっても、初挑戦する守備軍の際は自爆部隊の運用を推奨します。</p>
+<p>章任務で大量の銀銭が手に入りますので、すべてガチャを回して戦法経験値に変換し、主力に注ぎ込みます。</p>
+<p>練兵場による銀銭での育成はまだ考えなくて良いです。</p>
+
+</section>
+<details class="detail-card" open=""><summary>天守5になったあと：石を集める</summary><div class="detail-body"><h3>とにかく石を集める</h3>
+<p>任務報酬で求められている施設以外、施設Lvを上げないでください。石が足りなくなり、天守6に上げられず、資源が貯まるまで待ちぼうけになる可能性があります。</p>
+<p>天守6に必要な石を集めるために、評定では石を必ず選びます。</p>
+<p>また、評定では石以外も木、鉄などの資源を推奨します。石が2つあれば2つ選んでください。鍛造素材や普請書は等級が高くてもスルーして、資源を選んでください。</p>
+<h4>評定の例１</h4>
+<p>画像では、「城下の整備」では普請書が報酬で、追加報酬は小判です。</p>
+<p>さらに建築の技能まで上げられますが、これは選ばないでください。</p>
+<p>鉄、木、米、石の4つで執行します。</p>
+<figure class="inline-image"><button aria-label="評定の例1を拡大" class="image-zoom" type="button"><img alt="評定の例1" loading="lazy" src="images/council-example-1.png"/></button></figure>
+<h4>評定の例2</h4>
+<p>鉄塊の鍛造が2つありますが、片方は鉄、片方は鍛造素材が報酬となっています。</p>
+<p>この場合選択するのは、石、鉄、米、木の4種類になります。</p>
+<figure class="inline-image"><button aria-label="評定の例2を拡大" class="image-zoom" type="button"><img alt="評定の例2" loading="lazy" src="images/council-example-2.png"/></button></figure>
+
+</div></details>
+<details class="detail-card"><summary>職人技能</summary><div class="detail-body"><p>天守5で職人技能が解放されます。優先的に弁論と算術をLv2にしてください。序盤の優先順位が高いです。</p>
+<p>弁論Lv2：国衆進上で督促ができ、資源を2倍にできる</p>
+<p>算術Lv2：値引き交渉が行える</p>
+<p>算術をLv2にしたら値引き交渉を限界まで進めておいてください。</p>
+<p>これには気力を消費しないので、メリットしかありません。</p>
+<figure class="inline-image"><button aria-label="値引き交渉の画面を拡大" class="image-zoom" type="button"><img alt="値引き交渉の画面" loading="lazy" src="images/price-negotiation-screen.png"/></button></figure>
+<p>職人技能はLv2に上げると威信が60上昇しますので、まずはすべてLv2に上げます。</p>
+<p>弁論→算術→武芸→建築→茶道の順で上げてください。</p>
+<figure class="inline-image"><button aria-label="領主技能の画面を拡大" class="image-zoom" type="button"><img alt="領主技能の画面" loading="lazy" src="images/lord-skills-screen.png"/></button></figure>
+<p>鍛冶は天守8で解放されますので現時点では無視してよいです。</p>
+<p>鍛冶以外の技能がLv2になってないうちから、Lv3に上げようとしないでください。</p>
+
+</div></details>
+</section><section class="stage" data-stage="5" id="castle6">
+<div class="stage-kicker">STEP 5 / 10</div>
+<div class="stage-title-row"><span class="stage-badge">5</span><div><h2>天守6</h2><p>石を集め、徴発→報酬で上限突破</p></div></div>
+<section class="visual-card important"><div class="visual-title"><span>最重要</span><strong>上限突破の順番</strong></div><div class="flow flow-compact"><div class="flow-step"><span class="flow-num">1</span><div><p>石を徴発する</p>
+</div></div><div aria-hidden="true" class="flow-arrow"></div><div class="flow-step"><span class="flow-num">2</span><div><p>蔵上限付近まで石を貯める</p>
+</div></div><div aria-hidden="true" class="flow-arrow"></div><div class="flow-step"><span class="flow-num">3</span><div><p>評定報酬・任務報酬などを回収する</p>
+</div></div><div aria-hidden="true" class="flow-arrow"></div><div class="flow-step"><span class="flow-num">4</span><div><p>倉庫上限を突破して天守6に上げる</p>
+</div></div></div><p class="microcopy">原稿の「徴発してから報酬を回収する」を図にしたものです。</p></section>
+<section class="content-card"><h3>第一目標は天守6</h3><p>次なる目標は天守6です。</p>
+<h3>なぜ天守6を目指すのか</h3>
+<p>天守6達成で役職が上がり、勢力親交が解放され、「物資調達の証」や「徴発促進策」を取得できるほか、基本資源産出量の増加を得られるからです。また、国衆進上の2枠目も解放されます。</p>
+
+<h3>石を徴発して天守6に上げる</h3>
+<h4>Lv5土地が取れる場合</h4>
+<p>Lv5土地を1回徴発すると石2.4万が手に入ります。</p>
+<p>蔵Lv6のまま、石を徴発をして14万ほど貯めてから、評定報酬、第8章任務報酬を回収することで倉庫上限を突破し、天守6に上げることが可能になります。</p>
+<h4>Lv5土地が取れる状況ではない場合</h4>
+<p>Lv5土地を取ってから徴発するほうが資源効率的には良いです。</p>
+<p>Lv5の石が遠い、守備軍の難易度が高い場合、難易度の低いLv5土地を取り、土地転換令で石に変換してください。変換には1時間かかりますが、変換が終わってから徴発し、天守6に上げます。</p>
+<p>もし11時からスタダを開始して20時までにLv5土地が取れない場合、Lv4土地を徴発して不足分を補い、天守6に上げてください。</p>
+<h4>石の必要量の計算</h4>
+<p>天守6に必要な石：19.2万</p>
+<ul>
+<li>第8章任務報酬：石4万</li>
+<li>評定報酬：石2万前後</li>
+</ul>
+<p>石を徴発して14万まで貯めれば、上記報酬を受け取ることで天守6に上げられます。</p>
+<p>評定報酬に石が2つ出て余った場合は、今後も含めてですが、温存しておいてください。評定報酬は受け取りをしなければ日付をまたいでもメールで報酬が送られてくるため取り損ねることがなく、あとでメールから必要時に取り出せるので非常に便利です。</p>
+<h4>【注意点】 徴発してから報酬を回収する</h4>
+<p>徴発してから各報酬を受け取るようにしてください。各報酬は倉庫上限を超えて受け取れますが、徴発は蔵上限に引っかかってそれ以上獲得できなくなるためです。</p>
+<p>もし間違えて先に報酬を受け取ってしまった場合は、蔵を上げてから徴発し、14時の国衆進上を利用して上げてください。</p>
+<details class="detail-card"><summary>14時の国衆進上や各報酬について</summary><div class="detail-body">
+<p>14時の国衆進上は天守6に上げてから行うようにしてください。国衆進上の2つ目の隊列を使うことができます。</p>
+<p>14時の国衆進上には督促を使わず、要求される施設Lv上げや徴兵に使ってください。</p>
+<p>第9章任務報酬も同様に使用して構いません。</p>
+<p>20時の国衆進上2倍と第10章任務報酬は天守7に上げるための上限突破に使うので、温存し、資源は受け取らないようにします。</p>
+<p>国衆進上は石が報酬としてもらえるものを優先的に選択してください。国衆進上の倍にするのも石です。</p>
+
+</div></details>
+
+</section>
+<section class="content-card"><h3>天守6になったあと</h3><h3>資源産出量を最優先で上げる</h3>
+<p>資源産出量は時間が経つほど他者との差が開くので、できるだけ早く到達することが後々の資源量に響いてきます。</p>
+<figure class="inline-image"><button aria-label="盟約の品・基本資源の効果を拡大" class="image-zoom" type="button"><img alt="盟約の品・基本資源の効果" loading="lazy" src="images/alliance-item-resource-effect.png"/></button></figure>
+<p>市場で値引き交渉を終えたら、銅銭で国衆の好物を買い叩き、上げられる5つの盟約の品の信頼度をすべて70まで上げてください。好物が足りない場合、嫌物でないものを購入して上げてください。</p>
+<p>その上で「物資調達の証」や「徴発促進策」を100まで上げて、盟約の品を装備してください。</p>
+<p>この時点では国衆相手には気力は使わないでおきましょう。銅銭を使って物資を買い与えて信頼度をあげてください。</p>
+
+<h3>Lv5土地に入れ替える</h3>
+<p>Lv5土地の感触からLv5土地を継続するか、Lv4土地に戻るべきか判断してください。</p>
+<p>少なくとも主力がレベル20を超えたら、 すべての土地をレベル5に入れ替えてください。 漢方薬（体力回復アイテム）を使って全力で回しましょう。 Lv5土地が近くになくなった場合、Lv4土地を検地してください。</p>
+
+</section>
+</section><section class="stage" data-stage="6" id="castle7">
+<div class="stage-kicker">STEP 6 / 10</div>
+<div class="stage-title-row"><span class="stage-badge">6</span><div><h2>天守7</h2><p>進行状況に合わせて3ルートから選ぶ</p></div></div>
+<section class="content-card"><h3>第二目標は天守7に上げること</h3><p>天守7になると、土地枠が増え、国衆進上の隊列が+1されます。</p>
+<p>天守7に必要な石は29.2万ですので、徴発を駆使して貯めます。</p>
+</section>
+<div aria-label="天守7到達タイミング" class="route-picker" role="tablist">
+<button aria-selected="true" class="route-tab active" data-route="route-night" role="tab">初日夜に到達</button>
+<button aria-selected="false" class="route-tab" data-route="route-morning" role="tab">2日目朝に到達</button>
+<button aria-selected="false" class="route-tab" data-route="route-late" role="tab">2日目朝も難しい</button>
+</div>
+<div class="route-panel active" id="route-night" role="tabpanel">
+
+<section class="content-card"><p>Lv5土地をレベル16で取得し、その後もLv5土地を周回し続けられている場合、初日の夜に天守7に上げられる可能性があります。</p>
+<p>蔵Lv8に上げ、石を徴発して24~25万まで貯めます。労力が不足するので、200小判で購入します。</p>
+<p>20時の国衆進上の2倍と第10章任務報酬で上限を突破し、天守7に上げます。</p>
+<p>国衆進上で石がいくらもらえるか、任務報酬と合わせて足りるかどうか確認してから受け取ります。上限突破後にわずかに石が足りないことが判明した場合、蔵Lv9に上げてから石を貯め直す手間が発生します。</p>
+<p>無事、天守7に上げられたら、次に兵舎を上げます。兵舎がLv3~5になったら、Lv6土地を検討します。</p>
+<p>また、演武場Lv1を作成し、1軍予定のまだ編成に入れられていない武将2体と、コスト3の武将（星5ならお市、加藤嘉明、吉岡妙林、星4なら小山田茂誠、甘粕景継など）を練兵場でLv20まで育てます。武将訓練を夜間に回せると無駄がなくて良いです。</p>
+</section>
+<section class="visual-card"><div class="visual-title"><span>この先</span><strong>天守8までの流れ</strong></div><div class="long-flow flow"><div class="flow-step"><span class="flow-num">1</span><div><p>天守7に上げる</p>
+</div></div><div aria-hidden="true" class="flow-arrow"></div><div class="flow-step"><span class="flow-num">2</span><div><p>練兵場を作成し、1軍武将やコスト3武将を育てる</p>
+</div></div><div aria-hidden="true" class="flow-arrow"></div><div class="flow-step"><span class="flow-num">3</span><div><p>朝起きて、育った武将とスタダ武将を混ぜながらLv5土地で土地枠を埋める（すべての土地がLv5、Lv4の検地済だけになるように）</p>
+</div></div><div aria-hidden="true" class="flow-arrow"></div><div class="flow-step"><span class="flow-num">4</span><div><p>Lv6土地が取れるレベルまで兵舎を上げる（兵舎Lv3~5程度）</p>
+</div></div><div aria-hidden="true" class="flow-arrow"></div><div class="flow-step"><span class="flow-num">5</span><div><p>Lv6の石の土地を1つ取る or 取れたLv6土地を石に変更する（勲功商店で購入できる土地転換令を使います）</p>
+</div></div><div aria-hidden="true" class="flow-arrow"></div><div class="flow-step"><span class="flow-num">6</span><div><p>蔵をLv12まで上げ、天守8に向けて資源を貯める（労力を買い、Lv6石を徴発しまくる）</p>
+</div></div><div aria-hidden="true" class="flow-arrow"></div><div class="flow-step"><span class="flow-num">7</span><div><p>天守8に上げる</p>
+
+</div></div></div></section>
+</div>
+<div class="route-panel" id="route-morning" role="tabpanel">
+
+<section class="content-card"><p>天守6に上げる際に、Lv5土地を転換するのに時間を使った場合でも、その後に順調に進んでいれば2日目の朝に天守7に上げられる資源が溜まります。</p>
+<p>蔵Lv9に上げておき、朝起きて天守7に上げたら、10章の任務報酬を使って兵舎を上げながらLv5土地で土地枠を埋めていきます。</p>
+<p>また、演武場Lv1を作成し、1軍予定のまだ編成に入れられていない武将2体と、コスト3の武将（星5ならお市、加藤嘉明、吉岡妙林、星4なら小山田茂誠、甘粕景継など）を練兵場でLv20まで育てます。</p>
+</section>
+<section class="visual-card"><div class="visual-title"><span>この先</span><strong>天守8までの流れ</strong></div><div class="long-flow flow"><div class="flow-step"><span class="flow-num">1</span><div><p>朝起きて、天守7に上げる</p>
+</div></div><div aria-hidden="true" class="flow-arrow"></div><div class="flow-step"><span class="flow-num">2</span><div><p>練兵場を作成し、1軍武将やコスト3武将を育てる</p>
+</div></div><div aria-hidden="true" class="flow-arrow"></div><div class="flow-step"><span class="flow-num">3</span><div><p>スタダ部隊でLv5土地で土地枠を埋める（土地の状況がLv5、Lv4の検地済だけになるようにします）</p>
+</div></div><div aria-hidden="true" class="flow-arrow"></div><div class="flow-step"><span class="flow-num">4</span><div><p>蔵をLv12まで上げ、残りの資源でどんどん兵舎を上げていく</p>
+</div></div><div aria-hidden="true" class="flow-arrow"></div><div class="flow-step"><span class="flow-num">5</span><div><p>Lv5土地は練兵場でレベル上げした武将の体力が回復し次第、スタダ部隊を混ぜて取得を続ける</p>
+</div></div><div aria-hidden="true" class="flow-arrow"></div><div class="flow-step"><span class="flow-num">6</span><div><p>Lv6土地が取れるレベルまで兵舎を上げます（兵舎Lv3~5程度）</p>
+</div></div><div aria-hidden="true" class="flow-arrow"></div><div class="flow-step"><span class="flow-num">7</span><div><p>Lv6の石の土地を取る or 取れたLv6土地を石に変更する（勲功商店で購入できる土地転換令を使います）</p>
+</div></div><div aria-hidden="true" class="flow-arrow"></div><div class="flow-step"><span class="flow-num">8</span><div><p>武家屋敷Lv2に上げる</p>
+</div></div><div aria-hidden="true" class="flow-arrow"></div><div class="flow-step"><span class="flow-num">9</span><div><p>夜20時頃には兵舎を上げるのを止め、天守8と3日目の攻城用の徴兵分がどれくらい必要か確認</p>
+</div></div><div aria-hidden="true" class="flow-arrow"></div><div class="flow-step"><span class="flow-num">10</span><div><p>寝る前に兵器部隊に余った兵を積んでおく（徴兵しすぎた場合でも、すでに積んである兵を戻せば、メールで資源が届くため）</p>
+</div></div><div aria-hidden="true" class="flow-arrow"></div><div class="flow-step"><span class="flow-num">11</span><div><p>3日目の朝以降、不足資源を徴発し、上限突破で天守8に上げる</p>
+
+</div></div></div></section>
+</div>
+<div class="route-panel" id="route-late" role="tabpanel">
+
+<section class="content-card"><p>操作を間違えた、複数のトラブルが重なった、時間が取れなかったなど、なかなか思い通りに進まないこともあります。</p>
+<p>そんなときは基本を思い出し、ここから1つずつ確実にこなすことが大切です。</p>
+<ul>
+<li>資源・体力を溢れさせないこと</li>
+<li>土地は偵察して難易度の低い守備軍に対し、兵種有利で挑むこと</li>
+<li>章任務で要求されているもののみ施設Lvを上げること</li>
+</ul>
+<p>威信が上がればイベントで小判がもらえるので、勲功商店や市場で戦法経験値と交換しましょう。</p>
+<p>足りない資源は、労力を購入して徴発を行います。そうすれば、徐々に先に進めるはずです。</p>
+<h4>シーズンを通して挽回しよう</h4>
+<p>スタダは2日間しかないので、遅れた分をスタダ期間中に取り戻すというのは難しいのですが、シーズンの期間で考えるとまだ約60日のうち1日しか経っていません。</p>
+<p>50m走なら、自分が1m地点、相手が2m地点のようなものです。</p>
+<p>どちらもほとんどまだスタートラインに立っているようなものなのです。</p>
+<p>シーズンを通しての挽回なら十分に可能ですので、ここからじっくり取り組んでいきましょう。</p>
+<p>また、何が上手くいかなかったのか、2ヶ月後のスタダに向けてメモを残しておくことをおすすめします。</p>
+
+</section>
+</div>
+</section><section class="stage" data-stage="7" id="switch">
+<div class="stage-kicker">STEP 7 / 10</div>
+<div class="stage-title-row"><span class="stage-badge">7</span><div><h2>本命へ一部入替</h2><p>練兵場育成とスタダ武将を組み合わせる</p></div></div>
+<section class="visual-card"><div class="visual-title"><span>考え方</span><strong>本命へ移行するとき</strong></div><div class="flow"><div class="flow-step"><span class="flow-num">1</span><div><p>練兵場で本命武将やコスト3武将をLv20まで育てる</p>
+</div></div><div aria-hidden="true" class="flow-arrow"></div><div class="flow-step"><span class="flow-num">2</span><div><p>スタダ武将と混ぜてLv5土地を周回する</p>
+</div></div><div aria-hidden="true" class="flow-arrow"></div><div class="flow-step"><span class="flow-num">3</span><div><p>部隊を入れ替えながら本命へ移行する</p>
+</div></div></div></section>
+<section class="content-card"><h3>スタダ部隊と本命部隊の入れ替え</h3><p>入れ替えの方法を３パターン紹介します。</p>
+<ul>
+<li>スタダ期間中にレベリングを進め、随時入れ替えていく</li>
+<li>スタダ終了後、スタダ部隊を2分割し、1軍武将と混ぜてレベリングする</li>
+<li>1週間経過後、武将継承用巻物を使って、入れ替える</li>
+</ul>
+</section>
+<section class="content-card"><h3>スタダ期間中にレベリングを進め、随時入れ替えていく</h3><p>天守7になり、兵舎Lvが上がってくれば、ようやく2部隊目の運用が可能になります。</p>
+<p>2部隊目といっても並行で運用するわけではなく、1部隊を兵を戻して切り替えながら運用します。</p>
+<p><strong>メリット</strong></p>
+<ul>
+<li>2部隊分の体力があるので、Lv5土地を集め続けられます。</li>
+<li>1軍武将のレベルを効率よく上げられます</li>
+</ul>
+</section>
+<details class="detail-card"><summary>コスト16で組める場合の具体例</summary><div class="detail-body"><p>例を挙げて説明します。</p>
+<p>下記のスタダ編成で進めるつもりだとします。</p>
+<p>スタダ編成（コスト15）：北条氏康、福島正則、お市</p>
+<p>天守7達成後の入れ替え後はこのようになります。</p>
+<p>コスト16：立花道雪、北条氏康、お市</p>
+<p>コスト20：立花誾千代、立花道雪、北条氏康</p>
+<p>最終編成に必要な立花誾千代、立花道雪、そして部隊に合うコスト3またはコスト4の武将（加藤嘉明、小山田茂誠、甘粕景継、浦上宗景、里見義堯）を練兵場でLv20まで育てます。</p>
+<p>Lv20になって体力が回復したら、スタダ部隊と2部隊目を混ぜて、部隊を入れ替えながらLv5土地を周回し、土地枠を埋めていきます。</p>
+<p>初日のスタダ部隊：北条氏康Lv28、福島正則Lv28、お市Lv28</p>
+<p>↓↓</p>
+<p>2日目の1部隊目：立花道雪Lv20、北条氏康Lv28、加藤嘉明Lv20</p>
+<p>2日目の2部隊目：立花誾千代Lv20、福島正則Lv28、お市Lv28</p>
+<p>Lv20部隊の体力が先に切れたら、スタダ部隊に戻してまた土地を取得していきます。</p>
+<p>『Lv6土地は周回ができないがLv5土地は余裕がある』という期間を2部隊目のレベル上げと土地埋めで有意義に使えます。</p>
+
+</div></details>
+<details class="detail-card"><summary>コスト17で組める場合の具体例</summary><div class="detail-body"><p>コスト15：明智光秀、里見義堯、加藤嘉明</p>
+<p>コスト17：明智光秀、真田昌幸、加藤嘉明</p>
+<p>コスト20：明智光秀、真田昌幸、帰蝶</p>
+<p>このような編成で進める場合でも同様です。</p>
+<p>練兵場で真田昌幸と帰蝶、浦上宗景（またはお市、吉岡妙林、小山田茂誠、甘粕景継）のレベル上げを行い、部隊を混ぜて、部隊を入れ替えながらレベル上げをします。</p>
+<p>1部隊目：明智光秀Lv28、帰蝶Lv20、加藤嘉明Lv28</p>
+<p>2部隊目：里見義堯Lv28、真田昌幸Lv20、浦上宗景Lv20</p>
+<p>このように混ぜることでLv5土地攻略による兵損を抑えます。</p>
+
+</div></details>
+<details class="detail-card"><summary>スタダ終了後、スタダ部隊を分割してレベリングする場合</summary><div class="detail-body">
+<p><strong>スタダ期間中にレベリングを進め、随時入れ替えていく（コスト16で組める場合）</strong>の例で進めているとします。</p>
+<p>1部隊の入れ替え運用でスタダ期間中にレベリングを進め、下記部隊が出来上がっています。</p>
+<p>立花道雪、北条氏康、加藤嘉明</p>
+<p>立花誾千代、福島正則、お市</p>
+<p>スタダ期間終了後、立花道雪Lv30、豊臣秀吉Lv5、加藤嘉明Lv30で組みます。</p>
+<p>豊臣秀吉は兵力に1を設定し、戦法は兵種戦法や会盟の陣などの陣形戦法を付けます。</p>
+<p>兵種戦法や陣形戦法は、その武将が倒されても効果が残るためです。</p>
+<p>Lv5土地を掃討すると、豊臣秀吉は一気にレベルが上がっていきます。</p>
+<p>スタダ期間終了後は土地枠に余裕がない時期がありますので、体力が余るそのタイミングで行います。</p>
+<p><strong>メリット</strong></p>
+<ul>
+<li>練兵場を使用しないため、銀銭を使いません。</li>
+<li>レベル5の武将は知略や統率が低いですが、兵力が1なので兵損がほぼありません。</li>
+</ul>
+
+</div></details>
+<details class="detail-card"><summary>1週間経過後、武将継承用巻物を使って入れ替える場合</summary><div class="detail-body">
+<p><strong>スタダ終了後、スタダ部隊を分割し、1軍武将と混ぜてレベリングする</strong>の例で進めているとします。</p>
+<p>豊臣秀吉のレベルを一定まで育てておいたら、1週間後に武将継承用巻物を使って、お市→黒田官兵衛、加藤嘉明→ねねに継承を行います。</p>
+<p>1週間が経つ頃には軍策所3は達成していますので、下記部隊が完成します。</p>
+<p>1軍：立花誾千代、立花道雪、北条氏康</p>
+<p>2軍：黒田官兵衛、豊臣秀吉、ねね</p>
+<p><strong>メリット</strong></p>
+<ul>
+<li>スタダで使いづらい尻上がり系、徳川系のレベリングをスキップできる</li>
+</ul>
+
+</div></details>
+<section class="content-card warning"><h3>徴兵が間に合わなそうな場合</h3><p>自爆部隊を活用して、兵損を少しでも減らしてください。Lv6土地は守備軍が速度も強度も高いので自爆部隊は使いづらくなりますが、Lv5土地の周回には使えます。</p>
+<p>それでも兵損が厳しい場合、体力を使いますが、行軍して士気回復してから占領することで兵損を減らします。</p>
+<p>徴兵が間に合わなければ、体力がどれだけあっても意味がありません。</p>
+
+</section>
+</section><section class="stage" data-stage="8" id="lv6">
+<div class="stage-kicker">STEP 8 / 10</div>
+<div class="stage-title-row"><span class="stage-badge">8</span><div><h2>Lv6土地</h2><p>まず石Lv6を1か所だけ確保</p></div></div>
+<section class="decision-banner"><span>まず取るのは</span><strong>石Lv6 × 1か所</strong><small>その後は残りの土地枠をLv5で埋める</small></section>
+<section class="content-card"><h3>Lv6土地挑戦の目安</h3><p>Lv6土地を取るためには兵舎を上げる必要があります。</p>
+<p>上振れ下振れがありますが、大まかな目安は以下のとおりです。</p>
+<p>強度が高い場合：Lv26 + 兵舎Lv3</p>
+<p>標準：Lv27~28＋兵舎Lv3～Lv5</p>
+<p>レベル8でLv4土地、レベル16でLv5土地という基準から見て、ご自身の進捗はいかがでしょうか？</p>
+<p>余裕があるなら、Lv26~27+兵舎3で挑戦可能な可能性があります。</p>
+<p>ギリギリか、もしくは遅れているようであれば、Lv28 + 兵舎5まで上げてからの挑戦が無難です。</p>
+
+</section>
+<section class="content-card key-card"><h3>Lv6土地は石１か所を取得する</h3><p>Lv6土地を取れるようになっても、すぐにLv6を周回し続けることを基本方針にはせず、徴発用だけ確保します。</p>
+<p>石のLv6を1つ確保した後は、残りの土地枠をLv5で埋めることを優先します。</p>
+<p>取りやすい守備軍でない場合、取りやすいLv6土地を土地転換令のアイテムで石に変更してください。</p>
+<p>Lv5で土地枠を埋めた後、兵損を見ながら追加のLv6取得を検討しましょう。</p>
+
+</section>
+</section><section class="stage" data-stage="9" id="castle8">
+<div class="stage-kicker">STEP 9 / 10</div>
+<div class="stage-title-row"><span class="stage-badge">9</span><div><h2>天守8</h2><p>兵損を見て兵舎との優先順位を判断</p></div></div>
+<div class="compare-grid">
+<section class="compare-card"><div class="compare-label">天守8を優先</div><ul>
+<li>役職が上がることで土地枠が+3されること</li>
+<li>新たな盟約の品が解放され、基本資源 +300/h を得られること</li>
+<li>評定主命を1つ多く獲得できること</li>
+<li>軍策所や評定所を作れること</li>
+</ul>
+</section>
+<section class="compare-card"><div class="compare-label">兵舎を優先</div><ul>
+<li>部隊強度が上がり、兵損が減ること</li>
+</ul>
+</section>
+</div>
+<div class="decision-split"><div><span>部隊強度が高く兵舎の必要性が低い</span><strong>天守8を優先</strong></div><div><span>まだ兵損が多い</span><strong>兵舎を優先 → 3日目朝に天守8</strong></div></div>
+<details class="detail-card"><summary>資源量に換算した比較を見る</summary><div class="detail-body"><p>仮に天守8を2日目の夜、寝る前に達成した場合、朝起きるまでの8時間で約11.5万ほどの資源増加になります。</p>
+<h4>内訳</h4>
+<ul>
+<li><p>増えた土地枠でLv5土地を3つ取る（+1900/h が3つで+5700/h）</p>
+</li>
+<li><p>基本資源産出量を増加（銅銭の都合から3つ取って基本資源+900/hと仮定、4資源で3600/h）</p>
+</li>
+<li><p>評定主命が増えて得られる資源（4万程度）</p>
+<p>11.5万の資源量は、徴兵に換算すると約3000です。</p>
+<p>夜に天守8を上げず、代わりに兵舎Lvをどんどん上げることで兵損を3000以上減らすことができるなら、兵舎を上げたほうが資源的にお得ということになります。</p>
+</li>
+</ul>
+<p>このことから、部隊強度が高く、土地取得に対しての兵舎の必要性が低ければ天守8を優先します。</p>
+<p>逆に兵損がまだ多く出る状況であれば、兵舎を優先し、3日目の朝に天守8に上げるほうが資源効率が良いです。</p>
+
+</div></details>
+<section class="content-card"><h3>天守8に上げる</h3><div aria-label="天守8の蔵レベル" class="route-picker castle8-picker" role="tablist"><button aria-selected="true" class="route-tab active" data-route="store12" role="tab">蔵Lv12で上げる</button><button aria-selected="false" class="route-tab" data-route="store11" role="tab">蔵Lv11で上げる</button></div><div class="route-panel active" id="store12" role="tabpanel">
+<p>2日目の朝からLv5土地で土地枠を埋めていき、蔵と兵舎を上げながらLv6の石土地を確保します。</p>
+<p>Lv6石を確保できない場合は、Lv6の他の資源地を確保し、土地変換アイテムを使用してください。</p>
+<p>蔵をLv12まで上げ、労力を200小判で購入し、Lv6石を徴発していきます。</p>
+<p>時間経過で蔵MAXになったら、直前の国衆進上と2日目の評定を利用して上限を突破し、天守8に上げます。</p>
+<p>天守7に上げたタイミングが2日目の朝なら、天守8は早くても3日目の朝に上げられることになります。</p>
+<p>初日の夜に天守7に上げられていれば、天守8を2日目の夜に上げるか、3日目の朝に上げるか、選べる可能性があります。（兵舎1でLv6土地を確保し、14時に天守8達成という記録がありますが、兵舎1でLv6土地挑戦は失敗する可能性が非常に高いので、完凸部隊を組んでいる人以外はやめておきましょう）</p>
+<p>兵舎レベルを上げるほど資源を消費してしまうため、天守8が遅れるのも事実ですが、基本的に安全を重視してください。</p>
+<p>兵舎レベルを上げるほど兵損は減り、Lv6土地取得で失敗する確率が減ります。</p>
+<p>無課金・微課金の方は、兵舎をしっかり上げてからLv6土地を取得し、天守8は3日目の朝以降に上げるという手順で進めるほうが安全度は高いです。</p>
+
+</div><div class="route-panel" id="store11" role="tabpanel">
+<p>必要な石が58.4万ですので、12.4万を報酬として確保する必要があり、計算が細かいので難易度が高いです。</p>
+<p>3日目朝に上げる場合、下記を温存しておきます。</p>
+<ul>
+<li>2日目 20時 国衆進上：2万</li>
+<li>2日目 評定：3.3万</li>
+<li>3日目 8時 国衆進上：2万</li>
+<li>3日目 評定：5.5万</li>
+</ul>
+<p>これでぎりぎり足りるはずですが、当日評定で石が出ないなどが不運が発生した場合、</p>
+<ul>
+<li>国衆進上を2倍にする</li>
+<li>11章任務 練兵場Lv5報酬：30,000を獲得する</li>
+<li>3日目の攻城戦に参加し、攻城報酬を得る</li>
+<li>蔵Lv12に上げる
+といった対応が必要になることがあります。</li>
+</ul>
+
+</div></section>
+</section><section class="stage" data-stage="10" id="finish">
+<div class="stage-kicker">STEP 10 / 10</div>
+<div class="stage-title-row"><span class="stage-badge">10</span><div><h2>終了前</h2><p>本命移行・侍大将・外し忘れを確認</p></div></div>
+<section class="check-card"><div class="visual-title"><span>48時間終了前</span><strong>最後の確認</strong></div><div class="checklist"><label><input data-check="end-0" type="checkbox"/><span>戦法のはずし忘れがないか</span></label><label><input data-check="end-1" type="checkbox"/><span>武将につけた兵士のはずし忘れがないか</span></label></div></section>
+<div class="end-grid">
+<details class="detail-card"><summary>Lv7土地攻略目安</summary><div class="detail-body"><p>部隊強度に大きく左右されますが、Lv33~34 + 兵舎Lv7~10あたりが目安です。Lv6の土地攻略の兵損具合から、Lv7に挑戦できるかどうかを判断します。</p>
+<p>兵舎をしっかり上げてから挑戦するほうがよく、急いで挑戦するメリットはほとんどありません。</p>
+
+</div></details>
+<details class="detail-card"><summary>天守9を目指すか、軍策所2を目指すか</summary><div class="detail-body"><p>コスト19に魅力があるかどうかで、天守9を目指すか、軍策所Lv2を目指すか決めてください。</p>
+<p>特にそのコストで組める部隊が変わるわけでなければ、天守9を目指してください。</p>
+<p>天守9になると威信が300増えるので、役職が上がればさらに土地を取ることができるようになります。</p>
+
+</div></details>
+<details class="detail-card"><summary>侍大将の達成</summary><div class="detail-body"><p>スタダ成果として侍大将（威信6000）はわかりやすく、資源的なメリットも大きいです。</p>
+<p>ただし、兵損の大きいLv6を無理に連打して達成しようとするのは本末転倒です。</p>
+<p>下記で威信6000を達成するために取得しなければならない土地の数を計算します。</p>
+<figure class="inline-image"><button aria-label="侍大将Lv1の達成効果を拡大" class="image-zoom" type="button"><img alt="侍大将Lv1の達成効果" loading="lazy" src="images/samurai-general-lv1-effect.png"/></button></figure>
+<h3>侍大将のメリット</h3>
+<ul>
+<li>資源産出量 +5,000/h</li>
+<li>土地枠 +10</li>
+<li>国衆進上隊列 +1</li>
+</ul>
+<h3>達成するための威信計算</h3>
+<h4>土地以外の合計：1,160</h4>
+<ul>
+<li>領主技能：360</li>
+<li>施設（天守8）：500</li>
+<li>任務：300</li>
+</ul>
+<h4>残りの4,840を土地で確保</h4>
+<p>土地枠は65ですが、本城9マス含むので、実質56です。</p>
+<p>全部Lv5土地なら：56 × 80 = 4,480で、360不足します。</p>
+<p>不足分をLv6土地に置き換えて、Lv6 ×18、 Lv5 ×38（検地含む）で威信6000、侍大将が達成可能です。</p>
+<p>Lv7土地を取った場合、Lv6土地を取る数を減らせます。</p>
+<p>また、支城を建設すると土地枠を4つ使いますが威信が400増えるため、Lv6土地を4個取得したことと同じになります。とはいえ、各資源10万ずつ、労力10を消費し、建設に5時間かかりますので、通常のプレイではまだ建設する必要はないでしょう。もし本城のまわりに人が多くて資源が取れない場合に検討してみてください。</p>
+
+</div></details>
+<details class="detail-card"><summary>損失する戦法経験値</summary><div class="detail-body"><p>S戦法 Lv10を3つ装着している場合、戦法経験値は28,440を使用しています。</p>
+<p>スタダ期間が終了してしまえば、継承しようとも、初期化しようとも、忘却させたとしても、戦法経験値はもとの80%の22,752しか返ってきません。</p>
+<p>つまり、武将をスタダ期間外で入れ替える際には、1武将あたり約5,700の戦法経験値を失うことになります。スタダ期間中に本命の1軍武将に随時入れ替えていくのは、そうした損失を避けつつ強度を上げるためです。</p>
+<h4>天守8達成で戦法経験値の損失なく移行可能な例</h4>
+<p>コスト15：前田利家、柴田勝家、お市</p>
+<p>コスト18：前田利家、柴田勝家、まつ</p>
+<h4>スタダ期間には入れ替えが完了できず、戦法経験値の損失が1武将分となる例</h4>
+<p>コスト15：柿崎景家、本多正信、加藤嘉明</p>
+<p>コスト16：柿崎景家、宇佐美定満、加藤嘉明</p>
+<p>コスト20：上杉謙信、柿崎景家、宇佐美定満</p>
+<h4>軍策所2がスタダ期間中に作れたなら損失がなく、作れなければ損失が1武将分となる例</h4>
+<p>コスト14：武田信玄、里見義堯、加藤嘉明</p>
+<p>コスト16：武田信玄、馬場信春、加藤嘉明</p>
+<p>コスト19：武田信玄、馬場信春、山本勘助</p>
+
+</div></details>
+<details class="detail-card"><summary>兵損と銀銭育成</summary><div class="detail-body"><h3>商店で銀銭を購入するかどうか</h3>
+<p>商店で銀銭7,500を資源2.5万で購入できる場合、購入して練兵場での銀銭育成するのか、それともその資源を使って徴兵し、土地取得で育成するべきか、比較して検討します。</p>
+<p>練兵場では、銀銭3万で経験値8万が得られます。</p>
+<p>商店に置き換えると資源10万を支払って、経験値8万を得られるのと同等です。</p>
+<p>経験値8万は、Lv5土地で換算すると、約6戦分です。</p>
+<p>資源10万は徴兵2500に相当しますので、Lv5土地で6戦して死んだ兵損が2,500を超える場合、練兵場で銀製育成したほうがお得ということになります。</p>
+<h4>Lv5土地と比較してどちらが得か</h4>
+<p>育成部隊がLv5土地を6戦して合計の兵損死を2,500以内に抑えられる場合、銀銭は買わずに土地で育成します。逆に兵損が多くなりそうなら、商店で銀銭を買い、練兵場を活用するほうが資源効率的には良いです。</p>
+<p>ちなみにLv6土地で換算すると、約3戦で兵損死が5000を超えるかどうかが判断基準になります。</p>
+
+</div></details>
+</div>
+</section>
+</main>
+</div>
+<div class="mobile-bottom"><a class="bottom-nav-link" href="#prep" id="prevStage">← 前へ</a><a class="bottom-nav-link center" href="#drawer" id="openMobileMenu">進行を見る</a><a class="bottom-nav-link" href="#start" id="nextStage">次へ →</a></div>
+<div class="drawer-backdrop" id="backdrop"></div>
+<section aria-modal="true" class="drawer" id="drawer" role="dialog"><div class="drawer-handle"></div><div class="drawer-head"><h2>進行ナビ</h2><a aria-label="閉じる" class="close-btn" href="#">×</a></div><nav class="journey"><a class="journey-step" data-stage-link="prep" href="#prep"><span class="journey-num">1</span><span><strong>前シーズン準備</strong><small>心得・勲功・編成・小判を準備</small></span></a><a class="journey-step" data-stage-link="start" href="#start"><span class="journey-num">2</span><span><strong>開始直後</strong><small>戦法経験値を確保し、1軍の体力を温存</small></span></a><a class="journey-step" data-stage-link="lv4" href="#lv4"><span class="journey-num">3</span><span><strong>Lv4土地挑戦</strong><small>レベル目安と土地難易度を確認</small></span></a><a class="journey-step" data-stage-link="lv5" href="#lv5"><span class="journey-num">4</span><span><strong>Lv5土地挑戦</strong><small>Lv4の感触を見て、無理せずLv5へ</small></span></a><a class="journey-step" data-stage-link="castle6" href="#castle6"><span class="journey-num">5</span><span><strong>天守6</strong><small>石を集め、徴発→報酬で上限突破</small></span></a><a class="journey-step" data-stage-link="castle7" href="#castle7"><span class="journey-num">6</span><span><strong>天守7</strong><small>進行状況に合わせて3ルートから選ぶ</small></span></a><a class="journey-step" data-stage-link="switch" href="#switch"><span class="journey-num">7</span><span><strong>本命へ一部入替</strong><small>練兵場育成とスタダ武将を組み合わせる</small></span></a><a class="journey-step" data-stage-link="lv6" href="#lv6"><span class="journey-num">8</span><span><strong>Lv6土地</strong><small>まず石Lv6を1か所だけ確保</small></span></a><a class="journey-step" data-stage-link="castle8" href="#castle8"><span class="journey-num">9</span><span><strong>天守8</strong><small>兵損を見て兵舎との優先順位を判断</small></span></a><a class="journey-step" data-stage-link="finish" href="#finish"><span class="journey-num">10</span><span><strong>終了前</strong><small>本命移行・侍大将・外し忘れを確認</small></span></a></nav><div class="sidebar-help"><h2>困ったとき</h2><a class="quick-link" href="#lv5">Lv5に挑戦できる？<span>→</span></a><a class="quick-link" href="#castle7">天守7が遅れた<span>→</span></a><a class="quick-link" href="#switch">徴兵が足りない<span>→</span></a><a class="quick-link" href="#lv6">Lv6へ行く？<span>→</span></a><a class="quick-link" href="#castle8">天守8か兵舎か<span>→</span></a><a class="quick-link" href="#switch">本命への入替<span>→</span></a><a class="quick-link" href="#finish">終了前チェック<span>→</span></a></div></section>
+<div class="lightbox" id="lightbox"><button aria-label="画像を閉じる" class="lightbox-close" id="lightboxClose">×</button><img alt="拡大画像" id="lightboxImg"/></div>
+
+<script>
+const stageKeys=['prep','start','lv4','lv5','castle6','castle7','switch','lv6','castle8','finish'];
+const stageTitles=['前シーズン準備','開始直後','Lv4土地挑戦','Lv5土地挑戦','天守6','天守7','本命へ一部入替','Lv6土地','天守8','終了前'];
+let currentIndex=0;
+const chip=document.getElementById('currentChip'), bar=document.getElementById('progressBar');
+const prev=document.getElementById('prevStage'), next=document.getElementById('nextStage');
+function setCurrentByIndex(idx){
+ idx=Math.max(0,Math.min(stageKeys.length-1,idx)); currentIndex=idx;
+ if(chip) chip.textContent=`STEP ${idx+1} / ${stageKeys.length}　${stageTitles[idx]}`;
+ if(bar) bar.style.width=`${((idx+1)/stageKeys.length)*100}%`;
+ document.querySelectorAll('[data-stage-link]').forEach(a=>a.classList.toggle('active',a.dataset.stageLink===stageKeys[idx]));
+ if(prev){prev.href='#'+stageKeys[Math.max(0,idx-1)]; prev.style.opacity=idx===0?'.45':'1';}
+ if(next){next.href='#'+stageKeys[Math.min(stageKeys.length-1,idx+1)]; next.style.opacity=idx===stageKeys.length-1?'.45':'1';}
+}
+function detectStage(){
+ const marker=window.scrollY + Math.min(180,window.innerHeight*.28);
+ let idx=0;
+ stageKeys.forEach((k,i)=>{const el=document.getElementById(k); if(el && el.offsetTop<=marker) idx=i;});
+ setCurrentByIndex(idx);
+}
+window.addEventListener('scroll',detectStage,{passive:true}); window.addEventListener('resize',detectStage);
+window.addEventListener('hashchange',()=>{const h=location.hash.slice(1);const i=stageKeys.indexOf(h);if(i>=0)setCurrentByIndex(i)});
+setTimeout(detectStage,0);
+
+// desktop hamburger uses the same drawer
+const drawer=document.getElementById('drawer'),backdrop=document.getElementById('backdrop');
+function openDrawer(){if(drawer)drawer.classList.add('open');if(backdrop)backdrop.classList.add('open');document.body.style.overflow='hidden'}
+function closeDrawer(){if(drawer)drawer.classList.remove('open');if(backdrop)backdrop.classList.remove('open');document.body.style.overflow=''}
+const openMenu=document.getElementById('openMenu'); if(openMenu)openMenu.addEventListener('click',openDrawer);
+const openMobileMenu=document.getElementById('openMobileMenu'); if(openMobileMenu)openMobileMenu.addEventListener('click',e=>{e.preventDefault();openDrawer()});
+if(backdrop)backdrop.addEventListener('click',closeDrawer);
+if(drawer)drawer.querySelectorAll('a[href^="#"]:not(.close-btn)').forEach(a=>a.addEventListener('click',()=>{closeDrawer();if(location.hash==='#drawer')history.replaceState(null,'',a.getAttribute('href'))}));
+const closeA=drawer&&drawer.querySelector('.close-btn'); if(closeA)closeA.addEventListener('click',e=>{e.preventDefault();closeDrawer()});
+
+// bottom-nav prev/next: scroll explicitly instead of relying on native anchor jump
+function goToStage(id){
+ const el=document.getElementById(id);
+ if(el) el.scrollIntoView({behavior:'smooth',block:'start'});
+ if(location.hash!=='#'+id){try{history.pushState(null,'','#'+id)}catch(e){location.hash=id}}
+ const i=stageKeys.indexOf(id); if(i>=0) setCurrentByIndex(i);
+}
+if(prev) prev.addEventListener('click',e=>{e.preventDefault();goToStage(prev.getAttribute('href').slice(1))});
+if(next) next.addEventListener('click',e=>{e.preventDefault();goToStage(next.getAttribute('href').slice(1))});
+
+// route/tab switchers (castle7 and castle8)
+document.querySelectorAll('.route-tab').forEach(btn=>btn.addEventListener('click',()=>{
+ const host=btn.closest('.stage') || btn.parentElement.parentElement;
+ host.querySelectorAll('.route-tab').forEach(b=>{b.classList.remove('active');b.setAttribute('aria-selected','false')});
+ host.querySelectorAll('.route-panel').forEach(p=>p.classList.remove('active'));
+ btn.classList.add('active');btn.setAttribute('aria-selected','true');const panel=document.getElementById(btn.dataset.route);if(panel)panel.classList.add('active');
+}));
+// lightbox
+const lb=document.getElementById('lightbox'),lbimg=document.getElementById('lightboxImg');
+document.querySelectorAll('.image-zoom').forEach(b=>b.addEventListener('click',()=>{const img=b.querySelector('img');if(lb&&lbimg&&img){lbimg.src=img.src;lb.classList.add('open');document.body.style.overflow='hidden'}}));
+function closeLightbox(){if(lb)lb.classList.remove('open');if(lbimg)lbimg.src='';document.body.style.overflow=''}
+const lbc=document.getElementById('lightboxClose'); if(lbc)lbc.addEventListener('click',closeLightbox); if(lb)lb.addEventListener('click',e=>{if(e.target===lb)closeLightbox()});
+// checklist persistence
+try{document.querySelectorAll('[data-check]').forEach(cb=>{const k='stada-'+cb.dataset.check;cb.checked=localStorage.getItem(k)==='1';cb.addEventListener('change',()=>localStorage.setItem(k,cb.checked?'1':'0'))})}catch(e){}
+</script></body></html>
