@@ -25,7 +25,7 @@ img{display:block;max-width:100%;height:auto}
 .progress{height:4px;background:rgba(255,255,255,.14)}
 .progress i{display:block;height:100%;width:10%;background:#d9b06c;transition:width .25s ease}
 .layout{max-width:1180px;margin:auto;display:grid;grid-template-columns:260px 1fr;gap:26px;padding:26px 16px 100px}
-.sidebar{position:sticky;top:94px;align-self:start;max-height:calc(100vh - 112px);overflow:auto;padding-right:4px}
+.sidebar{position:sticky;top:94px;max-height:calc(100vh - 112px);overflow:auto;padding-right:4px}
 .sidebar h2{font-size:12px;letter-spacing:.12em;color:var(--muted);margin:0 0 9px;text-transform:uppercase}
 .journey{display:grid;gap:6px}
 .journey-step{display:grid;grid-template-columns:30px 1fr;gap:9px;align-items:center;text-decoration:none;background:rgba(255,255,255,.55);border:1px solid transparent;border-radius:13px;padding:8px;transition:.15s}
@@ -57,7 +57,7 @@ img{display:block;max-width:100%;height:auto}
 .overview-step strong{font-size:12px;display:block;margin-top:5px;line-height:1.35}
 .overview-step small{font-size:9px;color:var(--muted);display:block;margin-top:3px;line-height:1.35}
 .overview-no{font-size:10px;font-weight:900;color:var(--gold)}
-.stage{margin-top:34px;scroll-margin-top:88px}
+.stage{margin-top:34px}
 .stage-kicker{font-size:10px;letter-spacing:.14em;color:var(--gold);font-weight:900;margin-bottom:6px}
 .stage-title-row{display:grid;grid-template-columns:48px 1fr;gap:12px;align-items:center;margin-bottom:16px}
 .stage-badge{width:48px;height:48px;border-radius:15px;background:var(--navy);color:#fff;display:grid;place-items:center;font-weight:900;font-size:20px;box-shadow:0 6px 16px rgba(31,52,67,.16)}
@@ -74,7 +74,6 @@ img{display:block;max-width:100%;height:auto}
 .content-card ul,.detail-body ul{padding-left:20px}
 .content-card strong,.detail-body strong{font-weight:800}
 .emphasis{border-top:4px solid var(--gold)}
-.key-card{border-left:5px solid var(--navy2)}
 .warning{background:var(--warn-bg);border-color:#e9c2bd}
 .principles{margin-top:12px}
 .principles > ul{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;list-style:none;padding:0;margin:0}
@@ -128,7 +127,7 @@ th{background:#eef1ef}
 .checklist label{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--line);border-radius:13px;padding:12px;cursor:pointer}
 .checklist input{width:20px;height:20px;accent-color:var(--ok)}
 .checklist input:checked+span{text-decoration:line-through;color:var(--muted)}
-.end-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.end-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:start}
 .next-card{margin-top:18px;display:flex;align-items:center;justify-content:space-between;text-decoration:none;background:var(--navy);color:#fff;border-radius:17px;padding:15px 17px;box-shadow:0 7px 20px rgba(31,52,67,.14)}
 .next-card span{font-size:10px;color:#cbd7dd;letter-spacing:.12em}
 .next-card strong{font-size:15px}
@@ -216,8 +215,8 @@ table thead th{text-align:center;vertical-align:middle;white-space:nowrap}
 <div class="layout">
 <aside class="sidebar">
 <h2>現在地 / 進行ナビ</h2>
-<nav class="journey"><a class="journey-step" data-stage-link="prep" href="#prep"><span class="journey-num">1</span><span><strong>前シーズン準備</strong><small>心得・勲功・編成・小判を準備</small></span></a><a class="journey-step" data-stage-link="start" href="#start"><span class="journey-num">2</span><span><strong>開始直後</strong><small>戦法経験値を確保し、1軍の体力を温存</small></span></a><a class="journey-step" data-stage-link="lv4" href="#lv4"><span class="journey-num">3</span><span><strong>Lv4土地挑戦</strong><small>レベル目安と土地難易度を確認</small></span></a><a class="journey-step" data-stage-link="lv5" href="#lv5"><span class="journey-num">4</span><span><strong>Lv5土地挑戦</strong><small>Lv4の感触を見て、無理せずLv5へ</small></span></a><a class="journey-step" data-stage-link="castle6" href="#castle6"><span class="journey-num">5</span><span><strong>天守6</strong><small>石を集め、徴発→報酬で上限突破</small></span></a><a class="journey-step" data-stage-link="castle7" href="#castle7"><span class="journey-num">6</span><span><strong>天守7</strong><small>進行状況に合わせて3ルートから選ぶ</small></span></a><a class="journey-step" data-stage-link="switch" href="#switch"><span class="journey-num">7</span><span><strong>本命へ一部入替</strong><small>練兵場育成とスタダ武将を組み合わせる</small></span></a><a class="journey-step" data-stage-link="lv6" href="#lv6"><span class="journey-num">8</span><span><strong>Lv6土地</strong><small>まず石Lv6を1か所だけ確保</small></span></a><a class="journey-step" data-stage-link="castle8" href="#castle8"><span class="journey-num">9</span><span><strong>天守8</strong><small>兵損を見て兵舎との優先順位を判断</small></span></a><a class="journey-step" data-stage-link="finish" href="#finish"><span class="journey-num">10</span><span><strong>終了前</strong><small>本命移行・侍大将・外し忘れを確認</small></span></a></nav>
-<div class="sidebar-help"><h2>困ったとき</h2><a class="quick-link" href="#lv5">Lv5に挑戦できる？<span>→</span></a><a class="quick-link" href="#castle7">天守7が遅れた<span>→</span></a><a class="quick-link" href="#switch">徴兵が足りない<span>→</span></a><a class="quick-link" href="#lv6">Lv6へ行く？<span>→</span></a><a class="quick-link" href="#castle8">天守8か兵舎か<span>→</span></a><a class="quick-link" href="#switch">本命への入替<span>→</span></a><a class="quick-link" href="#finish">終了前チェック<span>→</span></a></div>
+<nav class="journey"><a class="journey-step" data-stage-link="prep" href="#prep"><span class="journey-num">1</span><span><strong>前シーズン準備</strong><small>心得・勲功・編成・小判を準備</small></span></a><a class="journey-step" data-stage-link="start" href="#start"><span class="journey-num">2</span><span><strong>開始直後</strong><small>戦法経験値を確保し、1軍の体力を温存</small></span></a><a class="journey-step" data-stage-link="lv4" href="#lv4"><span class="journey-num">3</span><span><strong>Lv4土地挑戦</strong><small>レベル目安と土地難易度を確認</small></span></a><a class="journey-step" data-stage-link="lv5" href="#lv5"><span class="journey-num">4</span><span><strong>Lv5土地挑戦</strong><small>Lv4の感触を見て、無理せずLv5へ</small></span></a><a class="journey-step" data-stage-link="castle6" href="#castle6"><span class="journey-num">5</span><span><strong>天守6</strong><small>石を集め、徴発→報酬で上限突破</small></span></a><a class="journey-step" data-stage-link="castle7" href="#castle7"><span class="journey-num">6</span><span><strong>天守7</strong><small>進行状況に合わせて3ルートから選ぶ</small></span></a><a class="journey-step" data-stage-link="switch" href="#switch"><span class="journey-num">7</span><span><strong>本命へ一部入替</strong><small>練兵場育成とスタダ武将を組み合わせる</small></span></a><a class="journey-step" data-stage-link="lv6" href="#lv6"><span class="journey-num">8</span><span><strong>Lv6土地挑戦</strong><small>まず石Lv6を1か所だけ確保</small></span></a><a class="journey-step" data-stage-link="castle8" href="#castle8"><span class="journey-num">9</span><span><strong>天守8</strong><small>兵損を見て兵舎との優先順位を判断</small></span></a><a class="journey-step" data-stage-link="finish" href="#finish"><span class="journey-num">10</span><span><strong>終了前</strong><small>本命移行・侍大将・外し忘れを確認</small></span></a></nav>
+<div class="sidebar-help"><h2>困ったとき</h2><a class="quick-link" href="#lv5">Lv5に挑戦できる？<span>→</span></a><a class="quick-link" href="#castle7">天守7が遅れた<span>→</span></a><a class="quick-link" href="#levy-shortage">徴兵が足りない<span>→</span></a><a class="quick-link" href="#lv6">Lv6に挑戦できる？<span>→</span></a><a class="quick-link" href="#castle8">天守8か兵舎か<span>→</span></a><a class="quick-link" href="#switch">本命への入替<span>→</span></a><a class="quick-link" href="#finish">終了前チェック<span>→</span></a></div>
 </aside>
 <main class="main">
 <section class="hero">
@@ -232,7 +231,7 @@ table thead th{text-align:center;vertical-align:middle;white-space:nowrap}
 </ul>
 </div></details></div>
 </section>
-<section class="overview"><div class="overview-head"><div><h2>全体の流れ</h2><p>いま自分がいる段階を選んでください。</p></div></div><div class="overview-grid"><a class="overview-step" href="#prep"><span class="overview-no">STEP 1</span><strong>前シーズン準備</strong><small>心得・勲功・編成・小判を準備</small></a><a class="overview-step" href="#start"><span class="overview-no">STEP 2</span><strong>開始直後</strong><small>戦法経験値を確保し、1軍の体力を温存</small></a><a class="overview-step" href="#lv4"><span class="overview-no">STEP 3</span><strong>Lv4土地挑戦</strong><small>レベル目安と土地難易度を確認</small></a><a class="overview-step" href="#lv5"><span class="overview-no">STEP 4</span><strong>Lv5土地挑戦</strong><small>Lv4の感触を見て、無理せずLv5へ</small></a><a class="overview-step" href="#castle6"><span class="overview-no">STEP 5</span><strong>天守6</strong><small>石を集め、徴発→報酬で上限突破</small></a><a class="overview-step" href="#castle7"><span class="overview-no">STEP 6</span><strong>天守7</strong><small>進行状況に合わせて3ルートから選ぶ</small></a><a class="overview-step" href="#switch"><span class="overview-no">STEP 7</span><strong>本命へ一部入替</strong><small>練兵場育成とスタダ武将を組み合わせる</small></a><a class="overview-step" href="#lv6"><span class="overview-no">STEP 8</span><strong>Lv6土地</strong><small>まず石Lv6を1か所だけ確保</small></a><a class="overview-step" href="#castle8"><span class="overview-no">STEP 9</span><strong>天守8</strong><small>兵損を見て兵舎との優先順位を判断</small></a><a class="overview-step" href="#finish"><span class="overview-no">STEP 10</span><strong>終了前</strong><small>本命移行・侍大将・外し忘れを確認</small></a></div></section>
+<section class="overview"><div class="overview-head"><div><h2>全体の流れ</h2><p>いま自分がいる段階を選んでください。</p></div></div><div class="overview-grid"><a class="overview-step" href="#prep"><span class="overview-no">STEP 1</span><strong>前シーズン準備</strong><small>心得・勲功・編成・小判を準備</small></a><a class="overview-step" href="#start"><span class="overview-no">STEP 2</span><strong>開始直後</strong><small>戦法経験値を確保し、1軍の体力を温存</small></a><a class="overview-step" href="#lv4"><span class="overview-no">STEP 3</span><strong>Lv4土地挑戦</strong><small>レベル目安と土地難易度を確認</small></a><a class="overview-step" href="#lv5"><span class="overview-no">STEP 4</span><strong>Lv5土地挑戦</strong><small>Lv4の感触を見て、無理せずLv5へ</small></a><a class="overview-step" href="#castle6"><span class="overview-no">STEP 5</span><strong>天守6</strong><small>石を集め、徴発→報酬で上限突破</small></a><a class="overview-step" href="#castle7"><span class="overview-no">STEP 6</span><strong>天守7</strong><small>進行状況に合わせて3ルートから選ぶ</small></a><a class="overview-step" href="#switch"><span class="overview-no">STEP 7</span><strong>本命へ一部入替</strong><small>練兵場育成とスタダ武将を組み合わせる</small></a><a class="overview-step" href="#lv6"><span class="overview-no">STEP 8</span><strong>Lv6土地挑戦</strong><small>まず石Lv6を1か所だけ確保</small></a><a class="overview-step" href="#castle8"><span class="overview-no">STEP 9</span><strong>天守8</strong><small>兵損を見て兵舎との優先順位を判断</small></a><a class="overview-step" href="#finish"><span class="overview-no">STEP 10</span><strong>終了前</strong><small>本命移行・侍大将・外し忘れを確認</small></a></div></section>
 <section class="stage" data-stage="1" id="prep">
 <div class="stage-kicker">STEP 1 / 10</div>
 <div class="stage-title-row"><span class="stage-badge">1</span><div><h2>前シーズン準備</h2><p>心得・勲功・編成・小判を準備</p></div></div>
@@ -283,7 +282,8 @@ table thead th{text-align:center;vertical-align:middle;white-space:nowrap}
 <p>後述するスタダ部隊の体力節約術で使用します。</p>
 <p>スタダ部隊と同様に、コスト15までで組んでおきますが、初動でLv3土地を攻略するためだけの部隊となります。</p>
 </section>
-<section class="content-card key-card"><h3>自爆部隊</h3><ul>
+</div>
+<section class="content-card emphasis"><h3>自爆部隊</h3><ul>
 <li>兵力を1だけ設定し、敵部隊よりも速度の高い武将を使って先に攻撃する部隊のことです。</li>
 <li>当然戦闘には負けますが、速度の速さを活かして1ターン目でわずかでもダメージを与えることで敵の兵力を削り、守備軍が回復する5分以内にスタダ部隊で戦闘を行います。</li>
 </ul>
@@ -311,7 +311,6 @@ table thead th{text-align:center;vertical-align:middle;white-space:nowrap}
 <li><a href="https://www.youtube.com/watch?v=2NDY6Eyx2js" rel="noopener noreferrer" target="_blank">https://www.youtube.com/watch?v=2NDY6Eyx2js</a></li>
 </ul>
 </section>
-</div>
 <details class="detail-card"><summary>スタダ編成例を見る</summary><div class="detail-body"><h4>人気のスタダ編成</h4><p>この編成はスタダ人気の常連です。</p>
 <p>北条氏康の特性で、士気を高く維持できること、福島正則の安定したダメージが評価のポイントです。</p>
 <p>メインアタッカーが福島正則、サブアタッカー兼回復兼タンクが北条氏康、制御兼回復がお市というお手本通りの構成です。</p>
@@ -709,7 +708,6 @@ table thead th{text-align:center;vertical-align:middle;white-space:nowrap}
 </table></div>
 
 <p>スタダ期間の48時間を超えると、レベル継承券を使用しても戦法経験値は80%しか返ってこないことから、スタダ部隊をできるだけそのまま1軍編成に移行できることが戦法経験値の損失を最も少なくする方法です。</p>
-<p>また、後述しますが、最序盤で1軍の体力を温存したい方は、使用するスタダ用の2軍の編成もあらかじめ決めておきます。</p>
 
 </div></details>
 <details class="detail-card"><summary>小判の使いどころと用意しておく量</summary><div class="detail-body"><p>スタダで使用する小判の優先順位と概算です。</p>
@@ -785,7 +783,7 @@ table thead th{text-align:center;vertical-align:middle;white-space:nowrap}
 </div></div><div aria-hidden="true" class="flow-arrow"></div><div class="flow-step"><span class="flow-num">3</span><div><p>国衆進上の石を受け取り、天守5に上げ、任務4章、任務5章の報酬で武将経験値を受け取ります。</p>
 </div></div><div aria-hidden="true" class="flow-arrow"></div><div class="flow-step"><span class="flow-num">4</span><div><p>任務5章の経験値報酬を受け取ったら全武将がレベル7になりますので、スタダ部隊に切り替えます。</p>
 </div></div><div aria-hidden="true" class="flow-arrow"></div><div class="flow-step"><span class="flow-num">5</span><div><p>スタダ部隊はLv3土地を1つ取るだけでレベル8になり、次からLv4土地に移行することができます。</p>
-</div></div></div><div class="flow-note attention-note"><p>2軍でLv4土地を取らないこと。場合によっては兵損が大きくなりその後の徴兵が間に合わなくなる恐れがありますので、武将経験値を取るためだけに2軍を動かしていることを意識します。</p>
+</div></div></div><div class="flow-note attention-note"><p>初動軍でLv4土地を取らないこと。場合によっては兵損が大きくなりその後の徴兵が間に合わなくなる恐れがありますので、武将経験値を取るためだけに初動軍を動かしていることを意識します。</p>
 
 </div></section>
 <details class="detail-card" open=""><summary>土地資源比率を見る</summary><div class="detail-body"><p>以下のような比率で土地を集めるよう意識してください。</p>
@@ -808,7 +806,7 @@ table thead th{text-align:center;vertical-align:middle;white-space:nowrap}
 </section><section class="stage" data-stage="3" id="lv4">
 <div class="stage-kicker">STEP 3 / 10</div>
 <div class="stage-title-row"><span class="stage-badge">3</span><div><h2>Lv4土地挑戦</h2><p>レベル目安と土地難易度を確認</p></div></div>
-<section class="content-card"><h3>Lv4土地の攻略目安</h3>
+<section class="content-card"><h3>Lv4土地挑戦の目安</h3>
 <p>難易度の低い敵を選び、自爆部隊を活用する場合：レベル8</p>
 <p>自爆部隊を使わず、スタダ部隊単独でクリアする場合：レベル10</p>
 </section>
@@ -830,6 +828,18 @@ table thead th{text-align:center;vertical-align:middle;white-space:nowrap}
 <p>戦法レベルや部隊強度が低い場合、レベル20で「覚醒」するまでLv4土地を取り続けます。 3つ目の戦法と装備を整えてから、 Lv5土地への挑戦を開始します。Lv20であっても、初挑戦する守備軍の際は自爆部隊の運用を推奨します。</p>
 <p>章任務で大量の銀銭が手に入りますので、すべてガチャを回して戦法経験値に変換し、主力に注ぎ込みます。</p>
 <p>練兵場による銀銭での育成はまだ考えなくて良いです。</p>
+
+</section>
+<section class="content-card warning"><h3>徴兵が間に合わなそうな場合</h3><ul>
+<li>章任務で求められている施設Lvだけ上げるようにし、求められていない施設はまだ上げないでください。</li>
+<li>米が足りない場合、勲功商店で購入してください。</li>
+<li>木、鉄が足りない場合でも、まだ徴発はしないでください。</li>
+<li>自爆部隊を活用して、兵損を少しでも減らしてください。Lv6土地は守備軍の速度も強度も高くなりますので自爆部隊は使いづらくなりますが、Lv4土地、Lv5土地の周回には使えます。</li>
+<li>章任務の報酬で、兵が少しですが補充されます。</li>
+</ul>
+<h4>それでも兵損が厳しい場合</h4>
+<p>体力を使いますが、行軍して士気回復してから占領することで兵損を減らします。</p>
+<p>徴兵が間に合わなければ、体力がどれだけあっても意味がありません。</p>
 
 </section>
 <details class="detail-card" open=""><summary>天守5になったあと：石を集める</summary><div class="detail-body"><h3>とにかく石を集める</h3>
@@ -918,6 +928,12 @@ table thead th{text-align:center;vertical-align:middle;white-space:nowrap}
 <div class="stage-title-row"><span class="stage-badge">6</span><div><h2>天守7</h2><p>進行状況に合わせて3ルートから選ぶ</p></div></div>
 <section class="content-card"><h3>第二目標は天守7に上げること</h3><p>天守7になると、土地枠が増え、国衆進上の隊列が+1されます。</p>
 <p>天守7に必要な石は29.2万ですので、徴発を駆使して貯めます。</p>
+<p>下記に3パターンのシナリオを記載しています。</p>
+<ul>
+<li>初日の夜に天守7に上げるパターン</li>
+<li>2日目の朝に天守7に上げるパターン</li>
+<li>2日目の朝も難しいパターン</li>
+</ul>
 </section>
 <div aria-label="天守7到達タイミング" class="route-picker" role="tablist">
 <button aria-selected="true" class="route-tab active" data-route="route-night" role="tab">初日夜に到達</button>
@@ -974,6 +990,8 @@ table thead th{text-align:center;vertical-align:middle;white-space:nowrap}
 </ul>
 <p>威信が上がればイベントで小判がもらえるので、勲功商店や市場で戦法経験値と交換しましょう。</p>
 <p>足りない資源は、労力を購入して徴発を行います。そうすれば、徐々に先に進めるはずです。</p>
+<p>まずは、天守7に上げるために蔵Lv9に上げましょう。</p>
+<p>天守7に上げられたら、次は兵舎を上げ、Lv6土地の取得を狙います。</p>
 <h4>シーズンを通して挽回しよう</h4>
 <p>スタダは2日間しかないので、遅れた分をスタダ期間中に取り戻すというのは難しいのですが、シーズンの期間で考えるとまだ約60日のうち1日しか経っていません。</p>
 <p>50m走なら、自分が1m地点、相手が2m地点のようなものです。</p>
@@ -990,7 +1008,7 @@ table thead th{text-align:center;vertical-align:middle;white-space:nowrap}
 </div></div><div aria-hidden="true" class="flow-arrow"></div><div class="flow-step"><span class="flow-num">2</span><div><p>スタダ武将と混ぜてLv5土地を周回する</p>
 </div></div><div aria-hidden="true" class="flow-arrow"></div><div class="flow-step"><span class="flow-num">3</span><div><p>部隊を入れ替えながら本命へ移行する</p>
 </div></div></div></section>
-<section class="content-card"><h3>スタダ部隊と本命部隊の入れ替え</h3><p>入れ替えの方法を３パターン紹介します。</p>
+<section class="content-card"><h3>スタダ部隊と1軍武将の入れ替え</h3><p>入れ替えの方法を３パターン紹介します。</p>
 <ul>
 <li>スタダ期間中にレベリングを進め、随時入れ替えていく</li>
 <li>スタダ終了後、スタダ部隊を2分割し、1軍武将と混ぜてレベリングする</li>
@@ -1060,14 +1078,14 @@ table thead th{text-align:center;vertical-align:middle;white-space:nowrap}
 </ul>
 
 </div></details>
-<section class="content-card warning"><h3>徴兵が間に合わなそうな場合</h3><p>自爆部隊を活用して、兵損を少しでも減らしてください。Lv6土地は守備軍が速度も強度も高いので自爆部隊は使いづらくなりますが、Lv5土地の周回には使えます。</p>
+<section class="content-card warning" id="levy-shortage"><h3>徴兵が間に合わなそうな場合</h3><p>自爆部隊を活用して、兵損を少しでも減らしてください。Lv6土地は守備軍が速度も強度も高いので自爆部隊は使いづらくなりますが、Lv5土地の周回には使えます。</p>
 <p>それでも兵損が厳しい場合、体力を使いますが、行軍して士気回復してから占領することで兵損を減らします。</p>
 <p>徴兵が間に合わなければ、体力がどれだけあっても意味がありません。</p>
 
 </section>
 </section><section class="stage" data-stage="8" id="lv6">
 <div class="stage-kicker">STEP 8 / 10</div>
-<div class="stage-title-row"><span class="stage-badge">8</span><div><h2>Lv6土地</h2><p>まず石Lv6を1か所だけ確保</p></div></div>
+<div class="stage-title-row"><span class="stage-badge">8</span><div><h2>Lv6土地挑戦</h2><p>まず石Lv6を1か所だけ確保</p></div></div>
 <section class="decision-banner"><span>まず取るのは</span><strong>石Lv6 × 1か所</strong><small>その後は残りの土地枠をLv5で埋める</small></section>
 <section class="content-card"><h3>Lv6土地挑戦の目安</h3><p>Lv6土地を取るためには兵舎を上げる必要があります。</p>
 <p>上振れ下振れがありますが、大まかな目安は以下のとおりです。</p>
@@ -1078,7 +1096,7 @@ table thead th{text-align:center;vertical-align:middle;white-space:nowrap}
 <p>ギリギリか、もしくは遅れているようであれば、Lv28 + 兵舎5まで上げてからの挑戦が無難です。</p>
 
 </section>
-<section class="content-card key-card"><h3>Lv6土地は石１か所を取得する</h3><p>Lv6土地を取れるようになっても、すぐにLv6を周回し続けることを基本方針にはせず、徴発用だけ確保します。</p>
+<section class="content-card emphasis"><h3>Lv6土地は石１か所を取得する</h3><p>Lv6土地を取れるようになっても、すぐにLv6を周回し続けることを基本方針にはせず、徴発用だけ確保します。</p>
 <p>石のLv6を1つ確保した後は、残りの土地枠をLv5で埋めることを優先します。</p>
 <p>取りやすい守備軍でない場合、取りやすいLv6土地を土地転換令のアイテムで石に変更してください。</p>
 <p>Lv5で土地枠を埋めた後、兵損を見ながら追加のLv6取得を検討しましょう。</p>
@@ -1188,7 +1206,7 @@ table thead th{text-align:center;vertical-align:middle;white-space:nowrap}
 </div></details>
 <details class="detail-card"><summary>損失する戦法経験値</summary><div class="detail-body"><p>S戦法 Lv10を3つ装着している場合、戦法経験値は28,440を使用しています。</p>
 <p>スタダ期間が終了してしまえば、継承しようとも、初期化しようとも、忘却させたとしても、戦法経験値はもとの80%の22,752しか返ってきません。</p>
-<p>つまり、武将をスタダ期間外で入れ替える際には、1武将あたり約5,700の戦法経験値を失うことになります。スタダ期間中に本命の1軍武将に随時入れ替えていくのは、そうした損失を避けつつ強度を上げるためです。</p>
+<p>つまり、武将をスタダ期間外で入れ替える際には、1武将あたり約5,700の戦法経験値を失うことになります。スタダ期間中に1軍武将に随時入れ替えていくのは、そうした損失を避けつつ強度を上げるためです。</p>
 <h4>天守8達成で戦法経験値の損失なく移行可能な例</h4>
 <p>コスト15：前田利家、柴田勝家、お市</p>
 <p>コスト18：前田利家、柴田勝家、まつ</p>
@@ -1217,14 +1235,14 @@ table thead th{text-align:center;vertical-align:middle;white-space:nowrap}
 </section>
 </main>
 </div>
-<div class="mobile-bottom"><a class="bottom-nav-link" href="#prep" id="prevStage">← 前へ</a><a class="bottom-nav-link center" href="#drawer" id="openMobileMenu">進行を見る</a><a class="bottom-nav-link" href="#start" id="nextStage">次へ →</a></div>
+<div class="mobile-bottom"><a class="bottom-nav-link" href="#prep" id="prevStage">← 前の章へ</a><a class="bottom-nav-link center" href="#drawer" id="openMobileMenu">進行を見る</a><a class="bottom-nav-link" href="#start" id="nextStage">次の章へ →</a></div>
 <div class="drawer-backdrop" id="backdrop"></div>
-<section aria-modal="true" class="drawer" id="drawer" role="dialog"><div class="drawer-handle"></div><div class="drawer-head"><h2>進行ナビ</h2><a aria-label="閉じる" class="close-btn" href="#">×</a></div><nav class="journey"><a class="journey-step" data-stage-link="prep" href="#prep"><span class="journey-num">1</span><span><strong>前シーズン準備</strong><small>心得・勲功・編成・小判を準備</small></span></a><a class="journey-step" data-stage-link="start" href="#start"><span class="journey-num">2</span><span><strong>開始直後</strong><small>戦法経験値を確保し、1軍の体力を温存</small></span></a><a class="journey-step" data-stage-link="lv4" href="#lv4"><span class="journey-num">3</span><span><strong>Lv4土地挑戦</strong><small>レベル目安と土地難易度を確認</small></span></a><a class="journey-step" data-stage-link="lv5" href="#lv5"><span class="journey-num">4</span><span><strong>Lv5土地挑戦</strong><small>Lv4の感触を見て、無理せずLv5へ</small></span></a><a class="journey-step" data-stage-link="castle6" href="#castle6"><span class="journey-num">5</span><span><strong>天守6</strong><small>石を集め、徴発→報酬で上限突破</small></span></a><a class="journey-step" data-stage-link="castle7" href="#castle7"><span class="journey-num">6</span><span><strong>天守7</strong><small>進行状況に合わせて3ルートから選ぶ</small></span></a><a class="journey-step" data-stage-link="switch" href="#switch"><span class="journey-num">7</span><span><strong>本命へ一部入替</strong><small>練兵場育成とスタダ武将を組み合わせる</small></span></a><a class="journey-step" data-stage-link="lv6" href="#lv6"><span class="journey-num">8</span><span><strong>Lv6土地</strong><small>まず石Lv6を1か所だけ確保</small></span></a><a class="journey-step" data-stage-link="castle8" href="#castle8"><span class="journey-num">9</span><span><strong>天守8</strong><small>兵損を見て兵舎との優先順位を判断</small></span></a><a class="journey-step" data-stage-link="finish" href="#finish"><span class="journey-num">10</span><span><strong>終了前</strong><small>本命移行・侍大将・外し忘れを確認</small></span></a></nav><div class="sidebar-help"><h2>困ったとき</h2><a class="quick-link" href="#lv5">Lv5に挑戦できる？<span>→</span></a><a class="quick-link" href="#castle7">天守7が遅れた<span>→</span></a><a class="quick-link" href="#switch">徴兵が足りない<span>→</span></a><a class="quick-link" href="#lv6">Lv6へ行く？<span>→</span></a><a class="quick-link" href="#castle8">天守8か兵舎か<span>→</span></a><a class="quick-link" href="#switch">本命への入替<span>→</span></a><a class="quick-link" href="#finish">終了前チェック<span>→</span></a></div></section>
+<section aria-modal="true" class="drawer" id="drawer" role="dialog"><div class="drawer-handle"></div><div class="drawer-head"><h2>進行ナビ</h2><a aria-label="閉じる" class="close-btn" href="#">×</a></div><nav class="journey"><a class="journey-step" data-stage-link="prep" href="#prep"><span class="journey-num">1</span><span><strong>前シーズン準備</strong><small>心得・勲功・編成・小判を準備</small></span></a><a class="journey-step" data-stage-link="start" href="#start"><span class="journey-num">2</span><span><strong>開始直後</strong><small>戦法経験値を確保し、1軍の体力を温存</small></span></a><a class="journey-step" data-stage-link="lv4" href="#lv4"><span class="journey-num">3</span><span><strong>Lv4土地挑戦</strong><small>レベル目安と土地難易度を確認</small></span></a><a class="journey-step" data-stage-link="lv5" href="#lv5"><span class="journey-num">4</span><span><strong>Lv5土地挑戦</strong><small>Lv4の感触を見て、無理せずLv5へ</small></span></a><a class="journey-step" data-stage-link="castle6" href="#castle6"><span class="journey-num">5</span><span><strong>天守6</strong><small>石を集め、徴発→報酬で上限突破</small></span></a><a class="journey-step" data-stage-link="castle7" href="#castle7"><span class="journey-num">6</span><span><strong>天守7</strong><small>進行状況に合わせて3ルートから選ぶ</small></span></a><a class="journey-step" data-stage-link="switch" href="#switch"><span class="journey-num">7</span><span><strong>本命へ一部入替</strong><small>練兵場育成とスタダ武将を組み合わせる</small></span></a><a class="journey-step" data-stage-link="lv6" href="#lv6"><span class="journey-num">8</span><span><strong>Lv6土地挑戦</strong><small>まず石Lv6を1か所だけ確保</small></span></a><a class="journey-step" data-stage-link="castle8" href="#castle8"><span class="journey-num">9</span><span><strong>天守8</strong><small>兵損を見て兵舎との優先順位を判断</small></span></a><a class="journey-step" data-stage-link="finish" href="#finish"><span class="journey-num">10</span><span><strong>終了前</strong><small>本命移行・侍大将・外し忘れを確認</small></span></a></nav><div class="sidebar-help"><h2>困ったとき</h2><a class="quick-link" href="#lv5">Lv5に挑戦できる？<span>→</span></a><a class="quick-link" href="#castle7">天守7が遅れた<span>→</span></a><a class="quick-link" href="#levy-shortage">徴兵が足りない<span>→</span></a><a class="quick-link" href="#lv6">Lv6に挑戦できる？<span>→</span></a><a class="quick-link" href="#castle8">天守8か兵舎か<span>→</span></a><a class="quick-link" href="#switch">本命への入替<span>→</span></a><a class="quick-link" href="#finish">終了前チェック<span>→</span></a></div></section>
 <div class="lightbox" id="lightbox"><button aria-label="画像を閉じる" class="lightbox-close" id="lightboxClose">×</button><img alt="拡大画像" id="lightboxImg"/></div>
 
 <script>
 const stageKeys=['prep','start','lv4','lv5','castle6','castle7','switch','lv6','castle8','finish'];
-const stageTitles=['前シーズン準備','開始直後','Lv4土地挑戦','Lv5土地挑戦','天守6','天守7','本命へ一部入替','Lv6土地','天守8','終了前'];
+const stageTitles=['前シーズン準備','開始直後','Lv4土地挑戦','Lv5土地挑戦','天守6','天守7','本命へ一部入替','Lv6土地挑戦','天守8','終了前'];
 let currentIndex=0;
 const chip=document.getElementById('currentChip'), bar=document.getElementById('progressBar');
 const prev=document.getElementById('prevStage'), next=document.getElementById('nextStage');
