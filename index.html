@@ -283,7 +283,7 @@ table thead th{text-align:center;vertical-align:middle;white-space:nowrap}
 <p>スタダ部隊と同様に、コスト15までで組んでおきますが、初動でLv3土地を攻略するためだけの部隊となります。</p>
 </section>
 </div>
-<section class="content-card emphasis"><h3>自爆部隊</h3><ul>
+<section class="content-card emphasis" id="self-destruct"><h3>自爆部隊</h3><ul>
 <li>兵力を1だけ設定し、敵部隊よりも速度の高い武将を使って先に攻撃する部隊のことです。</li>
 <li>当然戦闘には負けますが、速度の速さを活かして1ターン目でわずかでもダメージを与えることで敵の兵力を削り、守備軍が回復する5分以内にスタダ部隊で戦闘を行います。</li>
 </ul>
@@ -294,12 +294,29 @@ table thead th{text-align:center;vertical-align:middle;white-space:nowrap}
 <p>スタダ部隊の兵損が400減れば、総資源量が1.6万（木4000, 鉄4000, 米8000）、浮くことになります。</p>
 <p>毎度自爆部隊を使うのはつけたり外したりが面倒ですが、その分の資源リターンがありますので、手間を惜しまない方はぜひトライしてください。</p>
 <h4>自爆部隊の編成例</h4>
+<p>最もダメージが出るのが荒木村重や混乱です。相手のチカラを借りてダメージを出すためです。</p>
 <p>荒木村重　百戦錬磨／百錬成鋼</p>
-<p>榊原康政　乗勝追撃／理非曲直／矢石飛行</p>
-<p>（小山田茂誠　会盟の陣／甲斐弓騎兵／伊賀忍者）</p>
+<p>真田昌幸　越後先手組／伊賀忍者／母衣武者</p>
+<p>しかしながら荒木村重はレベル5時点の速度が37。凸があれば、速度に振ってください。</p>
+<p>荒木村重に百戦錬磨を付けた場合、速度+42、百錬成鋼を付けた場合、速度+35。</p>
+<p>一部の守備軍に対しては、2武将目に以下の兵種戦法等を装備させて、速度をさらに上積みします。</p>
+<ul>
+<li>越後先手組：+24</li>
+<li>母衣武者：+20</li>
+<li>伊賀忍者：+10</li>
+</ul>
+<p>これで相手を上回り、先制攻撃が可能となります。</p>
+<p>後述する土地難易度一覧表に、守備軍の最大速度を記載しています。最大速度とは、その守備軍で最も行動が速い武将の兵種の影響等を受けた戦闘中の速度です。</p>
+<h5>最大速度の例</h5>
+<p>Lv5土地の仙石権兵衛の速度は122です。</p>
+<figure class="inline-image"><button aria-label="仙石権兵衛の速度122の画面を拡大" class="image-zoom" type="button"><img alt="仙石権兵衛の速度122の画面" loading="lazy" width="766" height="443" src="images/self-destruct-max-speed-example-1.png"/></button></figure>
+<p>しかし、戦闘が始まると兵種の影響を受けて、速度が127に上がります。この場合、仙石権兵衛の部隊では、仙石権兵衛が最速の127であるため、最大速度：127と記載しています。</p>
+<figure class="inline-image"><button aria-label="戦闘中に速度127へ上がる画面を拡大" class="image-zoom" type="button"><img alt="戦闘中に速度127へ上がる画面" loading="lazy" width="802" height="405" src="images/self-destruct-max-speed-example-2.png"/></button></figure>
+<p>入るダメージは減りますが、単純に速度が速い武将を使うのも手です。</p>
 <p>今川義元　乱世の華／岐阜侍従</p>
 <p>仙石権兵衛　乗勝追撃／理非曲直／矢石飛行</p>
-<p>その他、柴田勝家、柿崎景家、山県昌景もおすすめです。</p>
+<p>（小山田茂誠　会盟の陣／甲斐弓騎兵／伊賀忍者）</p>
+<p>その他、榊原康政、柴田勝家、柿崎景家、山県昌景もおすすめです。</p>
 <h4>注意点</h4>
 <ul>
 <li>偵察した土地を見ると敵部隊の速度がわかりますので、自爆部隊に採用する武将の速度が遅い場合には属性ポイントを速度に振ります。</li>
@@ -810,9 +827,10 @@ table thead th{text-align:center;vertical-align:middle;white-space:nowrap}
 <p>難易度の低い敵を選び、自爆部隊を活用する場合：レベル8</p>
 <p>自爆部隊を使わず、スタダ部隊単独でクリアする場合：レベル10</p>
 </section>
-<section class="content-card"><h3>土地難易度</h3><p>公式が公開している難易度表を参考にすると良いです。</p>
-<p>できるだけ難易度の低い敵を狙い撃ちして土地取得を進めましょう。</p>
-<figure class="inline-image"><button aria-label="開荒TIPS・土地守軍の注意点を拡大" class="image-zoom" type="button"><img alt="開荒TIPS・土地守軍の注意点" loading="lazy" width="941" height="1672" src="images/land-difficulty.png"/></button></figure>
+<section class="content-card"><h3>土地難易度一覧</h3><p>公式が公開している難易度表を参考にします。</p>
+<p>相性を考慮した上で、できるだけ難易度の低い守備軍を狙って戦うようにしましょう。</p>
+<p>最大速度については、<a href="#self-destruct">自爆部隊の項</a>を参照してください。</p>
+<figure class="inline-image"><button aria-label="土地難易度一覧を拡大" class="image-zoom" type="button"><img alt="土地難易度一覧" loading="lazy" width="1699" height="1569" src="images/land-difficulty.png"/></button></figure>
 <p>まず、混乱・回避は大損害に繋がる恐れがあるので、できるだけ避け、その土地攻略に余裕が出てからにしましょう。</p>
 <p>また、ご自身のスタダ編成に応じて、福島正則であれば封撃を避ける、北条氏康であれば必中を避けるなど、相手を選んで戦うようにしましょう。</p>
 <p>難易度の高い守備軍がいたとしても、日付が変わり朝起きる頃には守備軍が変わりますので、再度偵察すれば難易度が低い守備軍になっている可能性があります。</p>
