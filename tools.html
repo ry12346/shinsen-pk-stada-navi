@@ -39,12 +39,15 @@ button,input,select{font:inherit}
 .list{display:grid;gap:6px;margin:10px 0}
 .list-row{display:flex;align-items:center;justify-content:space-between;gap:8px;background:#fafaf8;border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:12px}
 .list-row .meta{color:var(--muted)}
+.tag{display:inline-block;font-size:10px;padding:1px 6px;border-radius:999px;margin-left:4px}
+.tag-shared{background:var(--gold-soft);color:#7e6234}
+.tag-mine{background:var(--ok-bg);color:var(--ok)}
 .slot{border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:10px;background:#fbfbf9}
 .slot h4{margin:0 0 8px;font-size:13px;color:var(--navy2)}
 .slot-result{margin-top:8px;font-size:13px;font-weight:800;padding:8px 10px;border-radius:10px}
 .slot-result.hit{background:var(--ok-bg);color:var(--ok)}
 .slot-result.miss{background:var(--warn-bg);color:var(--warn)}
-.custom-bonus{margin-top:6px}
+.custom-bonus,.custom-num{margin-top:6px}
 .result-box{margin-top:14px;border-radius:14px;padding:14px;font-size:14px;line-height:1.7}
 .result-box.ok{background:var(--ok-bg);color:var(--ok)}
 .result-box.warn{background:var(--warn-bg);color:var(--warn)}
@@ -53,6 +56,7 @@ button,input,select{font:inherit}
 .summary-table{width:100%;border-collapse:collapse;margin-top:10px;font-size:12px}
 .summary-table th,.summary-table td{border:1px solid var(--line);padding:6px 8px;text-align:left}
 .summary-table th{background:#eef1ef}
+.summary-table tr.now-row td{background:var(--ok-bg);font-weight:800}
 @media(max-width:480px){.row3{grid-template-columns:1fr}}
 </style>
 </head>
@@ -75,25 +79,36 @@ button,input,select{font:inherit}
 
 <div class="card">
 <h2>武将データベース</h2>
-<p class="note">武将名・凸数・レベル・そのときの速度をゲーム内で確認して登録してください。凸は0〜5で、1凸ごとにステータス10ポイントを割り振れます（速度に振るかは任意）。目安として、Lv4土地挑戦開始時はレベル7、Lv5土地挑戦の頃はレベル9あたりの速度を確認しておくと使いやすいです。数値は正確な参考データを持っていないため、すべて手動登録です。</p>
+<p class="note">「共通データ」はサイトに保存され、誰が見ても同じものが使えます（更新には作者への連絡が必要です）。「自分で追加」はこのブラウザだけに保存されます。凸は0〜5（1凸ごとにステータス10ポイントを自由に割り振れます）。基準レベルは7・8・9から選ぶか、自由入力できます。レベルアップごとの上昇値がわかる場合は入力すると、速度比較のときに他のレベルでの速度も自動計算されます（空欄の場合は上昇なしとして扱います）。</p>
 <div class="row3">
 <div class="field"><label>武将名</label><input id="genName" placeholder="例: 荒木村重" type="text"/></div>
-<div class="field"><label>凸数（0〜5）</label><input id="genDupe" max="5" min="0" placeholder="0" type="number"/></div>
-<div class="field"><label>レベル</label><input id="genLevel" placeholder="例: 7" type="number"/></div>
+<div class="field"><label>凸数</label>
+<select id="genDupe">
+<option value="0">0凸</option><option value="1">1凸</option><option value="2">2凸</option><option value="3">3凸</option><option value="4">4凸</option><option value="5">5凸</option>
+</select></div>
+<div class="field"><label>基準レベル</label>
+<select id="genLevelSelect">
+<option value="7">Lv7</option><option value="8">Lv8</option><option value="9">Lv9</option><option value="custom">カスタム…</option>
+</select>
+<input class="custom-num" id="genLevelCustom" placeholder="レベルを入力" style="display:none" type="number"/>
 </div>
-<div class="field"><label>速度</label><input id="genSpeed" placeholder="例: 38" type="number"/></div>
-<button class="btn btn-primary" id="addGeneral" type="button">武将を登録</button>
+</div>
+<div class="row2">
+<div class="field"><label>その基準レベルでの速度</label><input id="genSpeed" placeholder="例: 38" type="number"/></div>
+<div class="field"><label>レベルアップごとの上昇値（任意）</label><input id="genIncrement" placeholder="わかれば入力" type="number"/></div>
+</div>
+<button class="btn btn-primary" id="addGeneral" type="button">自分の武将として登録</button>
 <div class="list" id="generalList"></div>
 </div>
 
 <div class="card">
 <h2>戦法・装備の速度ボーナス</h2>
-<p class="note">ガイド内で確認済みの数値を初期登録しています。必要に応じて追加・編集してください。</p>
+<p class="note">ガイド内で確認済みの数値を共通データとして登録しています。必要に応じて自分用に追加できます。</p>
 <div class="row2">
 <div class="field"><label>名称</label><input id="tacName" placeholder="例: 百戦錬磨" type="text"/></div>
 <div class="field"><label>速度ボーナス</label><input id="tacBonus" placeholder="例: 42" type="number"/></div>
 </div>
-<button class="btn btn-primary" id="addTactic" type="button">登録</button>
+<button class="btn btn-primary" id="addTactic" type="button">自分用に登録</button>
 <div class="list" id="tacticList"></div>
 </div>
 
@@ -112,12 +127,27 @@ button,input,select{font:inherit}
 
 <div class="card">
 <h2>資源必要量トラッカー</h2>
-<p class="note">金額は「万」単位で入力してください（例: 19.2万なら 19.2）。参考: 天守6=19.2万、天守7=29.2万（いずれもガイド記載値、蔵Lvにより異なる場合あります）。</p>
+<p class="note">対応は天守6以降です。</p>
 
-<h3>目標と蔵</h3>
-<div class="row2">
-<div class="field"><label>目標達成に必要な資源量（万）</label><input id="targetNeed" placeholder="例: 19.2" step="0.1" type="number"/></div>
-<div class="field"><label>蔵の上限（万）</label><input id="storageCap" placeholder="例: 24" step="0.1" type="number"/></div>
+<h3>目標</h3>
+<div class="field"><label>目標の天守レベル</label>
+<select id="targetCastle">
+<option value="19.2">天守6（必要 19.2万）</option>
+<option value="29.2">天守7（必要 29.2万）</option>
+<option value="58.4">天守8（必要 58.4万）</option>
+<option value="custom">その他（手入力）</option>
+</select>
+<input class="custom-num" id="targetCastleCustom" placeholder="必要資源量（万）" style="display:none" type="number"/>
+</div>
+
+<h3>蔵</h3>
+<div class="field"><label>蔵レベル</label>
+<select id="storageCastle">
+<option value="46">蔵Lv11（上限 46万）</option>
+<option value="56">蔵Lv12（上限 56万）</option>
+<option value="custom">その他（手入力）</option>
+</select>
+<input class="custom-num" id="storageCastleCustom" placeholder="蔵の上限（万）" style="display:none" type="number"/>
 </div>
 
 <h3>今の状況</h3>
@@ -125,20 +155,16 @@ button,input,select{font:inherit}
 <div class="field"><label>現在の貯蓄量（万）</label><input id="currentStock" placeholder="例: 10" step="0.1" type="number"/></div>
 <div class="field"><label>毎時の産出量（万/時）</label><input id="hourlyRate" placeholder="例: 1.2" step="0.01" type="number"/></div>
 </div>
-
-<h3>労力について（任意）</h3>
-<p class="note">労力は30分で1回復（上限50）。現在持っている労力はまず一度だけ徴発に使い、その後は回復し続ける労力を毎時の産出量に自動で組み込んで計算します。使わない場合は0のままでOKです。</p>
-<div class="row2">
-<div class="field"><label>現在の労力（上限50）</label><input id="currentLabor" max="50" min="0" placeholder="0" type="number"/></div>
-<div class="field"><label>徴発1回の労力コスト</label><input id="laborPerLevy" placeholder="6" value="6" type="number"/></div>
-</div>
 <div class="field"><label>徴発1回で得られる資源（万）</label><input id="stonePerLevy" placeholder="例: 2.4" step="0.1" type="number"/></div>
-<div class="field"><label><input id="dailyLaborBuy" type="checkbox"/> 毎日1回、200小判で労力+20を購入する（24時更新）</label></div>
 
-<h3>現在時刻</h3>
-<div class="field"><label>基準時刻（自動取得・編集可）</label><input id="nowTime" type="datetime-local"/></div>
+<h3>労力</h3>
+<div class="row2">
+<div class="field"><label>現在の労力</label><input id="currentLabor" max="50" min="0" placeholder="0" type="number"/></div>
+<div class="field"><label>現在時刻</label><input id="nowTime" type="datetime-local"/></div>
+</div>
+<div class="field"><label><input id="dailyLaborBuy" type="checkbox"/> 200小判で労力+20を購入する（この計算に含める）</label></div>
 
-<button class="btn btn-primary" id="calcTracker" type="button">到達時刻を計算する</button>
+<button class="btn btn-primary" id="calcTracker" type="button">徴発パターンを計算する</button>
 <div id="trackerResult"></div>
 </div>
 
@@ -171,83 +197,120 @@ document.querySelectorAll('.tool-tab').forEach(btn=>btn.addEventListener('click'
 })();
 
 // ================= 速度計算機 =================
-const GEN_KEY='stada-tools-generals', TAC_KEY='stada-tools-tactics';
-let generals = loadJSON(GEN_KEY, []);
-let tactics = loadJSON(TAC_KEY, null);
-if(tactics === null){
- tactics = [
-  {id:'t1', name:'百戦錬磨', bonus:42},
-  {id:'t2', name:'百錬成鋼', bonus:35},
-  {id:'t3', name:'越後先手組', bonus:24},
-  {id:'t4', name:'母衣武者', bonus:20},
-  {id:'t5', name:'伊賀忍者', bonus:10}
- ];
- saveJSON(TAC_KEY, tactics);
-}
+// 共通データ（サイトに保存・全員が使える）。作者に情報を送ってもらい、ここに追記していきます。
+// 形式: {name, dupe, level, speed, increment}  ※increment=レベルアップごとの上昇値（未確定なら0）
+const BUILTIN_GENERALS = [
+ // 例: {name:'荒木村重', dupe:0, level:7, speed:38, increment:0},
+];
+const BUILTIN_TACTICS = [
+ {name:'百戦錬磨', bonus:42},
+ {name:'百錬成鋼', bonus:35},
+ {name:'越後先手組', bonus:24},
+ {name:'母衣武者', bonus:20},
+ {name:'伊賀忍者', bonus:10}
+];
+
+const GEN_KEY='stada-tools-generals-v2', TAC_KEY='stada-tools-tactics-v2';
+let myGenerals = loadJSON(GEN_KEY, []);
+let myTactics = loadJSON(TAC_KEY, []);
 function uid(){ return 'id'+Date.now()+Math.floor(Math.random()*1000); }
+
+function allGenerals(){
+ const builtin = BUILTIN_GENERALS.map((g,i)=>({id:'builtin-'+i, name:g.name, dupe:g.dupe, level:g.level, speed:g.speed, increment:g.increment||0, shared:true}));
+ return builtin.concat(myGenerals.map(g=>Object.assign({shared:false}, g)));
+}
+function allTactics(){
+ const builtin = BUILTIN_TACTICS.map((t,i)=>({id:'builtin-'+i, name:t.name, bonus:t.bonus, shared:true}));
+ return builtin.concat(myTactics.map(t=>Object.assign({shared:false}, t)));
+}
+function speedAtLevel(gen, targetLevel){
+ return gen.speed + (targetLevel - gen.level) * (gen.increment || 0);
+}
 
 function renderGeneralList(){
  const el = document.getElementById('generalList');
  el.innerHTML = '';
- generals.forEach(g=>{
+ allGenerals().forEach(g=>{
   const row = document.createElement('div'); row.className='list-row';
-  row.innerHTML = '<span>'+g.name+' <span class="meta">(凸'+g.dupe+' / Lv'+g.level+' / 速度'+g.speed+')</span></span>';
-  const del = document.createElement('button'); del.className='btn-danger-text'; del.textContent='削除';
-  del.addEventListener('click',()=>{ generals = generals.filter(x=>x.id!==g.id); saveJSON(GEN_KEY, generals); renderGeneralList(); renderSlots(); });
-  row.appendChild(del);
+  const tag = g.shared ? '<span class="tag tag-shared">共通</span>' : '<span class="tag tag-mine">自分</span>';
+  row.innerHTML = '<span>'+g.name+tag+' <span class="meta">('+g.dupe+'凸 / 基準Lv'+g.level+' / 速度'+g.speed+(g.increment?' / +'+g.increment+'per Lv':'')+')</span></span>';
+  if(!g.shared){
+   const del = document.createElement('button'); del.className='btn-danger-text'; del.textContent='削除';
+   del.addEventListener('click',()=>{ myGenerals = myGenerals.filter(x=>x.id!==g.id); saveJSON(GEN_KEY, myGenerals); renderGeneralList(); renderSlots(); });
+   row.appendChild(del);
+  }
   el.appendChild(row);
  });
 }
 function renderTacticList(){
  const el = document.getElementById('tacticList');
  el.innerHTML = '';
- tactics.forEach(t=>{
+ allTactics().forEach(t=>{
   const row = document.createElement('div'); row.className='list-row';
-  row.innerHTML = '<span>'+t.name+' <span class="meta">(+'+t.bonus+')</span></span>';
-  const del = document.createElement('button'); del.className='btn-danger-text'; del.textContent='削除';
-  del.addEventListener('click',()=>{ tactics = tactics.filter(x=>x.id!==t.id); saveJSON(TAC_KEY, tactics); renderTacticList(); renderSlots(); });
-  row.appendChild(del);
+  const tag = t.shared ? '<span class="tag tag-shared">共通</span>' : '<span class="tag tag-mine">自分</span>';
+  row.innerHTML = '<span>'+t.name+tag+' <span class="meta">(+'+t.bonus+')</span></span>';
+  if(!t.shared){
+   const del = document.createElement('button'); del.className='btn-danger-text'; del.textContent='削除';
+   del.addEventListener('click',()=>{ myTactics = myTactics.filter(x=>x.id!==t.id); saveJSON(TAC_KEY, myTactics); renderTacticList(); renderSlots(); });
+   row.appendChild(del);
+  }
   el.appendChild(row);
  });
 }
+
+document.getElementById('genLevelSelect').addEventListener('change',(e)=>{
+ document.getElementById('genLevelCustom').style.display = e.target.value==='custom' ? 'block' : 'none';
+});
 document.getElementById('addGeneral').addEventListener('click',()=>{
  const name = document.getElementById('genName').value.trim();
- const dupe = document.getElementById('genDupe').value;
- const level = document.getElementById('genLevel').value;
+ const dupe = Number(document.getElementById('genDupe').value);
+ const levelSel = document.getElementById('genLevelSelect').value;
+ const level = levelSel==='custom' ? Number(document.getElementById('genLevelCustom').value||0) : Number(levelSel);
  const speed = document.getElementById('genSpeed').value;
+ const increment = Number(document.getElementById('genIncrement').value || 0);
  if(!name || speed===''){ alert('武将名と速度は必須です'); return; }
- generals.push({id:uid(), name, dupe: dupe||'0', level: level||'-', speed: Number(speed)});
- saveJSON(GEN_KEY, generals);
- document.getElementById('genName').value='';document.getElementById('genDupe').value='';document.getElementById('genLevel').value='';document.getElementById('genSpeed').value='';
+ myGenerals.push({id:uid(), name, dupe, level, speed:Number(speed), increment});
+ saveJSON(GEN_KEY, myGenerals);
+ document.getElementById('genName').value='';document.getElementById('genSpeed').value='';document.getElementById('genIncrement').value='';
  renderGeneralList(); renderSlots();
 });
 document.getElementById('addTactic').addEventListener('click',()=>{
  const name = document.getElementById('tacName').value.trim();
  const bonus = document.getElementById('tacBonus').value;
  if(!name || bonus===''){ alert('名称とボーナス値は必須です'); return; }
- tactics.push({id:uid(), name, bonus:Number(bonus)});
- saveJSON(TAC_KEY, tactics);
+ myTactics.push({id:uid(), name, bonus:Number(bonus)});
+ saveJSON(TAC_KEY, myTactics);
  document.getElementById('tacName').value='';document.getElementById('tacBonus').value='';
  renderTacticList(); renderSlots();
 });
 
 function bonusSelectHTML(prefix){
  let opts = '<option value="">なし</option>';
- tactics.forEach(t=>{ opts += '<option value="'+t.id+'">'+t.name+' (+'+t.bonus+')</option>'; });
+ allTactics().forEach(t=>{ opts += '<option value="'+t.id+'">'+t.name+' (+'+t.bonus+')</option>'; });
  opts += '<option value="custom">カスタム入力…</option>';
  return '<select class="bonusSelect" data-slotprefix="'+prefix+'">'+opts+'</select><input class="custom-bonus" data-slotprefix="'+prefix+'" placeholder="速度ボーナス" style="display:none" type="number"/>';
+}
+function levelSelectHTML(prefix, defaultLevel){
+ const opts = [7,8,9];
+ let html = '<select class="levelSelect" data-slotprefix="'+prefix+'">';
+ opts.forEach(l=>{ html += '<option value="'+l+'"'+(l===defaultLevel?' selected':'')+'>Lv'+l+'</option>'; });
+ html += '<option value="custom"'+(opts.indexOf(defaultLevel)===-1?' selected':'')+'>カスタム…</option></select>';
+ html += '<input class="custom-num levelCustom" data-slotprefix="'+prefix+'" placeholder="レベル" style="display:'+(opts.indexOf(defaultLevel)===-1?'block':'none')+'" type="number" value="'+(opts.indexOf(defaultLevel)===-1?defaultLevel:'')+'"/>';
+ return html;
 }
 function renderSlots(){
  const wrap = document.getElementById('slots');
  wrap.innerHTML = '';
  const labels = ['大将','副将1','副将2'];
+ const gens = allGenerals();
  labels.forEach((label,i)=>{
   const slot = document.createElement('div'); slot.className='slot'; slot.dataset.slot=i;
   let genOpts = '<option value="">武将を選択</option>';
-  generals.forEach(g=>{ genOpts += '<option value="'+g.id+'">'+g.name+' (Lv'+g.level+' 凸'+g.dupe+' 速度'+g.speed+')</option>'; });
+  gens.forEach(g=>{ genOpts += '<option value="'+g.id+'">'+g.name+'（'+g.dupe+'凸 基準Lv'+g.level+' 速度'+g.speed+'）'+(g.shared?'':' [自分]')+'</option>'; });
   slot.innerHTML =
    '<h4>'+label+'</h4>'+
    '<div class="field"><select class="genSelect">'+genOpts+'</select></div>'+
+   '<div class="field"><label style="margin:0 0 4px">計算するレベル</label>'+levelSelectHTML(i+'-lv', 7)+'</div>'+
    '<div class="field">'+bonusSelectHTML(i+'-1')+'</div>'+
    '<div class="field">'+bonusSelectHTML(i+'-2')+'</div>'+
    '<div class="field">'+bonusSelectHTML(i+'-3')+'</div>'+
@@ -260,16 +323,39 @@ function renderSlots(){
    input.style.display = sel.value==='custom' ? 'block' : 'none';
   });
  });
+ wrap.querySelectorAll('.levelSelect').forEach(sel=>{
+  sel.addEventListener('change',()=>{
+   const input = wrap.querySelector('.levelCustom[data-slotprefix="'+sel.dataset.slotprefix+'"]');
+   input.style.display = sel.value==='custom' ? 'block' : 'none';
+  });
+  sel.addEventListener('change',()=>{
+   const genSel = sel.closest('.slot').querySelector('.genSelect');
+   const gen = gens.find(g=>g.id===genSel.value);
+   if(gen && sel.value!=='custom'){
+    // default the custom box to a sensible starting value if switched later
+   }
+  });
+ });
 }
 document.getElementById('calcSpeed').addEventListener('click',()=>{
  const enemy = Number(document.getElementById('enemySpeed').value || 0);
+ const gens = allGenerals();
+ const tactics = allTactics();
  const results = [];
  document.querySelectorAll('#slots .slot').forEach(slot=>{
   const genId = slot.querySelector('.genSelect').value;
-  const gen = generals.find(g=>g.id===genId);
+  const gen = gens.find(g=>g.id===genId);
   const resultEl = slot.querySelector('.slot-result');
   if(!gen){ resultEl.style.display='none'; return; }
-  let total = gen.speed;
+  const levelSel = slot.querySelector('.levelSelect');
+  let targetLevel = gen.level;
+  if(levelSel.value==='custom'){
+   const custom = slot.querySelector('.levelCustom').value;
+   if(custom!=='') targetLevel = Number(custom);
+  }else{
+   targetLevel = Number(levelSel.value);
+  }
+  let total = speedAtLevel(gen, targetLevel);
   slot.querySelectorAll('.bonusSelect').forEach(sel=>{
    if(sel.value==='custom'){
     const input = slot.querySelector('.custom-bonus[data-slotprefix="'+sel.dataset.slotprefix+'"]');
@@ -282,8 +368,8 @@ document.getElementById('calcSpeed').addEventListener('click',()=>{
   const hit = total > enemy;
   resultEl.style.display='block';
   resultEl.className = 'slot-result ' + (hit ? 'hit' : 'miss');
-  resultEl.textContent = gen.name+'：合計速度 '+total+'　'+(hit ? '✓ 先手を取れます' : '✗ 先手を取れません')+'（差: '+(total-enemy)+'）';
-  results.push({name:gen.name, total, hit});
+  resultEl.textContent = gen.name+'（Lv'+targetLevel+'）：合計速度 '+total+'　'+(hit ? '✓ 先手を取れます' : '✗ 先手を取れません')+'（差: '+(total-enemy)+'）';
+  results.push({name:gen.name+'（Lv'+targetLevel+'）', total, hit});
  });
  const box = document.getElementById('speedResult');
  if(results.length===0){ box.innerHTML = '<div class="result-box warn">武将を1体以上選んでください。</div>'; return; }
@@ -304,72 +390,73 @@ renderSlots();
  now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
  document.getElementById('nowTime').value = now.toISOString().slice(0,16);
 })();
+['targetCastle','storageCastle'].forEach(id=>{
+ document.getElementById(id).addEventListener('change',(e)=>{
+  document.getElementById(id+'Custom').style.display = e.target.value==='custom' ? 'block' : 'none';
+ });
+});
 
-const LABOR_REGEN_PER_HOUR = 2; // 30分で1回復 = 1時間で2回復
+const LABOR_PER_LEVY = 6; // 徴発1回の労力コスト（固定）
+const LABOR_CAP = 50;
 const DAILY_LABOR_BUY_AMOUNT = 20; // 200小判で1日1回、+20
 
+function fmtDate(d){
+ return (d.getMonth()+1)+'月'+d.getDate()+'日 '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+}
+
 document.getElementById('calcTracker').addEventListener('click',()=>{
- const targetNeed = Number(document.getElementById('targetNeed').value || 0);
- const storageCap = Number(document.getElementById('storageCap').value || 0);
+ const targetSel = document.getElementById('targetCastle').value;
+ const targetNeed = targetSel==='custom' ? Number(document.getElementById('targetCastleCustom').value||0) : Number(targetSel);
+ const capSel = document.getElementById('storageCastle').value;
+ const storageCap = capSel==='custom' ? Number(document.getElementById('storageCastleCustom').value||0) : Number(capSel);
  const currentStock = Number(document.getElementById('currentStock').value || 0);
- const baseHourlyRate = Number(document.getElementById('hourlyRate').value || 0);
- const currentLabor = Number(document.getElementById('currentLabor').value || 0);
- const laborPerLevy = Number(document.getElementById('laborPerLevy').value || 0);
+ const hourlyRate = Number(document.getElementById('hourlyRate').value || 0);
  const stonePerLevy = Number(document.getElementById('stonePerLevy').value || 0);
+ const currentLabor = Number(document.getElementById('currentLabor').value || 0);
  const dailyLaborBuy = document.getElementById('dailyLaborBuy').checked;
  const nowVal = document.getElementById('nowTime').value;
  const box = document.getElementById('trackerResult');
 
- if(targetNeed<=0){ box.innerHTML = '<div class="result-box warn">目標達成に必要な資源量を入力してください。</div>'; return; }
+ if(targetNeed<=0){ box.innerHTML = '<div class="result-box warn">目標の天守レベルを選んでください。</div>'; return; }
  const now = nowVal ? new Date(nowVal) : new Date();
 
- // 現在持っている労力は一度だけ即時徴発に使う
- const possibleLevies = laborPerLevy>0 ? Math.floor(currentLabor/laborPerLevy) : 0;
- const immediateBoost = possibleLevies * stonePerLevy;
- let stockAfterBoost = currentStock + immediateBoost;
- if(storageCap>0) stockAfterBoost = Math.min(stockAfterBoost, storageCap);
- const boostNote = immediateBoost>0 ? '（現在の労力'+currentLabor+'で徴発'+possibleLevies+'回・+'+immediateBoost.toFixed(2)+'万を先に上乗せ）' : '';
-
- // それ以降は、回復し続ける労力を毎時の産出量に自動で組み込む
- let laborRegenPerHour = LABOR_REGEN_PER_HOUR;
- if(dailyLaborBuy) laborRegenPerHour += DAILY_LABOR_BUY_AMOUNT/24;
- const stoneFromLaborPerHour = (laborPerLevy>0 && stonePerLevy>0) ? (laborRegenPerHour/laborPerLevy)*stonePerLevy : 0;
- const hourlyRate = baseHourlyRate + stoneFromLaborPerHour;
- const laborNote = stoneFromLaborPerHour>0 ? '（うち労力回復分：毎時+'+stoneFromLaborPerHour.toFixed(3)+'万'+(dailyLaborBuy?'／1日1回の労力購入込み':'')+'）' : '';
-
- function fmtDate(d){
-  return (d.getMonth()+1)+'月'+d.getDate()+'日 '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
- }
-
  if(storageCap>0 && targetNeed > storageCap){
-  let extra = '';
-  if(stockAfterBoost >= storageCap){
-   extra = '現在すでに蔵の上限（'+storageCap+'万）に達しています。';
-  }else if(hourlyRate>0){
-   const hoursToCap = (storageCap - stockAfterBoost)/hourlyRate;
-   const etaCap = new Date(now.getTime() + hoursToCap*3600*1000);
-   extra = fmtDate(etaCap)+'ごろに蔵の上限（'+storageCap+'万）に達します。';
-  }
   const gap = (targetNeed - storageCap).toFixed(2);
   box.innerHTML = '<div class="result-box warn"><strong>徴発だけでは目標に届きません</strong><br/>'
-   +'目標（'+targetNeed+'万）が蔵の上限（'+storageCap+'万）を超えています。'+extra+'<br/>'
-   +'残り <strong>'+gap+'万</strong> は、評定報酬や任務報酬など「上限を超えて受け取れる」報酬で上乗せする必要があります。'+boostNote+'</div>';
+   +'目標（'+targetNeed+'万）が蔵の上限（'+storageCap+'万）を超えています。<br/>'
+   +'残り <strong>'+gap+'万</strong> は、評定報酬や任務報酬など「上限を超えて受け取れる」報酬で上乗せする必要があります。</div>';
   return;
  }
 
- if(stockAfterBoost >= targetNeed){
-  box.innerHTML = '<div class="result-box ok"><strong>今すぐ達成可能です</strong><br/>現在の貯蓄'+currentStock+'万'+boostNote+'で、目標の'+targetNeed+'万に到達しています。</div>';
-  return;
+ const availableLabor = currentLabor + (dailyLaborBuy ? DAILY_LABOR_BUY_AMOUNT : 0);
+ const maxLevies = stonePerLevy>0 ? Math.floor(availableLabor / LABOR_PER_LEVY) : 0;
+
+ let rows = '';
+ for(let n=0; n<=maxLevies; n++){
+  const boost = n * stonePerLevy;
+  let stock = currentStock + boost;
+  if(storageCap>0) stock = Math.min(stock, storageCap);
+  let etaText;
+  if(stock >= targetNeed){
+   etaText = '今すぐ到達可能';
+  }else if(hourlyRate<=0){
+   etaText = '毎時産出量を入力してください';
+  }else{
+   const remaining = targetNeed - stock;
+   const hours = remaining / hourlyRate;
+   const eta = new Date(now.getTime() + hours*3600*1000);
+   etaText = fmtDate(eta)+'ごろ';
+  }
+  const laborUsed = n*LABOR_PER_LEVY;
+  rows += '<tr><td>'+n+'回（労力'+laborUsed+'）</td><td>'+etaText+'</td></tr>';
  }
- if(hourlyRate<=0){
-  box.innerHTML = '<div class="result-box warn">毎時の産出量（または労力の情報）を入力してください。</div>';
-  return;
+ if(maxLevies===0 && stonePerLevy<=0){
+  rows = '<tr><td colspan="2">「徴発1回で得られる資源」を入力すると、徴発回数ごとの比較が表示されます。</td></tr>';
  }
- const remaining = targetNeed - stockAfterBoost;
- const hoursNeeded = remaining / hourlyRate;
- const eta = new Date(now.getTime() + hoursNeeded*3600*1000);
- box.innerHTML = '<div class="result-box info"><strong>'+fmtDate(eta)+'ごろ</strong> に到達可能です。<br/>'
-  +'（現在'+currentStock+'万'+boostNote+' → 残り'+remaining.toFixed(2)+'万を毎時'+hourlyRate.toFixed(3)+'万で回収'+laborNote+'、約'+hoursNeeded.toFixed(1)+'時間）</div>';
+
+ box.innerHTML = '<div class="result-box info"><strong>徴発回数ごとの到達時刻</strong>'
+  +'（現在の貯蓄'+currentStock+'万、利用可能な労力'+availableLabor+(dailyLaborBuy?'（購入込み）':'')+'）'
+  +'<table class="summary-table"><tr><th>徴発回数</th><th>到達時刻</th></tr>'+rows+'</table></div>';
 });
 </script>
 </body>
