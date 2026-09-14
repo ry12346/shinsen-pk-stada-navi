@@ -50,7 +50,6 @@ button,input,select{font:inherit}
 .summary-table{width:100%;border-collapse:collapse;margin-top:10px;font-size:12px}
 .summary-table th,.summary-table td{border:1px solid var(--line);padding:6px 8px;text-align:left}
 .summary-table th{background:#eef1ef}
-.summary-table tr.now-row td{background:var(--ok-bg);font-weight:800}
 </style>
 </head>
 <body>
@@ -401,28 +400,25 @@ document.getElementById('calcTracker').addEventListener('click',()=>{
 
  const round2 = n => Math.round(n*100)/100;
  const startLabor = Math.min(currentLabor + (dailyLaborBuy ? DAILY_LABOR_BUY_AMOUNT : 0), LABOR_CAP);
- const laborNote = '現在の労力'+currentLabor+(dailyLaborBuy?'＋購入20':'')+'＝利用可能'+startLabor+'（上限50、徴発1回=労力6、労力回復は30分で1）';
 
  if(stonePerLevy<=0){
   let etaText;
-  if(currentStock >= effectiveTarget){ etaText = '今すぐ到達可能です。'; }
-  else if(hourlyRate<=0){ etaText = '毎時産出量を入力してください。'; }
+  if(currentStock >= effectiveTarget){ etaText = '今すぐ'; }
+  else if(hourlyRate<=0){ etaText = '毎時産出量を入力してください'; }
   else{
    const hours = (effectiveTarget-currentStock)/hourlyRate;
-   etaText = fmtDate(new Date(now.getTime()+hours*3600*1000))+'ごろ到達する見込みです。';
+   etaText = fmtDate(new Date(now.getTime()+hours*3600*1000))+'ごろ';
   }
-  box.innerHTML = '<div class="result-box info"><strong>資源量の推移</strong>（'+laborNote+'）'
-   +(rewardNote?'<p style="margin:6px 0 0">'+rewardNote+'</p>':'')
-   +'<p style="margin:10px 0 0">「徴発1回で得られる資源」を入力すると、徴発を使った場合の推移も表示されます。徴発なしの場合：'+etaText+'</p></div>';
+  box.innerHTML = '<div class="result-box info"><strong>資源量の推移</strong>'
+   +(rewardNote?'<p style="margin:6px 0 0;font-size:12px;color:var(--muted)">'+rewardNote+'</p>':'')
+   +'<p style="margin:10px 0 0">徴発なしの場合、'+etaText+' に到達する見込みです。「徴発1回で得られる資源」を入力すると、徴発を使った場合の回数・時刻も算出されます。</p></div>';
   return;
  }
 
- // 今すぐ使える労力ぶんの徴発を即実行
+ // 今すぐ使える労力ぶんの徴発を即実行し、以降は労力6回復ごと（3時間おき）に追加で徴発できるものとして進める
  let levies = Math.floor(startLabor / LABOR_PER_LEVY);
  let remainder = startLabor - levies*LABOR_PER_LEVY;
  let stock = round2(Math.min(currentStock + levies*stonePerLevy, storageCap>0 ? storageCap : Infinity));
-
- let rows = '<tr class="now-row"><td>今すぐ（'+fmtDate(now)+'）</td><td>'+levies+'回</td><td>'+stock+'</td></tr>';
 
  let reachedAt = (stock >= effectiveTarget) ? now : null;
  let elapsedHours = 0;
@@ -441,25 +437,21 @@ document.getElementById('calcTracker').addEventListener('click',()=>{
   elapsedHours += hoursToNextLevy;
   stock = round2(Math.min(stock + hourlyRate*hoursToNextLevy + stonePerLevy, storageCap>0 ? storageCap : Infinity));
   levies += 1;
-  const eventTime = new Date(now.getTime() + elapsedHours*3600*1000);
-  rows += '<tr><td>'+fmtDate(eventTime)+'</td><td>'+levies+'回</td><td>'+stock+'</td></tr>';
-  if(stock>=effectiveTarget){ reachedAt = eventTime; }
+  if(stock>=effectiveTarget){ reachedAt = new Date(now.getTime() + elapsedHours*3600*1000); }
   hoursToNextLevy = 3; // 以降は労力6回復ごと＝3時間おきに徴発可能
  }
 
- let summary;
- if(reachedAt && reachedAt.getTime()===now.getTime()){
-  summary = '<strong>今すぐ</strong>天守レベルを上げられます。';
- }else if(reachedAt){
-  summary = '<strong>'+fmtDate(reachedAt)+'ごろ、'+levies+'回の徴発</strong>で天守レベルを上げられる見込みです。';
- }else{
-  summary = '表の範囲内では目標に到達しませんでした。毎時産出量や貯蓄量を見直してください。';
- }
+ const timeText = !reachedAt ? '未到達'
+  : (reachedAt.getTime()===now.getTime() ? '今すぐ' : fmtDate(reachedAt)+'ごろ');
 
- box.innerHTML = '<div class="result-box info"><strong>徴発と労力回復による資源量の推移</strong>（'+laborNote+'）'
-  +(rewardNote?'<p style="margin:6px 0 0">'+rewardNote+'</p>':'')
-  +'<table class="summary-table"><tr><th>時刻</th><th>累計徴発回数</th><th>資源量（万）</th></tr>'+rows+'</table>'
-  +'<p style="margin:10px 0 0">'+summary+'</p></div>';
+ box.innerHTML = '<div class="result-box '+(reachedAt?'ok':'warn')+'"><strong>資源量の推移</strong>'
+  +(rewardNote?'<p style="margin:6px 0 0;font-size:12px;color:var(--muted)">'+rewardNote+'</p>':'')
+  +'<div style="display:flex;gap:16px;flex-wrap:wrap;margin-top:12px">'
+  +'<div style="flex:1;min-width:130px"><div style="font-size:11px;color:var(--muted)">必要な徴発回数</div><div style="font-size:24px;font-weight:900">'+levies+'回</div></div>'
+  +'<div style="flex:1;min-width:130px"><div style="font-size:11px;color:var(--muted)">天守レベルを上げられる時刻</div><div style="font-size:20px;font-weight:900">'+timeText+'</div></div>'
+  +'</div>'
+  +(reachedAt ? '' : '<p style="margin:10px 0 0">この見込みの範囲内では到達しませんでした。毎時産出量や貯蓄量を見直してください。</p>')
+  +'</div>';
 });
 </script>
 </body>
