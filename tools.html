@@ -29,7 +29,9 @@ button,input,select{font:inherit}
 .card p.note{font-size:12px;color:var(--muted);margin:2px 0 10px}
 .field{margin-bottom:10px}
 .field label{display:block;font-size:12px;color:var(--muted);margin-bottom:4px}
-.field input,.field select{width:100%;border:1px solid var(--line);border-radius:10px;padding:9px 10px;font-size:14px;background:#fff}
+.field input:not([type=checkbox]),.field select{width:100%;border:1px solid var(--line);border-radius:10px;padding:9px 10px;font-size:14px;background:#fff}
+.checkbox-label{display:flex!important;align-items:center;gap:6px;font-size:13px!important;color:var(--ink)!important}
+.checkbox-label input{width:auto;flex:none;margin:0}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .btn{border:0;border-radius:10px;padding:10px 14px;font-weight:800;font-size:13px;cursor:pointer}
 .btn-primary{background:var(--navy);color:#fff}
@@ -98,6 +100,11 @@ button,input,select{font:inherit}
 <h3>蔵</h3>
 <div class="field"><label>蔵レベル</label>
 <select id="storageCastle">
+<option value="16">蔵Lv6（上限 16万）</option>
+<option value="21">蔵Lv7（上限 21万）</option>
+<option value="26">蔵Lv8（上限 26万）</option>
+<option value="31">蔵Lv9（上限 31万）</option>
+<option value="36">蔵Lv10（上限 36万）</option>
 <option value="46">蔵Lv11（上限 46万）</option>
 <option value="56">蔵Lv12（上限 56万）</option>
 <option value="custom">その他（手入力）</option>
@@ -117,7 +124,7 @@ button,input,select{font:inherit}
 <div class="field"><label>現在の労力</label><input id="currentLabor" max="50" min="0" placeholder="0" type="number"/></div>
 <div class="field"><label>現在時刻</label><input id="nowTime" type="datetime-local"/></div>
 </div>
-<div class="field"><label><input id="dailyLaborBuy" type="checkbox"/> 200小判で労力+20を購入する（この計算に含める）</label></div>
+<div class="field"><label class="checkbox-label"><input id="dailyLaborBuy" type="checkbox"/> 200小判で労力+20を購入する（この計算に含める）</label></div>
 
 <button class="btn btn-primary" id="calcTracker" type="button">徴発パターンを計算する</button>
 <div id="trackerResult"></div>
@@ -377,35 +384,65 @@ document.getElementById('calcTracker').addEventListener('click',()=>{
   return;
  }
 
- const availableLabor = currentLabor + (dailyLaborBuy ? DAILY_LABOR_BUY_AMOUNT : 0);
- const maxLevies = stonePerLevy>0 ? Math.floor(availableLabor / LABOR_PER_LEVY) : 0;
+ const round2 = n => Math.round(n*100)/100;
+ const startLabor = Math.min(currentLabor + (dailyLaborBuy ? DAILY_LABOR_BUY_AMOUNT : 0), LABOR_CAP);
+ const laborNote = '現在の労力'+currentLabor+(dailyLaborBuy?'＋購入20':'')+'＝利用可能'+startLabor+'（上限50、徴発1回=労力6、労力回復は30分で1）';
 
- let rows = '';
- for(let n=0; n<=maxLevies; n++){
-  const boost = n * stonePerLevy;
-  let stock = currentStock + boost;
-  if(storageCap>0) stock = Math.min(stock, storageCap);
+ if(stonePerLevy<=0){
   let etaText;
-  if(stock >= targetNeed){
-   etaText = '今すぐ到達可能';
-  }else if(hourlyRate<=0){
-   etaText = '毎時産出量を入力してください';
-  }else{
-   const remaining = targetNeed - stock;
-   const hours = remaining / hourlyRate;
-   const eta = new Date(now.getTime() + hours*3600*1000);
-   etaText = fmtDate(eta)+'ごろ';
+  if(currentStock >= targetNeed){ etaText = '今すぐ到達可能です。'; }
+  else if(hourlyRate<=0){ etaText = '毎時産出量を入力してください。'; }
+  else{
+   const hours = (targetNeed-currentStock)/hourlyRate;
+   etaText = fmtDate(new Date(now.getTime()+hours*3600*1000))+'ごろ到達する見込みです。';
   }
-  const laborUsed = n*LABOR_PER_LEVY;
-  rows += '<tr><td>'+n+'回（労力'+laborUsed+'）</td><td>'+etaText+'</td></tr>';
- }
- if(maxLevies===0 && stonePerLevy<=0){
-  rows = '<tr><td colspan="2">「徴発1回で得られる資源」を入力すると、徴発回数ごとの比較が表示されます。</td></tr>';
+  box.innerHTML = '<div class="result-box info"><strong>資源量の推移</strong>（'+laborNote+'）'
+   +'<p style="margin:10px 0 0">「徴発1回で得られる資源」を入力すると、徴発を使った場合の推移も表示されます。徴発なしの場合：'+etaText+'</p></div>';
+  return;
  }
 
- box.innerHTML = '<div class="result-box info"><strong>徴発回数ごとの到達時刻</strong>'
-  +'（現在の貯蓄'+currentStock+'万、利用可能な労力'+availableLabor+(dailyLaborBuy?'（購入込み）':'')+'）'
-  +'<table class="summary-table"><tr><th>徴発回数</th><th>到達時刻</th></tr>'+rows+'</table></div>';
+ // 今すぐ使える労力ぶんの徴発を即実行
+ let levies = Math.floor(startLabor / LABOR_PER_LEVY);
+ let remainder = startLabor - levies*LABOR_PER_LEVY;
+ let stock = round2(Math.min(currentStock + levies*stonePerLevy, storageCap>0 ? storageCap : Infinity));
+
+ let rows = '<tr class="now-row"><td>今すぐ（'+fmtDate(now)+'）</td><td>'+levies+'回</td><td>'+stock+'</td></tr>';
+
+ let reachedAt = (stock >= targetNeed) ? now : null;
+ let elapsedHours = 0;
+ let hoursToNextLevy = (LABOR_PER_LEVY - remainder) * 0.5; // 労力回復は30分で1
+ const MAX_ROWS = 12;
+
+ for(let i=0; i<MAX_ROWS && reachedAt===null; i++){
+  if(hourlyRate>0){
+   const neededHours = (targetNeed - stock) / hourlyRate;
+   if(neededHours <= hoursToNextLevy){
+    elapsedHours += neededHours;
+    reachedAt = new Date(now.getTime() + elapsedHours*3600*1000);
+    break;
+   }
+  }
+  elapsedHours += hoursToNextLevy;
+  stock = round2(Math.min(stock + hourlyRate*hoursToNextLevy + stonePerLevy, storageCap>0 ? storageCap : Infinity));
+  levies += 1;
+  const eventTime = new Date(now.getTime() + elapsedHours*3600*1000);
+  rows += '<tr><td>'+fmtDate(eventTime)+'</td><td>'+levies+'回</td><td>'+stock+'</td></tr>';
+  if(stock>=targetNeed){ reachedAt = eventTime; }
+  hoursToNextLevy = 3; // 以降は労力6回復ごと＝3時間おきに徴発可能
+ }
+
+ let summary;
+ if(reachedAt && reachedAt.getTime()===now.getTime()){
+  summary = '<strong>今すぐ</strong>目標資源量に到達できます。';
+ }else if(reachedAt){
+  summary = '<strong>'+fmtDate(reachedAt)+'ごろ</strong>に目標資源量に到達する見込みです。';
+ }else{
+  summary = '表の範囲内では目標に到達しませんでした。毎時産出量や貯蓄量を見直してください。';
+ }
+
+ box.innerHTML = '<div class="result-box info"><strong>徴発と労力回復による資源量の推移</strong>（'+laborNote+'）'
+  +'<table class="summary-table"><tr><th>時刻</th><th>累計徴発回数</th><th>資源量（万）</th></tr>'+rows+'</table>'
+  +'<p style="margin:10px 0 0">'+summary+'</p></div>';
 });
 </script>
 </body>
