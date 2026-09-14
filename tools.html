@@ -410,10 +410,25 @@ document.getElementById('calcTracker').addEventListener('click',()=>{
  const round2 = n => Math.round(n*100)/100;
  const startLabor = Math.min(currentLabor + (dailyLaborBuy ? DAILY_LABOR_BUY_AMOUNT : 0), LABOR_CAP);
 
- // 今すぐ使える労力ぶんの徴発を即実行し、以降は労力6回復ごと（3時間おき）に追加で徴発できるものとして進める
- let levies = Math.floor(startLabor / LABOR_PER_LEVY);
- let remainder = startLabor - levies*LABOR_PER_LEVY;
- let stock = round2(Math.min(currentStock + levies*stonePerLevy, storageCap>0 ? storageCap : Infinity));
+ // 徴発は蔵の上限を超えて受け取れないため、上限に達した時点でそれ以上の徴発は無駄になる。
+ // 目標（蔵の上限以下）に届いた時点、または上限に達した時点で徴発を止めるものとして進める。
+ let cappedNote = '';
+
+ // 今すぐ使える労力ぶんの徴発を、目標に届くか蔵の上限に達するまで1回ずつ実行
+ const maxImmediateLevies = Math.floor(startLabor / LABOR_PER_LEVY);
+ let levies = 0;
+ let stock = currentStock;
+ while(levies < maxImmediateLevies && stock < effectiveTarget){
+  const raw = stock + stonePerLevy;
+  levies += 1;
+  if(storageCap>0 && raw > storageCap){
+   stock = storageCap;
+   cappedNote = '蔵の上限（'+storageCap+'万）を超えるため、'+levies+'回目の徴発では一部の資源が受け取れません（それ以上の徴発は不要です）。';
+   break;
+  }
+  stock = round2(raw);
+ }
+ const remainder = startLabor - levies*LABOR_PER_LEVY;
 
  let reachedAt = (stock >= effectiveTarget) ? now : null;
  let elapsedHours = 0;
@@ -430,21 +445,31 @@ document.getElementById('calcTracker').addEventListener('click',()=>{
    }
   }
   elapsedHours += hoursToNextLevy;
-  stock = round2(Math.min(stock + hourlyRate*hoursToNextLevy + stonePerLevy, storageCap>0 ? storageCap : Infinity));
+  const raw = stock + hourlyRate*hoursToNextLevy + stonePerLevy;
   levies += 1;
+  if(storageCap>0 && raw > storageCap){
+   stock = storageCap;
+   if(!cappedNote){ cappedNote = '蔵の上限（'+storageCap+'万）を超えるため、'+levies+'回目の徴発では一部の資源が受け取れません（それ以上の徴発は不要です）。'; }
+  }else{
+   stock = round2(raw);
+  }
   if(stock>=effectiveTarget){ reachedAt = new Date(now.getTime() + elapsedHours*3600*1000); }
   hoursToNextLevy = 3; // 以降は労力6回復ごと＝3時間おきに徴発可能
  }
 
  const timeText = !reachedAt ? '未到達'
   : (reachedAt.getTime()===now.getTime() ? '今すぐ' : fmtDate(reachedAt)+'ごろ');
+ const waitNote = (reachedAt && reachedAt.getTime()!==now.getTime())
+  ? 'それまでは徴発と毎時の産出で資源が貯まるのを待つ必要があります。' : '';
 
  box.innerHTML = '<div class="result-box '+(reachedAt?'ok':'warn')+'"><strong>資源量の推移</strong>'
   +(rewardNote?'<p style="margin:6px 0 0;font-size:12px;color:var(--muted)">'+rewardNote+'</p>':'')
+  +(cappedNote?'<p style="margin:6px 0 0;font-size:12px;color:var(--warn)">'+cappedNote+'</p>':'')
   +'<div style="display:flex;gap:16px;flex-wrap:wrap;margin-top:12px">'
   +'<div style="flex:1;min-width:130px"><div style="font-size:11px;color:var(--muted)">必要な徴発回数</div><div style="font-size:24px;font-weight:900">'+levies+'回</div></div>'
   +'<div style="flex:1;min-width:130px"><div style="font-size:11px;color:var(--muted)">天守レベルを上げられる時刻</div><div style="font-size:20px;font-weight:900">'+timeText+'</div></div>'
   +'</div>'
+  +(waitNote?'<p style="margin:10px 0 0;font-size:12px;color:var(--muted)">'+waitNote+'</p>':'')
   +(reachedAt ? '' : '<p style="margin:10px 0 0">この見込みの範囲内では到達しませんでした。毎時産出量や貯蓄量を見直してください。</p>')
   +'</div>';
 });
