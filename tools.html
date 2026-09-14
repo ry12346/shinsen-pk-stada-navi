@@ -197,18 +197,36 @@ document.querySelectorAll('.tool-tab').forEach(btn=>btn.addEventListener('click'
 })();
 
 // ================= 速度計算機 =================
-// 共通データ（サイトに保存・全員が使える）。作者に情報を送ってもらい、ここに追記していきます。
-// 形式: {name, dupe, level, speed, increment}  ※increment=レベルアップごとの上昇値（未確定なら0）
-const BUILTIN_GENERALS = [
- // 例: {name:'荒木村重', dupe:0, level:7, speed:38, increment:0},
-];
-const BUILTIN_TACTICS = [
- {name:'百戦錬磨', bonus:42},
- {name:'百錬成鋼', bonus:35},
- {name:'越後先手組', bonus:24},
- {name:'母衣武者', bonus:20},
- {name:'伊賀忍者', bonus:10}
-];
+// 共通データ（サイトに保存・全員が使える）。data/generals.csv, data/tactics.csv を編集すると更新されます。
+let BUILTIN_GENERALS = [];
+let BUILTIN_TACTICS = [];
+
+function parseCSV(text){
+ const lines = text.replace(/^﻿/,'').trim().split(/\r?\n/).filter(l=>l.trim()!=='');
+ if(lines.length<2) return [];
+ const headers = lines[0].split(',').map(h=>h.trim());
+ return lines.slice(1).map(line=>{
+  const cells = line.split(',').map(c=>c.trim());
+  const obj = {};
+  headers.forEach((h,i)=>{ obj[h] = cells[i]!==undefined ? cells[i] : ''; });
+  return obj;
+ });
+}
+async function loadBuiltinData(){
+ try{
+  const res = await fetch('data/generals.csv');
+  const rows = parseCSV(await res.text());
+  BUILTIN_GENERALS = rows.filter(r=>r.name).map(r=>({
+   name:r.name, dupe:Number(r.dupe||0), level:Number(r.level||0), speed:Number(r.speed||0), increment:Number(r.increment||0)
+  }));
+ }catch(e){ BUILTIN_GENERALS = []; }
+ try{
+  const res = await fetch('data/tactics.csv');
+  const rows = parseCSV(await res.text());
+  BUILTIN_TACTICS = rows.filter(r=>r.name).map(r=>({ name:r.name, bonus:Number(r.bonus||0) }));
+ }catch(e){ BUILTIN_TACTICS = []; }
+ renderGeneralList(); renderTacticList(); renderSlots();
+}
 
 const GEN_KEY='stada-tools-generals-v2', TAC_KEY='stada-tools-tactics-v2';
 let myGenerals = loadJSON(GEN_KEY, []);
@@ -383,6 +401,7 @@ document.getElementById('calcSpeed').addEventListener('click',()=>{
 renderGeneralList();
 renderTacticList();
 renderSlots();
+loadBuiltinData();
 
 // ================= 資源トラッカー =================
 (function(){
