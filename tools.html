@@ -70,7 +70,7 @@ button,input,select{font:inherit}
 
 <div class="card">
 <h2>速度比較（自動計算）</h2>
-<p class="note">武将・レベル・凸・戦法を選ぶと、登録済みの守備軍大将（Lv4/Lv5土地攻略）と自動で比較します。武将・戦法・敵大将のデータはdata/generals.csv・data/tactics.csv・data/enemy_generals.csvで管理しています（追加・変更は作者へ連絡、またはGitHub上で編集）。</p>
+<p class="note">武将・レベル・凸・戦法を選ぶと、登録済みの守備軍大将（Lv4/Lv5土地攻略）と自動で比較します。戦法は自軍全体の速度を上げるため、誰に付けても大将・副将全員の速度に加算されます。武将・戦法・敵大将のデータはdata/generals.csv・data/tactics.csv・data/enemy_generals.csvで管理しています（追加・変更は作者へ連絡、またはGitHub上で編集）。</p>
 <div id="slots"></div>
 <div id="speedResult"></div>
 </div>
@@ -249,7 +249,7 @@ function renderSlots(){
 function recalcAll(){
  const box = document.getElementById('speedResult');
  const labels = ['大将','副将1','副将2'];
- const slotData = [];
+ const rawSlots = [];
  document.querySelectorAll('#slots .slot').forEach((slot,i)=>{
   const genIdx = slot.querySelector('.genSelect').value;
   if(genIdx===''){ return; }
@@ -264,23 +264,28 @@ function recalcAll(){
    targetLevel = Number(levelSel.value);
   }
   const dupe = Number(slot.querySelector('.dupeSelect').value || 0);
-  let total = computeSpeed(gen, targetLevel, dupe);
+  const base = computeSpeed(gen, targetLevel, dupe);
   const bonusSel = slot.querySelector('.bonusSelect');
+  let bonus = 0;
   if(bonusSel.value==='custom'){
-   total += Number(slot.querySelector('.custom-bonus').value || 0);
+   bonus = Number(slot.querySelector('.custom-bonus').value || 0);
   }else if(bonusSel.value!==''){
    const t = BUILTIN_TACTICS[Number(bonusSel.value)];
-   if(t) total += t.bonus;
+   if(t) bonus = t.bonus;
   }
-  slotData.push({label:labels[i], name:gen.name, level:targetLevel, dupe, total});
+  rawSlots.push({label:labels[i], name:gen.name, level:targetLevel, dupe, base, bonus});
  });
 
- if(slotData.length===0){
+ if(rawSlots.length===0){
   box.innerHTML = '<div class="result-box warn">武将を1体以上選んでください。</div>';
   return;
  }
 
- let html = '<div class="result-box ok"><strong>あなたの武将の速度</strong><table class="summary-table"><tr><th>枠</th><th>武将</th><th>Lv/凸</th><th>合計速度</th></tr>';
+ // 戦法は自軍全体の速度に効果があるため、誰が持っていても全員の速度に加算する
+ const armyBonus = rawSlots.reduce((sum,s)=>sum+s.bonus, 0);
+ const slotData = rawSlots.map(s=>({label:s.label, name:s.name, level:s.level, dupe:s.dupe, total:s.base+armyBonus}));
+
+ let html = '<div class="result-box ok"><strong>あなたの武将の速度</strong>（戦法ボーナス合計 +'+armyBonus+' を全員に加算）<table class="summary-table"><tr><th>枠</th><th>武将</th><th>Lv/凸</th><th>合計速度</th></tr>';
  slotData.forEach(s=>{ html += '<tr><td>'+s.label+'</td><td>'+s.name+'</td><td>Lv'+s.level+' / '+s.dupe+'凸</td><td>'+s.total+'</td></tr>'; });
  html += '</table></div>';
 
@@ -307,8 +312,8 @@ function recalcAll(){
    list.forEach(e=>{
     html += '<tr><td>'+e.name+'</td><td>'+e.maxSpeed+'</td>';
     slotData.forEach(s=>{
-     const win = s.total > e.maxSpeed;
-     html += '<td style="color:'+(win?'var(--ok)':'var(--warn)')+';font-weight:800">'+(win?'○ 勝ち':'× 負け')+'</td>';
+     const first = s.total > e.maxSpeed;
+     html += '<td style="color:'+(first?'var(--ok)':'var(--warn)')+';font-weight:800">'+(first?'○ 先手':'× 後手')+'</td>';
     });
     html += '</tr>';
    });
