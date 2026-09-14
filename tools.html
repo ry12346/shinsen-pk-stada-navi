@@ -282,8 +282,9 @@ function recalcAll(){
  }
 
  // 戦法は自軍全体の速度に効果があるため、誰が持っていても全員の速度に加算する
- const armyBonus = rawSlots.reduce((sum,s)=>sum+s.bonus, 0);
- const slotData = rawSlots.map(s=>({label:s.label, name:s.name, level:s.level, dupe:s.dupe, total:s.base+armyBonus}));
+ const round2 = n => Math.round(n*100)/100;
+ const armyBonus = round2(rawSlots.reduce((sum,s)=>sum+s.bonus, 0));
+ const slotData = rawSlots.map(s=>({label:s.label, name:s.name, level:s.level, dupe:s.dupe, total:round2(s.base+armyBonus)}));
 
  let html = '<div class="result-box ok"><strong>あなたの武将の速度</strong>（戦法ボーナス合計 +'+armyBonus+' を全員に加算）<table class="summary-table"><tr><th>枠</th><th>武将</th><th>Lv/凸</th><th>合計速度</th></tr>';
  slotData.forEach(s=>{ html += '<tr><td>'+s.label+'</td><td>'+s.name+'</td><td>Lv'+s.level+' / '+s.dupe+'凸</td><td>'+s.total+'</td></tr>'; });
