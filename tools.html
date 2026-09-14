@@ -219,7 +219,7 @@ function levelSelectHTML(prefix, defaultLevel){
 }
 function dupeSelectHTML(prefix){
  let html = '<select class="dupeSelect" data-slotprefix="'+prefix+'">';
- for(let d=0; d<=5; d++){ html += '<option value="'+d+'"'+(d===0?' selected':'')+'>'+d+'凸</option>'; }
+ for(let d=0; d<=5; d++){ html += '<option value="'+d+'"'+(d===0?' selected':'')+'>'+d+'凸（速度+'+(d*DUPE_SPEED_BONUS)+'）</option>'; }
  html += '</select>';
  return html;
 }
