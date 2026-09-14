@@ -410,56 +410,60 @@ document.getElementById('calcTracker').addEventListener('click',()=>{
  const round2 = n => Math.round(n*100)/100;
  const startLabor = Math.min(currentLabor + (dailyLaborBuy ? DAILY_LABOR_BUY_AMOUNT : 0), LABOR_CAP);
 
- // 徴発は蔵の上限を超えて受け取れないため、上限に達した時点でそれ以上の徴発は無駄になる。
- // 目標（蔵の上限以下）に届いた時点、または上限に達した時点で徴発を止めるものとして進める。
- let cappedNote = '';
+ // 徴発は蔵の上限を超えて受け取れない。上限を超える徴発は「一部が無駄になる」のではなく、
+ // そもそも行わない（労力を使わない）ものとして扱う。蔵の余裕は時間が経つほど毎時産出で
+ // 減っていくだけなので、一度「次の徴発は上限を超える」状態になったら、それ以降ずっと
+ // 徴発はできない。そこからは毎時産出だけで目標に届く時間を計算する。
+ let levies = 0;
+ let stock = currentStock;
+ let canLevy = true; // false になったら二度と徴発できない
 
  // 今すぐ使える労力ぶんの徴発を、目標に届くか蔵の上限に達するまで1回ずつ実行
  const maxImmediateLevies = Math.floor(startLabor / LABOR_PER_LEVY);
- let levies = 0;
- let stock = currentStock;
- while(levies < maxImmediateLevies && stock < effectiveTarget){
-  const raw = stock + stonePerLevy;
+ for(let n=0; n<maxImmediateLevies && canLevy && stock<effectiveTarget; n++){
+  if(storageCap>0 && stock + stonePerLevy > storageCap){ canLevy = false; break; }
+  stock = round2(stock + stonePerLevy);
   levies += 1;
-  if(storageCap>0 && raw > storageCap){
-   stock = storageCap;
-   cappedNote = '蔵の上限（'+storageCap+'万）を超えるため、'+levies+'回目の徴発では一部の資源が受け取れません（それ以上の徴発は不要です）。';
-   break;
-  }
-  stock = round2(raw);
  }
  const remainder = startLabor - levies*LABOR_PER_LEVY;
 
- let reachedAt = (stock >= effectiveTarget) ? now : null;
  let elapsedHours = 0;
- let hoursToNextLevy = (LABOR_PER_LEVY - remainder) * 0.5; // 労力回復は30分で1
- const MAX_ROWS = 12;
 
- for(let i=0; i<MAX_ROWS && reachedAt===null; i++){
-  if(hourlyRate>0){
-   const neededHours = (effectiveTarget - stock) / hourlyRate;
-   if(neededHours <= hoursToNextLevy){
-    elapsedHours += neededHours;
-    reachedAt = new Date(now.getTime() + elapsedHours*3600*1000);
-    break;
+ // 労力が尽きても目標に届いておらず、まだ徴発の余地がある間は、労力回復（3時間おき）を
+ // 待って追加の徴発を続ける
+ if(canLevy && stock < effectiveTarget){
+  let hoursToNextLevy = (LABOR_PER_LEVY - remainder) * 0.5; // 労力回復は30分で1
+  const MAX_TICKS = 40;
+  for(let i=0; i<MAX_TICKS && canLevy && stock<effectiveTarget; i++){
+   if(hourlyRate>0){
+    const neededHours = (effectiveTarget - stock) / hourlyRate;
+    if(neededHours <= hoursToNextLevy){
+     elapsedHours += neededHours;
+     stock = effectiveTarget;
+     break;
+    }
    }
+   const projected = stock + hourlyRate*hoursToNextLevy;
+   if(storageCap>0 && projected + stonePerLevy > storageCap){ canLevy = false; break; }
+   elapsedHours += hoursToNextLevy;
+   stock = round2(projected + stonePerLevy);
+   levies += 1;
+   hoursToNextLevy = 3; // 以降は労力6回復ごと＝3時間おきに徴発可能
   }
-  elapsedHours += hoursToNextLevy;
-  const raw = stock + hourlyRate*hoursToNextLevy + stonePerLevy;
-  levies += 1;
-  if(storageCap>0 && raw > storageCap){
-   stock = storageCap;
-   if(!cappedNote){ cappedNote = '蔵の上限（'+storageCap+'万）を超えるため、'+levies+'回目の徴発では一部の資源が受け取れません（それ以上の徴発は不要です）。'; }
-  }else{
-   stock = round2(raw);
-  }
-  if(stock>=effectiveTarget){ reachedAt = new Date(now.getTime() + elapsedHours*3600*1000); }
-  hoursToNextLevy = 3; // 以降は労力6回復ごと＝3時間おきに徴発可能
+ }
+
+ // まだ届いていなければ、以降は徴発なしで毎時産出だけで届く時間を計算する
+ let reachedAt = null;
+ if(stock >= effectiveTarget){
+  reachedAt = new Date(now.getTime() + elapsedHours*3600*1000);
+ }else if(hourlyRate>0){
+  elapsedHours += (effectiveTarget - stock) / hourlyRate;
+  reachedAt = new Date(now.getTime() + elapsedHours*3600*1000);
  }
 
  const timeText = !reachedAt ? '未到達'
   : (reachedAt.getTime()===now.getTime() ? '今すぐ' : fmtDate(reachedAt)+'ごろ');
- const leviesText = levies+'回'+(cappedNote ? ' <span style="color:var(--warn);font-size:13px;font-weight:800">一部受け取り不可</span>' : '');
+ const leviesText = levies+'回'+(!canLevy ? ' <span style="color:var(--warn);font-size:13px;font-weight:800">上限のため以降は徴発なし</span>' : '');
 
  box.innerHTML = '<div class="result-box '+(reachedAt?'ok':'warn')+'"><strong>資源量の推移</strong>'
   +(rewardNote?'<p style="margin:6px 0 0;font-size:12px;color:var(--muted)">'+rewardNote+'</p>':'')
@@ -467,7 +471,7 @@ document.getElementById('calcTracker').addEventListener('click',()=>{
   +'<div style="margin-bottom:8px"><span style="font-size:11px;color:var(--muted)">必要な徴発回数　</span><span style="font-size:24px;font-weight:900">'+leviesText+'</span></div>'
   +'<div><span style="font-size:11px;color:var(--muted)">天守レベルを上げられる時刻　</span><span style="font-size:20px;font-weight:900">'+timeText+'</span></div>'
   +'</div>'
-  +(reachedAt ? '' : '<p style="margin:10px 0 0">この見込みの範囲内では到達しませんでした。毎時産出量や貯蓄量を見直してください。</p>')
+  +(reachedAt ? '' : '<p style="margin:10px 0 0">この見込みでは到達しません。蔵の上限を超えて受け取れる報酬を増やすか、毎時産出量を見直してください。</p>')
   +'</div>';
 });
 </script>
