@@ -112,6 +112,9 @@ button,input,select{font:inherit}
 <input class="custom-num" id="storageCastleCustom" placeholder="蔵の上限（万）" style="display:none" type="number"/>
 </div>
 
+<h3>報酬</h3>
+<div class="field"><label>評定報酬・任務報酬など（蔵の上限を超えて受け取れる資源、万）</label><input id="rewardAmount" placeholder="例: 5" step="0.1" type="number"/></div>
+
 <h3>今の状況</h3>
 <div class="row2">
 <div class="field"><label>現在の貯蓄量（万）</label><input id="currentStock" placeholder="例: 10" step="0.1" type="number"/></div>
@@ -366,6 +369,7 @@ document.getElementById('calcTracker').addEventListener('click',()=>{
  const capSel = document.getElementById('storageCastle').value;
  const storageCap = capSel==='custom' ? Number(document.getElementById('storageCastleCustom').value||0) : Number(capSel);
  const currentStock = Number(document.getElementById('currentStock').value || 0);
+ const rewardAmount = Number(document.getElementById('rewardAmount').value || 0);
  const hourlyRate = Number(document.getElementById('hourlyRate').value || 0);
  const stonePerLevy = Number(document.getElementById('stonePerLevy').value || 0);
  const currentLabor = Number(document.getElementById('currentLabor').value || 0);
@@ -376,11 +380,22 @@ document.getElementById('calcTracker').addEventListener('click',()=>{
  if(targetNeed<=0){ box.innerHTML = '<div class="result-box warn">目標の天守レベルを選んでください。</div>'; return; }
  const now = nowVal ? new Date(nowVal) : new Date();
 
- if(storageCap>0 && targetNeed > storageCap){
-  const gap = (targetNeed - storageCap).toFixed(2);
-  box.innerHTML = '<div class="result-box warn"><strong>徴発だけでは目標に届きません</strong><br/>'
-   +'目標（'+targetNeed+'万）が蔵の上限（'+storageCap+'万）を超えています。<br/>'
-   +'残り <strong>'+gap+'万</strong> は、評定報酬や任務報酬など「上限を超えて受け取れる」報酬で上乗せする必要があります。</div>';
+ // 評定報酬・任務報酬などは蔵の上限を超えて受け取れるため、目標からそのぶんを差し引いた
+ // 「蔵の中で貯める必要がある量」を実質の目標として扱う
+ const effectiveTarget = Math.max(0, targetNeed - rewardAmount);
+ const rewardNote = rewardAmount>0 ? '報酬'+rewardAmount+'万を含めて目標'+targetNeed+'万に到達するには、蔵内で'+effectiveTarget+'万まで貯める必要があります。' : '';
+
+ if(storageCap>0 && effectiveTarget > storageCap){
+  const gap = (effectiveTarget - storageCap).toFixed(2);
+  box.innerHTML = '<div class="result-box warn"><strong>徴発と報酬だけでは目標に届きません</strong><br/>'
+   +'蔵内で貯める必要がある量（'+effectiveTarget+'万）が蔵の上限（'+storageCap+'万）を超えています。'+(rewardNote?'<br/>'+rewardNote:'')+'<br/>'
+   +'残り <strong>'+gap+'万</strong> は、さらに評定報酬や任務報酬など「上限を超えて受け取れる」報酬を追加で受け取る必要があります。</div>';
+  return;
+ }
+
+ if(effectiveTarget<=0){
+  box.innerHTML = '<div class="result-box ok"><strong>今すぐ天守レベルを上げられます</strong><br/>'
+   +'報酬'+rewardAmount+'万だけで目標'+targetNeed+'万に到達しているため、徴発は不要です。</div>';
   return;
  }
 
@@ -390,13 +405,14 @@ document.getElementById('calcTracker').addEventListener('click',()=>{
 
  if(stonePerLevy<=0){
   let etaText;
-  if(currentStock >= targetNeed){ etaText = '今すぐ到達可能です。'; }
+  if(currentStock >= effectiveTarget){ etaText = '今すぐ到達可能です。'; }
   else if(hourlyRate<=0){ etaText = '毎時産出量を入力してください。'; }
   else{
-   const hours = (targetNeed-currentStock)/hourlyRate;
+   const hours = (effectiveTarget-currentStock)/hourlyRate;
    etaText = fmtDate(new Date(now.getTime()+hours*3600*1000))+'ごろ到達する見込みです。';
   }
   box.innerHTML = '<div class="result-box info"><strong>資源量の推移</strong>（'+laborNote+'）'
+   +(rewardNote?'<p style="margin:6px 0 0">'+rewardNote+'</p>':'')
    +'<p style="margin:10px 0 0">「徴発1回で得られる資源」を入力すると、徴発を使った場合の推移も表示されます。徴発なしの場合：'+etaText+'</p></div>';
   return;
  }
@@ -408,14 +424,14 @@ document.getElementById('calcTracker').addEventListener('click',()=>{
 
  let rows = '<tr class="now-row"><td>今すぐ（'+fmtDate(now)+'）</td><td>'+levies+'回</td><td>'+stock+'</td></tr>';
 
- let reachedAt = (stock >= targetNeed) ? now : null;
+ let reachedAt = (stock >= effectiveTarget) ? now : null;
  let elapsedHours = 0;
  let hoursToNextLevy = (LABOR_PER_LEVY - remainder) * 0.5; // 労力回復は30分で1
  const MAX_ROWS = 12;
 
  for(let i=0; i<MAX_ROWS && reachedAt===null; i++){
   if(hourlyRate>0){
-   const neededHours = (targetNeed - stock) / hourlyRate;
+   const neededHours = (effectiveTarget - stock) / hourlyRate;
    if(neededHours <= hoursToNextLevy){
     elapsedHours += neededHours;
     reachedAt = new Date(now.getTime() + elapsedHours*3600*1000);
@@ -427,20 +443,21 @@ document.getElementById('calcTracker').addEventListener('click',()=>{
   levies += 1;
   const eventTime = new Date(now.getTime() + elapsedHours*3600*1000);
   rows += '<tr><td>'+fmtDate(eventTime)+'</td><td>'+levies+'回</td><td>'+stock+'</td></tr>';
-  if(stock>=targetNeed){ reachedAt = eventTime; }
+  if(stock>=effectiveTarget){ reachedAt = eventTime; }
   hoursToNextLevy = 3; // 以降は労力6回復ごと＝3時間おきに徴発可能
  }
 
  let summary;
  if(reachedAt && reachedAt.getTime()===now.getTime()){
-  summary = '<strong>今すぐ</strong>目標資源量に到達できます。';
+  summary = '<strong>今すぐ</strong>天守レベルを上げられます。';
  }else if(reachedAt){
-  summary = '<strong>'+fmtDate(reachedAt)+'ごろ</strong>に目標資源量に到達する見込みです。';
+  summary = '<strong>'+fmtDate(reachedAt)+'ごろ、'+levies+'回の徴発</strong>で天守レベルを上げられる見込みです。';
  }else{
   summary = '表の範囲内では目標に到達しませんでした。毎時産出量や貯蓄量を見直してください。';
  }
 
  box.innerHTML = '<div class="result-box info"><strong>徴発と労力回復による資源量の推移</strong>（'+laborNote+'）'
+  +(rewardNote?'<p style="margin:6px 0 0">'+rewardNote+'</p>':'')
   +'<table class="summary-table"><tr><th>時刻</th><th>累計徴発回数</th><th>資源量（万）</th></tr>'+rows+'</table>'
   +'<p style="margin:10px 0 0">'+summary+'</p></div>';
 });
