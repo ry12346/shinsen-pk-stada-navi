@@ -459,17 +459,14 @@ document.getElementById('calcTracker').addEventListener('click',()=>{
 
  const timeText = !reachedAt ? '未到達'
   : (reachedAt.getTime()===now.getTime() ? '今すぐ' : fmtDate(reachedAt)+'ごろ');
- const waitNote = (reachedAt && reachedAt.getTime()!==now.getTime())
-  ? 'それまでは徴発と毎時の産出で資源が貯まるのを待つ必要があります。' : '';
+ const leviesText = levies+'回'+(cappedNote ? ' <span style="color:var(--warn);font-size:13px;font-weight:800">一部受け取り不可</span>' : '');
 
  box.innerHTML = '<div class="result-box '+(reachedAt?'ok':'warn')+'"><strong>資源量の推移</strong>'
   +(rewardNote?'<p style="margin:6px 0 0;font-size:12px;color:var(--muted)">'+rewardNote+'</p>':'')
-  +(cappedNote?'<p style="margin:6px 0 0;font-size:12px;color:var(--warn)">'+cappedNote+'</p>':'')
-  +'<div style="display:flex;gap:16px;flex-wrap:wrap;margin-top:12px">'
-  +'<div style="flex:1;min-width:130px"><div style="font-size:11px;color:var(--muted)">必要な徴発回数</div><div style="font-size:24px;font-weight:900">'+levies+'回</div></div>'
-  +'<div style="flex:1;min-width:130px"><div style="font-size:11px;color:var(--muted)">天守レベルを上げられる時刻</div><div style="font-size:20px;font-weight:900">'+timeText+'</div></div>'
+  +'<div style="margin-top:12px">'
+  +'<div style="margin-bottom:8px"><span style="font-size:11px;color:var(--muted)">必要な徴発回数　</span><span style="font-size:24px;font-weight:900">'+leviesText+'</span></div>'
+  +'<div><span style="font-size:11px;color:var(--muted)">天守レベルを上げられる時刻　</span><span style="font-size:20px;font-weight:900">'+timeText+'</span></div>'
   +'</div>'
-  +(waitNote?'<p style="margin:10px 0 0;font-size:12px;color:var(--muted)">'+waitNote+'</p>':'')
   +(reachedAt ? '' : '<p style="margin:10px 0 0">この見込みの範囲内では到達しませんでした。毎時産出量や貯蓄量を見直してください。</p>')
   +'</div>';
 });
