@@ -463,14 +463,25 @@ document.getElementById('calcTracker').addEventListener('click',()=>{
 
  const timeText = !reachedAt ? '未到達'
   : (reachedAt.getTime()===now.getTime() ? '今すぐ' : fmtDate(reachedAt)+'ごろ');
- const leviesText = levies+'回'+(!canLevy ? ' <span style="color:var(--warn);font-size:13px;font-weight:800">上限のため以降は徴発なし</span>' : '');
+ const capFlag = !canLevy ? '（<span style="color:var(--warn);font-weight:800">上限のため以降は徴発なし</span>）' : '';
+
+ let formulaHTML = '';
+ if(reachedAt){
+  const leviesGain = round2(levies*stonePerLevy);
+  const hoursShown = round2(elapsedHours);
+  const productionGain = round2(hourlyRate*elapsedHours);
+  const totalStock = round2(currentStock + leviesGain + productionGain);
+  formulaHTML = '<div style="margin-top:10px;font-size:12px;color:var(--muted);line-height:1.8">'
+   +'現在の貯蓄 '+currentStock+'万<br/>'
+   +'＋ 徴発 '+levies+'回 × '+stonePerLevy+'万 = '+leviesGain+'万<br/>'
+   +'＋ 毎時産出 '+hourlyRate+'万/時 × '+hoursShown+'時間 = '+productionGain+'万<br/>'
+   +'＝ 合計 '+totalStock+'万　（必要量 '+effectiveTarget+'万'+(rewardAmount>0?'、報酬'+rewardAmount+'万込みで目標'+targetNeed+'万':'')+'）'
+   +'</div>';
+ }
 
  box.innerHTML = '<div class="result-box '+(reachedAt?'ok':'warn')+'"><strong>資源量の推移</strong>'
-  +(rewardNote?'<p style="margin:6px 0 0;font-size:12px;color:var(--muted)">'+rewardNote+'</p>':'')
-  +'<div style="margin-top:12px">'
-  +'<div style="margin-bottom:8px"><span style="font-size:11px;color:var(--muted)">必要な徴発回数　</span><span style="font-size:24px;font-weight:900">'+leviesText+'</span></div>'
-  +'<div><span style="font-size:11px;color:var(--muted)">天守レベルを上げられる時刻　</span><span style="font-size:20px;font-weight:900">'+timeText+'</span></div>'
-  +'</div>'
+  +'<p style="margin:10px 0 0;font-size:15px;font-weight:800">'+levies+'回の徴発'+capFlag+'で、'+timeText+'に天守レベルを上げられます。</p>'
+  +formulaHTML
   +(reachedAt ? '' : '<p style="margin:10px 0 0">この見込みでは到達しません。蔵の上限を超えて受け取れる報酬を増やすか、毎時産出量を見直してください。</p>')
   +'</div>';
 });
