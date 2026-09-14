@@ -31,17 +31,9 @@ button,input,select{font:inherit}
 .field label{display:block;font-size:12px;color:var(--muted);margin-bottom:4px}
 .field input,.field select{width:100%;border:1px solid var(--line);border-radius:10px;padding:9px 10px;font-size:14px;background:#fff}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
 .btn{border:0;border-radius:10px;padding:10px 14px;font-weight:800;font-size:13px;cursor:pointer}
 .btn-primary{background:var(--navy);color:#fff}
 .btn-outline{background:#fff;border:1px solid var(--line);color:var(--ink)}
-.btn-danger-text{background:transparent;color:var(--warn);border:0;font-size:12px;padding:4px 6px;cursor:pointer}
-.list{display:grid;gap:6px;margin:10px 0}
-.list-row{display:flex;align-items:center;justify-content:space-between;gap:8px;background:#fafaf8;border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:12px}
-.list-row .meta{color:var(--muted)}
-.tag{display:inline-block;font-size:10px;padding:1px 6px;border-radius:999px;margin-left:4px}
-.tag-shared{background:var(--gold-soft);color:#7e6234}
-.tag-mine{background:var(--ok-bg);color:var(--ok)}
 .slot{border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:10px;background:#fbfbf9}
 .slot h4{margin:0 0 8px;font-size:13px;color:var(--navy2)}
 .slot-result{margin-top:8px;font-size:13px;font-weight:800;padding:8px 10px;border-radius:10px}
@@ -57,7 +49,6 @@ button,input,select{font:inherit}
 .summary-table th,.summary-table td{border:1px solid var(--line);padding:6px 8px;text-align:left}
 .summary-table th{background:#eef1ef}
 .summary-table tr.now-row td{background:var(--ok-bg);font-weight:800}
-@media(max-width:480px){.row3{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -78,33 +69,9 @@ button,input,select{font:inherit}
 <div class="tool-panel active" id="panel-speed">
 
 <div class="card">
-<h2>武将データベース</h2>
-<p class="note">「共通データ」はサイトに保存され、誰が見ても同じものが使えます（更新には作者への連絡、またはGitHub上でのdata/generals.csv編集が必要です）。「自分で追加」はこのブラウザだけに保存されます。凸は速度比較の際に「1凸=速度+10」として自動計算するため、ここでは登録不要です。</p>
-<div class="row3">
-<div class="field"><label>武将名</label><input id="genName" placeholder="例: 荒木村重" type="text"/></div>
-<div class="field"><label>Lv1での速度</label><input id="genSpeed" placeholder="例: 32" type="number"/></div>
-<div class="field"><label>レベルアップごとの増加値</label><input id="genIncrement" placeholder="例: 1" type="number"/></div>
-</div>
-<button class="btn btn-primary" id="addGeneral" type="button">自分の武将として登録</button>
-<div class="list" id="generalList"></div>
-</div>
-
-<div class="card">
-<h2>戦法・装備の速度ボーナス</h2>
-<p class="note">ガイド内で確認済みの数値を共通データとして登録しています。必要に応じて自分用に追加できます。</p>
-<div class="row2">
-<div class="field"><label>名称</label><input id="tacName" placeholder="例: 百戦錬磨" type="text"/></div>
-<div class="field"><label>速度ボーナス</label><input id="tacBonus" placeholder="例: 42" type="number"/></div>
-</div>
-<button class="btn btn-primary" id="addTactic" type="button">自分用に登録</button>
-<div class="list" id="tacticList"></div>
-</div>
-
-<div class="card">
-<h2>速度比較</h2>
-<div class="field"><label>相手守備軍の最大速度</label><input id="enemySpeed" placeholder="例: 92" type="number"/></div>
+<h2>速度比較（自動計算）</h2>
+<p class="note">武将・レベル・凸・戦法を選ぶと、登録済みの守備軍大将（Lv4/Lv5土地攻略）と自動で比較します。武将・戦法・敵大将のデータはdata/generals.csv・data/tactics.csv・data/enemy_generals.csvで管理しています（追加・変更は作者へ連絡、またはGitHub上で編集）。</p>
 <div id="slots"></div>
-<button class="btn btn-outline" id="calcSpeed" type="button">速度を計算・比較する</button>
 <div id="speedResult"></div>
 </div>
 
@@ -161,14 +128,6 @@ button,input,select{font:inherit}
 </div>
 
 <script>
-// ---------- storage helpers ----------
-function loadJSON(key, fallback){
- try{ const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; }catch(e){ return fallback; }
-}
-function saveJSON(key, val){
- try{ localStorage.setItem(key, JSON.stringify(val)); }catch(e){}
-}
-
 // ---------- tool tab switching ----------
 document.querySelectorAll('.tool-tab').forEach(btn=>btn.addEventListener('click',()=>{
  document.querySelectorAll('.tool-tab').forEach(b=>{b.classList.remove('active');b.setAttribute('aria-selected','false')});
@@ -185,9 +144,10 @@ document.querySelectorAll('.tool-tab').forEach(btn=>btn.addEventListener('click'
 })();
 
 // ================= 速度計算機 =================
-// 共通データ（サイトに保存・全員が使える）。data/generals.csv, data/tactics.csv を編集すると更新されます。
+// 共通データ。data/generals.csv, data/tactics.csv, data/enemy_generals.csv を編集すると更新されます。
 let BUILTIN_GENERALS = [];
 let BUILTIN_TACTICS = [];
+let BUILTIN_ENEMIES = [];
 
 function parseCSV(text){
  const lines = text.replace(/^﻿/,'').trim().split(/\r?\n/).filter(l=>l.trim()!=='');
@@ -213,82 +173,23 @@ async function loadBuiltinData(){
   const rows = parseCSV(await res.text());
   BUILTIN_TACTICS = rows.filter(r=>r.name).map(r=>({ name:r.name, bonus:Number(r.bonus||0) }));
  }catch(e){ BUILTIN_TACTICS = []; }
- renderGeneralList(); renderTacticList(); renderSlots();
+ try{
+  const res = await fetch('data/enemy_generals.csv');
+  const rows = parseCSV(await res.text());
+  BUILTIN_ENEMIES = rows.filter(r=>r.name).map(r=>({ name:r.name, maxSpeed:Number(r.maxSpeed||0), landLevel:r.landLevel||'' }));
+ }catch(e){ BUILTIN_ENEMIES = []; }
+ renderSlots();
 }
-
-const GEN_KEY='stada-tools-generals-v3', TAC_KEY='stada-tools-tactics-v2';
-let myGenerals = loadJSON(GEN_KEY, []);
-let myTactics = loadJSON(TAC_KEY, []);
-function uid(){ return 'id'+Date.now()+Math.floor(Math.random()*1000); }
 
 const DUPE_SPEED_BONUS = 10; // 凸1につき速度+10（全ポイントを速度に振った想定）
 
-function allGenerals(){
- const builtin = BUILTIN_GENERALS.map((g,i)=>({id:'builtin-'+i, name:g.name, lv1Speed:g.lv1Speed, increment:g.increment||0, shared:true}));
- return builtin.concat(myGenerals.map(g=>Object.assign({shared:false}, g)));
-}
-function allTactics(){
- const builtin = BUILTIN_TACTICS.map((t,i)=>({id:'builtin-'+i, name:t.name, bonus:t.bonus, shared:true}));
- return builtin.concat(myTactics.map(t=>Object.assign({shared:false}, t)));
-}
 function computeSpeed(gen, targetLevel, dupe){
  return gen.lv1Speed + (targetLevel - 1) * (gen.increment || 0) + (dupe||0) * DUPE_SPEED_BONUS;
 }
 
-function renderGeneralList(){
- const el = document.getElementById('generalList');
- el.innerHTML = '';
- allGenerals().forEach(g=>{
-  const row = document.createElement('div'); row.className='list-row';
-  const tag = g.shared ? '<span class="tag tag-shared">共通</span>' : '<span class="tag tag-mine">自分</span>';
-  row.innerHTML = '<span>'+g.name+tag+' <span class="meta">(Lv1速度'+g.lv1Speed+' / 上昇値+'+(g.increment||0)+'per Lv)</span></span>';
-  if(!g.shared){
-   const del = document.createElement('button'); del.className='btn-danger-text'; del.textContent='削除';
-   del.addEventListener('click',()=>{ myGenerals = myGenerals.filter(x=>x.id!==g.id); saveJSON(GEN_KEY, myGenerals); renderGeneralList(); renderSlots(); });
-   row.appendChild(del);
-  }
-  el.appendChild(row);
- });
-}
-function renderTacticList(){
- const el = document.getElementById('tacticList');
- el.innerHTML = '';
- allTactics().forEach(t=>{
-  const row = document.createElement('div'); row.className='list-row';
-  const tag = t.shared ? '<span class="tag tag-shared">共通</span>' : '<span class="tag tag-mine">自分</span>';
-  row.innerHTML = '<span>'+t.name+tag+' <span class="meta">(+'+t.bonus+')</span></span>';
-  if(!t.shared){
-   const del = document.createElement('button'); del.className='btn-danger-text'; del.textContent='削除';
-   del.addEventListener('click',()=>{ myTactics = myTactics.filter(x=>x.id!==t.id); saveJSON(TAC_KEY, myTactics); renderTacticList(); renderSlots(); });
-   row.appendChild(del);
-  }
-  el.appendChild(row);
- });
-}
-
-document.getElementById('addGeneral').addEventListener('click',()=>{
- const name = document.getElementById('genName').value.trim();
- const speed = document.getElementById('genSpeed').value;
- const increment = Number(document.getElementById('genIncrement').value || 0);
- if(!name || speed===''){ alert('武将名とLv1での速度は必須です'); return; }
- myGenerals.push({id:uid(), name, lv1Speed:Number(speed), increment});
- saveJSON(GEN_KEY, myGenerals);
- document.getElementById('genName').value='';document.getElementById('genSpeed').value='';document.getElementById('genIncrement').value='';
- renderGeneralList(); renderSlots();
-});
-document.getElementById('addTactic').addEventListener('click',()=>{
- const name = document.getElementById('tacName').value.trim();
- const bonus = document.getElementById('tacBonus').value;
- if(!name || bonus===''){ alert('名称とボーナス値は必須です'); return; }
- myTactics.push({id:uid(), name, bonus:Number(bonus)});
- saveJSON(TAC_KEY, myTactics);
- document.getElementById('tacName').value='';document.getElementById('tacBonus').value='';
- renderTacticList(); renderSlots();
-});
-
 function bonusSelectHTML(prefix){
- let opts = '<option value="">なし</option>';
- allTactics().forEach(t=>{ opts += '<option value="'+t.id+'">'+t.name+' (+'+t.bonus+')</option>'; });
+ let opts = '<option value="">戦法なし</option>';
+ BUILTIN_TACTICS.forEach((t,ti)=>{ opts += '<option value="'+ti+'">'+t.name+' (+'+t.bonus+')</option>'; });
  opts += '<option value="custom">カスタム入力…</option>';
  return '<select class="bonusSelect" data-slotprefix="'+prefix+'">'+opts+'</select><input class="custom-bonus" data-slotprefix="'+prefix+'" placeholder="速度ボーナス" style="display:none" type="number"/>';
 }
@@ -310,52 +211,50 @@ function renderSlots(){
  const wrap = document.getElementById('slots');
  wrap.innerHTML = '';
  const labels = ['大将','副将1','副将2'];
- const gens = allGenerals();
  labels.forEach((label,i)=>{
   const slot = document.createElement('div'); slot.className='slot'; slot.dataset.slot=i;
   let genOpts = '<option value="">武将を選択</option>';
-  gens.forEach(g=>{ genOpts += '<option value="'+g.id+'">'+g.name+'（Lv1速度'+g.lv1Speed+(g.increment?' / +'+g.increment+'per Lv':'')+'）'+(g.shared?'':' [自分]')+'</option>'; });
+  BUILTIN_GENERALS.forEach((g,gi)=>{ genOpts += '<option value="'+gi+'">'+g.name+'（Lv1速度'+g.lv1Speed+(g.increment?' / +'+g.increment+'per Lv':'')+'）</option>'; });
   slot.innerHTML =
    '<h4>'+label+'</h4>'+
    '<div class="field"><select class="genSelect">'+genOpts+'</select></div>'+
    '<div class="row2"><div class="field"><label style="margin:0 0 4px">計算するレベル</label>'+levelSelectHTML(i+'-lv', 7)+'</div>'+
    '<div class="field"><label style="margin:0 0 4px">凸</label>'+dupeSelectHTML(i+'-dupe')+'</div></div>'+
-   '<div class="field">'+bonusSelectHTML(i+'-1')+'</div>'+
-   '<div class="field">'+bonusSelectHTML(i+'-2')+'</div>'+
-   '<div class="field">'+bonusSelectHTML(i+'-3')+'</div>'+
-   '<div class="slot-result" style="display:none"></div>';
+   '<div class="field"><label style="margin:0 0 4px">戦法</label>'+bonusSelectHTML(i+'-tac')+'</div>';
   wrap.appendChild(slot);
  });
  wrap.querySelectorAll('.bonusSelect').forEach(sel=>{
   sel.addEventListener('change',()=>{
    const input = wrap.querySelector('.custom-bonus[data-slotprefix="'+sel.dataset.slotprefix+'"]');
    input.style.display = sel.value==='custom' ? 'block' : 'none';
+   recalcAll();
   });
  });
  wrap.querySelectorAll('.levelSelect').forEach(sel=>{
   sel.addEventListener('change',()=>{
    const input = wrap.querySelector('.levelCustom[data-slotprefix="'+sel.dataset.slotprefix+'"]');
    input.style.display = sel.value==='custom' ? 'block' : 'none';
-  });
-  sel.addEventListener('change',()=>{
-   const genSel = sel.closest('.slot').querySelector('.genSelect');
-   const gen = gens.find(g=>g.id===genSel.value);
-   if(gen && sel.value!=='custom'){
-    // default the custom box to a sensible starting value if switched later
-   }
+   recalcAll();
   });
  });
+ wrap.querySelectorAll('.genSelect,.dupeSelect').forEach(el=>{
+  el.addEventListener('change', recalcAll);
+ });
+ wrap.querySelectorAll('.levelCustom,.custom-bonus').forEach(el=>{
+  el.addEventListener('input', recalcAll);
+ });
+ recalcAll();
 }
-document.getElementById('calcSpeed').addEventListener('click',()=>{
- const enemy = Number(document.getElementById('enemySpeed').value || 0);
- const gens = allGenerals();
- const tactics = allTactics();
- const results = [];
- document.querySelectorAll('#slots .slot').forEach(slot=>{
-  const genId = slot.querySelector('.genSelect').value;
-  const gen = gens.find(g=>g.id===genId);
-  const resultEl = slot.querySelector('.slot-result');
-  if(!gen){ resultEl.style.display='none'; return; }
+
+function recalcAll(){
+ const box = document.getElementById('speedResult');
+ const labels = ['大将','副将1','副将2'];
+ const slotData = [];
+ document.querySelectorAll('#slots .slot').forEach((slot,i)=>{
+  const genIdx = slot.querySelector('.genSelect').value;
+  if(genIdx===''){ return; }
+  const gen = BUILTIN_GENERALS[Number(genIdx)];
+  if(!gen) return;
   const levelSel = slot.querySelector('.levelSelect');
   let targetLevel = 7;
   if(levelSel.value==='custom'){
@@ -366,32 +265,60 @@ document.getElementById('calcSpeed').addEventListener('click',()=>{
   }
   const dupe = Number(slot.querySelector('.dupeSelect').value || 0);
   let total = computeSpeed(gen, targetLevel, dupe);
-  slot.querySelectorAll('.bonusSelect').forEach(sel=>{
-   if(sel.value==='custom'){
-    const input = slot.querySelector('.custom-bonus[data-slotprefix="'+sel.dataset.slotprefix+'"]');
-    total += Number(input.value || 0);
-   }else if(sel.value){
-    const t = tactics.find(x=>x.id===sel.value);
-    if(t) total += t.bonus;
-   }
-  });
-  const hit = total > enemy;
-  resultEl.style.display='block';
-  resultEl.className = 'slot-result ' + (hit ? 'hit' : 'miss');
-  resultEl.textContent = gen.name+'（Lv'+targetLevel+' / '+dupe+'凸）：合計速度 '+total+'　'+(hit ? '✓ 先手を取れます' : '✗ 先手を取れません')+'（差: '+(total-enemy)+'）';
-  results.push({name:gen.name+'（Lv'+targetLevel+' / '+dupe+'凸）', total, hit});
+  const bonusSel = slot.querySelector('.bonusSelect');
+  if(bonusSel.value==='custom'){
+   total += Number(slot.querySelector('.custom-bonus').value || 0);
+  }else if(bonusSel.value!==''){
+   const t = BUILTIN_TACTICS[Number(bonusSel.value)];
+   if(t) total += t.bonus;
+  }
+  slotData.push({label:labels[i], name:gen.name, level:targetLevel, dupe, total});
  });
- const box = document.getElementById('speedResult');
- if(results.length===0){ box.innerHTML = '<div class="result-box warn">武将を1体以上選んでください。</div>'; return; }
- results.sort((a,b)=>b.total-a.total);
- let html = '<div class="result-box '+(results.some(r=>r.hit)?'ok':'warn')+'"><strong>比較結果（速度が速い順）</strong><table class="summary-table"><tr><th>武将</th><th>合計速度</th><th>先手</th></tr>';
- results.forEach(r=>{ html += '<tr><td>'+r.name+'</td><td>'+r.total+'</td><td>'+(r.hit?'○':'×')+'</td></tr>'; });
- html += '</table></div>';
- box.innerHTML = html;
-});
 
-renderGeneralList();
-renderTacticList();
+ if(slotData.length===0){
+  box.innerHTML = '<div class="result-box warn">武将を1体以上選んでください。</div>';
+  return;
+ }
+
+ let html = '<div class="result-box ok"><strong>あなたの武将の速度</strong><table class="summary-table"><tr><th>枠</th><th>武将</th><th>Lv/凸</th><th>合計速度</th></tr>';
+ slotData.forEach(s=>{ html += '<tr><td>'+s.label+'</td><td>'+s.name+'</td><td>Lv'+s.level+' / '+s.dupe+'凸</td><td>'+s.total+'</td></tr>'; });
+ html += '</table></div>';
+
+ if(BUILTIN_ENEMIES.length===0){
+  html += '<div class="result-box warn">敵大将データが未登録です。data/enemy_generals.csvに追加してください。</div>';
+ }else{
+  const groups = {};
+  BUILTIN_ENEMIES.forEach(e=>{
+   const key = e.landLevel || 'その他';
+   if(!groups[key]) groups[key]=[];
+   groups[key].push(e);
+  });
+  const groupKeys = Object.keys(groups).sort((a,b)=>{
+   const na=Number(a), nb=Number(b);
+   if(!isNaN(na) && !isNaN(nb)) return na-nb;
+   return String(a).localeCompare(String(b));
+  });
+  groupKeys.forEach(key=>{
+   const list = groups[key].slice().sort((a,b)=>a.maxSpeed-b.maxSpeed);
+   const title = (key==='その他') ? '敵大将との比較' : 'Lv'+key+'土地攻略との比較';
+   html += '<div class="result-box info"><strong>'+title+'</strong><table class="summary-table"><tr><th>守備軍大将</th><th>最大速度</th>';
+   slotData.forEach(s=>{ html += '<th>'+s.label+'</th>'; });
+   html += '</tr>';
+   list.forEach(e=>{
+    html += '<tr><td>'+e.name+'</td><td>'+e.maxSpeed+'</td>';
+    slotData.forEach(s=>{
+     const win = s.total > e.maxSpeed;
+     html += '<td style="color:'+(win?'var(--ok)':'var(--warn)')+';font-weight:800">'+(win?'○ 勝ち':'× 負け')+'</td>';
+    });
+    html += '</tr>';
+   });
+   html += '</table></div>';
+  });
+ }
+
+ box.innerHTML = html;
+}
+
 renderSlots();
 loadBuiltinData();
 
