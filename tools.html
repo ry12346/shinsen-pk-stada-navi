@@ -75,10 +75,10 @@ button,input,select{font:inherit}
 
 <div class="card">
 <h2>武将データベース</h2>
-<p class="note">武将名・凸数・レベル・そのときの速度をゲーム内で確認して登録してください。数値は正確な参考データを持っていないため、すべて手動登録です。</p>
+<p class="note">武将名・凸数・レベル・そのときの速度をゲーム内で確認して登録してください。凸は0〜5で、1凸ごとにステータス10ポイントを割り振れます（速度に振るかは任意）。目安として、Lv4土地挑戦開始時はレベル7、Lv5土地挑戦の頃はレベル9あたりの速度を確認しておくと使いやすいです。数値は正確な参考データを持っていないため、すべて手動登録です。</p>
 <div class="row3">
 <div class="field"><label>武将名</label><input id="genName" placeholder="例: 荒木村重" type="text"/></div>
-<div class="field"><label>凸数</label><input id="genDupe" min="0" placeholder="0" type="number"/></div>
+<div class="field"><label>凸数（0〜5）</label><input id="genDupe" max="5" min="0" placeholder="0" type="number"/></div>
 <div class="field"><label>レベル</label><input id="genLevel" placeholder="例: 7" type="number"/></div>
 </div>
 <div class="field"><label>速度</label><input id="genSpeed" placeholder="例: 38" type="number"/></div>
@@ -126,13 +126,14 @@ button,input,select{font:inherit}
 <div class="field"><label>毎時の産出量（万/時）</label><input id="hourlyRate" placeholder="例: 1.2" step="0.01" type="number"/></div>
 </div>
 
-<h3>労力での即時徴発（任意）</h3>
-<p class="note">現在の労力をすべて使って今すぐ徴発した分を、一回だけ上乗せして計算します。使わない場合は0のままでOKです。</p>
-<div class="row3">
-<div class="field"><label>現在の労力</label><input id="currentLabor" placeholder="0" type="number"/></div>
-<div class="field"><label>徴発1回の労力コスト</label><input id="laborPerLevy" placeholder="例: 30" type="number"/></div>
-<div class="field"><label>徴発1回で得られる資源（万）</label><input id="stonePerLevy" placeholder="例: 2.4" step="0.1" type="number"/></div>
+<h3>労力について（任意）</h3>
+<p class="note">労力は30分で1回復（上限50）。現在持っている労力はまず一度だけ徴発に使い、その後は回復し続ける労力を毎時の産出量に自動で組み込んで計算します。使わない場合は0のままでOKです。</p>
+<div class="row2">
+<div class="field"><label>現在の労力（上限50）</label><input id="currentLabor" max="50" min="0" placeholder="0" type="number"/></div>
+<div class="field"><label>徴発1回の労力コスト</label><input id="laborPerLevy" placeholder="6" value="6" type="number"/></div>
 </div>
+<div class="field"><label>徴発1回で得られる資源（万）</label><input id="stonePerLevy" placeholder="例: 2.4" step="0.1" type="number"/></div>
+<div class="field"><label><input id="dailyLaborBuy" type="checkbox"/> 毎日1回、200小判で労力+20を購入する（24時更新）</label></div>
 
 <h3>現在時刻</h3>
 <div class="field"><label>基準時刻（自動取得・編集可）</label><input id="nowTime" type="datetime-local"/></div>
@@ -304,26 +305,37 @@ renderSlots();
  document.getElementById('nowTime').value = now.toISOString().slice(0,16);
 })();
 
+const LABOR_REGEN_PER_HOUR = 2; // 30分で1回復 = 1時間で2回復
+const DAILY_LABOR_BUY_AMOUNT = 20; // 200小判で1日1回、+20
+
 document.getElementById('calcTracker').addEventListener('click',()=>{
  const targetNeed = Number(document.getElementById('targetNeed').value || 0);
  const storageCap = Number(document.getElementById('storageCap').value || 0);
  const currentStock = Number(document.getElementById('currentStock').value || 0);
- const hourlyRate = Number(document.getElementById('hourlyRate').value || 0);
+ const baseHourlyRate = Number(document.getElementById('hourlyRate').value || 0);
  const currentLabor = Number(document.getElementById('currentLabor').value || 0);
  const laborPerLevy = Number(document.getElementById('laborPerLevy').value || 0);
  const stonePerLevy = Number(document.getElementById('stonePerLevy').value || 0);
+ const dailyLaborBuy = document.getElementById('dailyLaborBuy').checked;
  const nowVal = document.getElementById('nowTime').value;
  const box = document.getElementById('trackerResult');
 
  if(targetNeed<=0){ box.innerHTML = '<div class="result-box warn">目標達成に必要な資源量を入力してください。</div>'; return; }
  const now = nowVal ? new Date(nowVal) : new Date();
 
+ // 現在持っている労力は一度だけ即時徴発に使う
  const possibleLevies = laborPerLevy>0 ? Math.floor(currentLabor/laborPerLevy) : 0;
  const immediateBoost = possibleLevies * stonePerLevy;
  let stockAfterBoost = currentStock + immediateBoost;
  if(storageCap>0) stockAfterBoost = Math.min(stockAfterBoost, storageCap);
+ const boostNote = immediateBoost>0 ? '（現在の労力'+currentLabor+'で徴発'+possibleLevies+'回・+'+immediateBoost.toFixed(2)+'万を先に上乗せ）' : '';
 
- const boostNote = immediateBoost>0 ? '（労力'+currentLabor+'で徴発'+possibleLevies+'回・+'+immediateBoost.toFixed(2)+'万を上乗せ）' : '';
+ // それ以降は、回復し続ける労力を毎時の産出量に自動で組み込む
+ let laborRegenPerHour = LABOR_REGEN_PER_HOUR;
+ if(dailyLaborBuy) laborRegenPerHour += DAILY_LABOR_BUY_AMOUNT/24;
+ const stoneFromLaborPerHour = (laborPerLevy>0 && stonePerLevy>0) ? (laborRegenPerHour/laborPerLevy)*stonePerLevy : 0;
+ const hourlyRate = baseHourlyRate + stoneFromLaborPerHour;
+ const laborNote = stoneFromLaborPerHour>0 ? '（うち労力回復分：毎時+'+stoneFromLaborPerHour.toFixed(3)+'万'+(dailyLaborBuy?'／1日1回の労力購入込み':'')+'）' : '';
 
  function fmtDate(d){
   return (d.getMonth()+1)+'月'+d.getDate()+'日 '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
@@ -350,14 +362,14 @@ document.getElementById('calcTracker').addEventListener('click',()=>{
   return;
  }
  if(hourlyRate<=0){
-  box.innerHTML = '<div class="result-box warn">毎時の産出量を入力してください。</div>';
+  box.innerHTML = '<div class="result-box warn">毎時の産出量（または労力の情報）を入力してください。</div>';
   return;
  }
  const remaining = targetNeed - stockAfterBoost;
  const hoursNeeded = remaining / hourlyRate;
  const eta = new Date(now.getTime() + hoursNeeded*3600*1000);
  box.innerHTML = '<div class="result-box info"><strong>'+fmtDate(eta)+'ごろ</strong> に到達可能です。<br/>'
-  +'（現在'+currentStock+'万'+boostNote+' → 残り'+remaining.toFixed(2)+'万を毎時'+hourlyRate+'万で回収、約'+hoursNeeded.toFixed(1)+'時間）</div>';
+  +'（現在'+currentStock+'万'+boostNote+' → 残り'+remaining.toFixed(2)+'万を毎時'+hourlyRate.toFixed(3)+'万で回収'+laborNote+'、約'+hoursNeeded.toFixed(1)+'時間）</div>';
 });
 </script>
 </body>
