@@ -70,7 +70,7 @@ button,input,select{font:inherit}
 
 <div class="card">
 <h2>速度比較（自動計算）</h2>
-<p class="note">武将・レベル・凸・戦法を選ぶと、登録済みの守備軍大将（Lv4/Lv5土地攻略）と自動で比較します。戦法は自軍全体の速度を上げるため、誰に付けても大将・副将全員の速度に加算されます。武将・戦法・敵大将のデータはdata/generals.csv・data/tactics.csv・data/enemy_generals.csvで管理しています（追加・変更は作者へ連絡、またはGitHub上で編集）。</p>
+<p class="note">武将・レベル・凸・戦法を選ぶと、登録済みの守備軍大将（Lv4/Lv5土地攻略）と自動で比較します。<br/>武将・戦法・敵大将のデータの追加・変更は作者へ連絡してください。</p>
 <div id="slots"></div>
 <div id="speedResult"></div>
 </div>
@@ -207,42 +207,47 @@ function dupeSelectHTML(prefix){
  html += '</select>';
  return html;
 }
+function buildSlot(label, i){
+ const slot = document.createElement('div'); slot.className='slot'; slot.dataset.slot=i;
+ let genOpts = '<option value="">武将を選択</option>';
+ BUILTIN_GENERALS.forEach((g,gi)=>{ genOpts += '<option value="'+gi+'">'+g.name+'（Lv1速度'+g.lv1Speed+(g.increment?' / +'+g.increment+'per Lv':'')+'）</option>'; });
+ slot.innerHTML =
+  '<h4>'+label+'</h4>'+
+  '<div class="field"><select class="genSelect">'+genOpts+'</select></div>'+
+  '<div class="row2"><div class="field"><label style="margin:0 0 4px">計算するレベル</label>'+levelSelectHTML(i+'-lv', 7)+'</div>'+
+  '<div class="field"><label style="margin:0 0 4px">凸</label>'+dupeSelectHTML(i+'-dupe')+'</div></div>'+
+  '<div class="field"><label style="margin:0 0 4px">戦法</label>'+bonusSelectHTML(i+'-tac')+'</div>';
+ slot.querySelector('.bonusSelect').addEventListener('change',(e)=>{
+  slot.querySelector('.custom-bonus').style.display = e.target.value==='custom' ? 'block' : 'none';
+  recalcAll();
+ });
+ slot.querySelector('.levelSelect').addEventListener('change',(e)=>{
+  slot.querySelector('.levelCustom').style.display = e.target.value==='custom' ? 'block' : 'none';
+  recalcAll();
+ });
+ slot.querySelector('.genSelect').addEventListener('change', recalcAll);
+ slot.querySelector('.dupeSelect').addEventListener('change', recalcAll);
+ slot.querySelector('.levelCustom').addEventListener('input', recalcAll);
+ slot.querySelector('.custom-bonus').addEventListener('input', recalcAll);
+ return slot;
+}
 function renderSlots(){
  const wrap = document.getElementById('slots');
  wrap.innerHTML = '';
- const labels = ['大将','副将1','副将2'];
- labels.forEach((label,i)=>{
-  const slot = document.createElement('div'); slot.className='slot'; slot.dataset.slot=i;
-  let genOpts = '<option value="">武将を選択</option>';
-  BUILTIN_GENERALS.forEach((g,gi)=>{ genOpts += '<option value="'+gi+'">'+g.name+'（Lv1速度'+g.lv1Speed+(g.increment?' / +'+g.increment+'per Lv':'')+'）</option>'; });
-  slot.innerHTML =
-   '<h4>'+label+'</h4>'+
-   '<div class="field"><select class="genSelect">'+genOpts+'</select></div>'+
-   '<div class="row2"><div class="field"><label style="margin:0 0 4px">計算するレベル</label>'+levelSelectHTML(i+'-lv', 7)+'</div>'+
-   '<div class="field"><label style="margin:0 0 4px">凸</label>'+dupeSelectHTML(i+'-dupe')+'</div></div>'+
-   '<div class="field"><label style="margin:0 0 4px">戦法</label>'+bonusSelectHTML(i+'-tac')+'</div>';
-  wrap.appendChild(slot);
+ wrap.appendChild(buildSlot('大将', 0));
+ wrap.appendChild(buildSlot('副将1', 1));
+ const addBtn = document.createElement('button');
+ addBtn.type = 'button';
+ addBtn.className = 'btn btn-outline';
+ addBtn.style.width = '100%';
+ addBtn.style.marginBottom = '10px';
+ addBtn.textContent = '+ 副将2を使う';
+ addBtn.addEventListener('click',()=>{
+  wrap.insertBefore(buildSlot('副将2', 2), addBtn);
+  addBtn.remove();
+  recalcAll();
  });
- wrap.querySelectorAll('.bonusSelect').forEach(sel=>{
-  sel.addEventListener('change',()=>{
-   const input = wrap.querySelector('.custom-bonus[data-slotprefix="'+sel.dataset.slotprefix+'"]');
-   input.style.display = sel.value==='custom' ? 'block' : 'none';
-   recalcAll();
-  });
- });
- wrap.querySelectorAll('.levelSelect').forEach(sel=>{
-  sel.addEventListener('change',()=>{
-   const input = wrap.querySelector('.levelCustom[data-slotprefix="'+sel.dataset.slotprefix+'"]');
-   input.style.display = sel.value==='custom' ? 'block' : 'none';
-   recalcAll();
-  });
- });
- wrap.querySelectorAll('.genSelect,.dupeSelect').forEach(el=>{
-  el.addEventListener('change', recalcAll);
- });
- wrap.querySelectorAll('.levelCustom,.custom-bonus').forEach(el=>{
-  el.addEventListener('input', recalcAll);
- });
+ wrap.appendChild(addBtn);
  recalcAll();
 }
 
