@@ -5,7 +5,7 @@
 <meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
 <meta content="#1f3443" name="theme-color"/>
 <title>スタダ ツール集</title>
-<meta content="自爆部隊速度計算機・資源必要量トラッカー・自爆部隊戦法演習。PKシーズン スタダナビゲーションの補助ツールです。" name="description"/>
+<meta content="自爆部隊速度計算機・資源必要量トラッカー・自爆部隊練習ミニゲーム。PKシーズン スタダナビゲーションの補助ツールです。" name="description"/>
 <style>
 :root{--paper:#f6f3ed;--surface:#fff;--ink:#202a30;--muted:#68747b;--navy:#1f3443;--navy2:#29495d;--gold:#b38a45;--gold-soft:#f1e8d7;--line:#dde2df;--warn:#9c443b;--warn-bg:#fff4f1;--ok:#3c6a56;--ok-bg:#eff7f3;--shadow:0 12px 30px rgba(24,39,48,.08)}
 *{box-sizing:border-box;min-width:0}
@@ -52,7 +52,7 @@ button,a,.tool-tab,.jb-row{touch-action:manipulation}
 .summary-table th,.summary-table td{border:1px solid var(--line);padding:6px 8px;text-align:left}
 .summary-table th{background:#eef1ef}
 
-/* ---- 自爆部隊 戦法演習 ---- */
+/* ---- 自爆部隊 練習ミニゲーム ---- */
 .jb-step-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0 16px}
 @media (max-width:520px){.jb-step-grid{grid-template-columns:1fr}}
 .jb-step-panel{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
@@ -126,7 +126,7 @@ button,a,.tool-tab,.jb-row{touch-action:manipulation}
 <div class="tool-picker" role="tablist">
 <button aria-selected="true" class="tool-tab active" data-tool="speed" role="tab">自爆部隊速度計算機</button>
 <button aria-selected="false" class="tool-tab" data-tool="tracker" role="tab">資源必要量トラッカー</button>
-<button aria-selected="false" class="tool-tab" data-tool="jibaku" role="tab">自爆部隊 戦法演習</button>
+<button aria-selected="false" class="tool-tab" data-tool="jibaku" role="tab">自爆部隊 練習ミニゲーム</button>
 </div>
 
 <!-- ===== 速度計算機 ===== -->
@@ -204,7 +204,7 @@ button,a,.tool-tab,.jb-row{touch-action:manipulation}
 
 </div>
 
-<!-- ===== 自爆部隊 戦法演習 ===== -->
+<!-- ===== 自爆部隊 練習ミニゲーム ===== -->
 <div class="tool-panel" id="panel-jibaku">
 
 <div class="card">
@@ -640,7 +640,7 @@ document.getElementById('calcTracker').addEventListener('click',()=>{
 </script>
 
 <script>
-// ================= 自爆部隊 戦法演習 =================
+// ================= 自爆部隊 練習ミニゲーム =================
 (function(){
 "use strict";
 
