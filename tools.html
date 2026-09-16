@@ -849,7 +849,7 @@ function render(){
  el.jbDispatch.textContent = state.jibakuSorties > 0 ? "出撃済み（重傷で動けない）" : "出撃させる";
  el.jbEquip.disabled = state.skill.equippedOn !== null;
  el.jbLevelup.disabled = state.skill.equippedOn !== "jibaku" || atMax;
- el.jbLevelup.textContent = (state.skill.equippedOn === "jibaku" && atMax) ? "戦法Lv 最大（Lv.10）" : "戦法Lvを上げる（" + lvText + "）";
+ el.jbLevelup.textContent = state.skill.equippedOn !== "jibaku" ? "戦法Lvを上げる" : (atMax ? "戦法Lv 最大（Lv.10）" : "戦法Lvを上げる（" + lvText + "）");
  el.jbUnequip.disabled = state.skill.equippedOn !== "jibaku";
  if (state.jibakuSorties === 0) {
   el.jbHint.textContent = state.jibakuTroops !== 1 ? "先に兵力を1に設定してください。" : "";
@@ -867,7 +867,7 @@ function render(){
  el.jbIchigunHint.textContent = (state.skill.equippedOn === null)
   ? "自爆部隊から戦法を外すと、ここに付け替えられます。" : "";
  el.jbIchigunLevelup.disabled = state.skill.equippedOn !== "ichigun" || atMax;
- el.jbIchigunLevelup.textContent = (state.skill.equippedOn === "ichigun" && atMax) ? "戦法Lv 最大（Lv.10）" : "戦法Lvを上げる（" + lvText + "）";
+ el.jbIchigunLevelup.textContent = state.skill.equippedOn !== "ichigun" ? "戦法Lvを上げる" : (atMax ? "戦法Lv 最大（Lv.10）" : "戦法Lvを上げる（" + lvText + "）");
  el.jbIchigunDispatch.disabled = state.phase !== "battle" || state.ichigun.battled;
 
  el.jbReportBadge.style.display = state.reportUnseen ? "" : "none";
