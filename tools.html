@@ -5,7 +5,7 @@
 <meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
 <meta content="#1f3443" name="theme-color"/>
 <title>スタダ ツール集</title>
-<meta content="自爆部隊速度計算機と資源必要量トラッカー。PKシーズン スタダナビゲーションの補助ツールです。" name="description"/>
+<meta content="自爆部隊速度計算機・資源必要量トラッカー・自爆部隊戦法演習。PKシーズン スタダナビゲーションの補助ツールです。" name="description"/>
 <style>
 :root{--paper:#f6f3ed;--surface:#fff;--ink:#202a30;--muted:#68747b;--navy:#1f3443;--navy2:#29495d;--gold:#b38a45;--gold-soft:#f1e8d7;--line:#dde2df;--warn:#9c443b;--warn-bg:#fff4f1;--ok:#3c6a56;--ok-bg:#eff7f3;--shadow:0 12px 30px rgba(24,39,48,.08)}
 *{box-sizing:border-box;min-width:0}
@@ -18,7 +18,7 @@ button,input,select{font:inherit}
 .back-link{color:#fff;text-decoration:none;font-size:13px;display:flex;align-items:center;gap:6px;white-space:nowrap}
 .topbar-title{font-weight:900;font-size:15px;flex:1}
 .layout{max-width:820px;margin:auto;padding:20px 14px 80px}
-.tool-picker{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:18px}
+.tool-picker{display:grid;grid-template-columns:repeat(auto-fit,minmax(108px,1fr));gap:8px;margin-bottom:18px}
 .tool-tab{border:1px solid var(--line);background:#fff;border-radius:14px;padding:12px 8px;font-weight:800;color:var(--ink);cursor:pointer;font-size:13px}
 .tool-tab.active{background:var(--navy);color:#fff;border-color:var(--navy)}
 .tool-panel{display:none}
@@ -50,6 +50,67 @@ button,input,select{font:inherit}
 .summary-table{width:100%;border-collapse:collapse;margin-top:10px;font-size:12px}
 .summary-table th,.summary-table td{border:1px solid var(--line);padding:6px 8px;text-align:left}
 .summary-table th{background:#eef1ef}
+
+/* ---- 自爆部隊 戦法演習 ---- */
+.jb-step-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0 16px}
+@media (max-width:520px){.jb-step-grid{grid-template-columns:1fr}}
+.jb-step-panel{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.jb-step-panel h4{margin:0 0 6px;font-size:13px;color:var(--navy2)}
+.jb-steps{margin:0;padding-left:18px;font-size:12.5px;line-height:1.9;color:var(--ink)}
+.jb-steps .jb-note{color:var(--muted)}
+
+.jb-report-row{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px}
+.jb-badge{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--warn);margin-left:6px;vertical-align:middle}
+
+.jb-unit-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
+@media (max-width:520px){.jb-unit-grid{grid-template-columns:1fr}}
+.jb-unit-card{border:1px solid var(--line);border-radius:14px;padding:12px;background:#fbfbf9;transition:border-color .2s ease}
+.jb-unit-card.jb-wounded{border-color:var(--warn);box-shadow:inset 0 0 0 1px var(--warn)}
+.jb-unit-card.jb-wound-fx{animation:jb-wound-flash .55s ease}
+@keyframes jb-wound-flash{
+ 0%{box-shadow:inset 0 0 0 1px var(--warn)}
+ 30%{box-shadow:inset 0 0 0 4px var(--warn),0 0 18px rgba(156,68,59,.5);transform:translateX(-3px)}
+ 55%{transform:translateX(3px)}
+ 100%{box-shadow:inset 0 0 0 1px var(--warn);transform:translateX(0)}
+}
+@media (prefers-reduced-motion:reduce){.jb-unit-card.jb-wound-fx{animation:none}}
+
+.jb-unit-head{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.jb-unit-head h4{margin:0;font-size:14px;color:var(--navy2)}
+.jb-unit-head-right{display:flex;align-items:center;gap:8px}
+.jb-subline{font-size:12px;color:var(--muted)}
+.jb-chip{font-size:11px;font-weight:800;padding:2px 8px;border-radius:999px;border:1px solid var(--line)}
+.jb-chip-wounded{color:#fff;background:var(--warn);border-color:var(--warn)}
+
+.jb-skill-slot{display:flex;justify-content:space-between;align-items:center;gap:8px;background:var(--gold-soft);border:1px dashed var(--gold);border-radius:10px;padding:7px 10px;font-size:12.5px;margin:8px 0}
+.jb-skill-slot.jb-filled{border-style:solid}
+.jb-skill-slot .jb-lv{font-weight:800;color:#7e6234}
+
+.jb-actions{display:flex;flex-direction:column;gap:6px}
+.jb-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.jb-hint{font-size:11px;color:var(--warn);min-height:14px;margin-top:4px}
+.jb-hint.jb-shake{animation:jb-hint-shake .3s ease;font-weight:800}
+@keyframes jb-hint-shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
+@media (prefers-reduced-motion:reduce){.jb-hint.jb-shake{animation:none}}
+
+.jb-log{background:#fbfbf9;border:1px solid var(--line);border-radius:12px;padding:10px 12px;max-height:200px;overflow-y:auto;font-size:12.5px;line-height:1.85;display:flex;flex-direction:column-reverse}
+.jb-log .jb-entry{border-bottom:1px dotted var(--line);padding:3px 0}
+.jb-log .jb-entry:last-child{border-bottom:none}
+.jb-log .jb-entry.jb-main{color:var(--warn);font-weight:800}
+.jb-log .jb-entry.jb-sys{color:var(--muted)}
+
+.jb-fx-overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(20,25,30,.6);z-index:999;opacity:0;pointer-events:none;transition:opacity .3s ease}
+.jb-fx-overlay.jb-show{opacity:1;pointer-events:auto}
+.jb-fx-banner{position:relative;background:#fff;border:2px solid var(--gold);border-radius:16px;padding:30px 40px;text-align:center;transform:scale(.6);opacity:0;box-shadow:0 10px 40px rgba(0,0,0,.4)}
+.jb-fx-overlay.jb-show .jb-fx-banner{animation:jb-fx-pop .55s cubic-bezier(.2,1.5,.4,1) forwards}
+@keyframes jb-fx-pop{to{transform:scale(1);opacity:1}}
+.jb-fx-banner .jb-kanji{font-size:40px;font-weight:900;color:var(--navy);letter-spacing:.08em}
+.jb-fx-banner.jb-lose .jb-kanji{color:var(--muted)}
+.jb-fx-banner .jb-sub{font-size:13px;color:var(--muted);margin-top:8px}
+.jb-spark{position:absolute;top:50%;left:50%;width:6px;height:6px;margin:-3px;border-radius:50%;background:var(--gold);opacity:0}
+.jb-fx-overlay.jb-show .jb-spark{animation:jb-spark-burst .9s ease-out forwards;animation-delay:.15s}
+@keyframes jb-spark-burst{0%{opacity:1;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(.3)}}
+@media (prefers-reduced-motion:reduce){.jb-fx-banner{animation:none!important;transform:none!important;opacity:1!important}.jb-spark{display:none!important}}
 </style>
 </head>
 <body>
@@ -64,6 +125,7 @@ button,input,select{font:inherit}
 <div class="tool-picker" role="tablist">
 <button aria-selected="true" class="tool-tab active" data-tool="speed" role="tab">自爆部隊速度計算機</button>
 <button aria-selected="false" class="tool-tab" data-tool="tracker" role="tab">資源必要量トラッカー</button>
+<button aria-selected="false" class="tool-tab" data-tool="jibaku" role="tab">自爆部隊 戦法演習</button>
 </div>
 
 <!-- ===== 速度計算機 ===== -->
@@ -137,6 +199,95 @@ button,input,select{font:inherit}
 
 <button class="btn btn-primary" id="calcTracker" type="button">徴発パターンを計算する</button>
 <div id="trackerResult"></div>
+</div>
+
+</div>
+
+<!-- ===== 自爆部隊 戦法演習 ===== -->
+<div class="tool-panel" id="panel-jibaku">
+
+<div class="card">
+<h2>自爆部隊 戦法運用演習</h2>
+<p class="note">自爆部隊で守備軍を削り、主城で戦法「乗勝追撃」を１軍部隊へ付け替えてLvを上げ、本隊で決着をつける——その手順をブラウザ上で練習できます。</p>
+
+<div id="jbSetup">
+<div class="jb-step-grid">
+<div class="jb-step-panel">
+<h4>自爆部隊で・・・</h4>
+<ol class="jb-steps">
+<li>兵力を1に設定</li>
+<li>戦法をつける</li>
+<li>戦法Lvを上げる</li>
+<li>出撃する <span class="jb-note">（必ず全滅する）</span></li>
+<li>戦法を外す</li>
+</ol>
+</div>
+<div class="jb-step-panel">
+<h4>１軍部隊で・・・</h4>
+<ol class="jb-steps">
+<li>戦法をつける</li>
+<li>戦法Lvを上げる</li>
+<li>出撃する</li>
+</ol>
+</div>
+</div>
+<button class="btn btn-primary" id="jbStartBtn" type="button">演習開始</button>
+</div>
+
+<div id="jbBattle" style="display:none">
+<div class="jb-report-row">
+<h3 style="margin:0">目的の土地：守備軍</h3>
+<button class="btn btn-outline" id="jbReportToggle" type="button">戦報を確認<span class="jb-badge" id="jbReportBadge" style="display:none"></span></button>
+</div>
+<div class="jb-log" id="jbReportLog" style="display:none"></div>
+
+<div class="jb-unit-grid">
+<div class="jb-unit-card" id="jbCard">
+<div class="jb-unit-head">
+<h4>自爆部隊</h4>
+<div class="jb-unit-head-right">
+<span class="jb-chip jb-chip-wounded" id="jbWounded" style="display:none">重傷</span>
+<span class="jb-subline" id="jbCount">出撃 0 回</span>
+</div>
+</div>
+<div class="jb-skill-slot" id="jbSlot">戦法：未装備</div>
+<div class="jb-actions">
+<div class="jb-row"><button class="btn btn-outline" id="jbSetTroops" type="button">兵力を1に設定</button><span class="jb-subline" id="jbTroops">兵力 100</span></div>
+<div class="jb-row"><button class="btn btn-outline" id="jbEquip" type="button">戦法を付ける</button></div>
+<div class="jb-row"><button class="btn btn-outline" id="jbLevelup" type="button">戦法Lvを上げる</button></div>
+<div class="jb-row"><button class="btn btn-outline" id="jbDispatch" type="button">出撃させる</button></div>
+<div class="jb-row"><button class="btn btn-outline" id="jbUnequip" type="button">戦法を外す</button></div>
+</div>
+<div class="jb-hint" id="jbHint"></div>
+</div>
+
+<div class="jb-unit-card">
+<div class="jb-unit-head"><h4>１軍部隊</h4><span class="jb-subline" id="jbIchigunTroops">兵力 0</span></div>
+<div class="jb-skill-slot" id="jbIchigunSlot">戦法：未装備</div>
+<div class="jb-actions">
+<div class="jb-row"><button class="btn btn-outline" id="jbIchigunEquip" type="button">戦法を付ける</button></div>
+<div class="jb-row"><button class="btn btn-outline" id="jbIchigunLevelup" type="button">戦法Lvを上げる</button></div>
+<div class="jb-row"><button class="btn btn-primary" id="jbIchigunDispatch" type="button">出撃させる</button></div>
+</div>
+<div class="jb-hint" id="jbIchigunHint"></div>
+</div>
+</div>
+
+<h3>行動ログ</h3>
+<div class="jb-log" id="jbLog"></div>
+</div>
+
+<div id="jbResult" style="display:none;text-align:center;padding:20px 0 4px">
+<button class="btn btn-primary" id="jbRetryBtn" type="button">もう一度演習する</button>
+</div>
+
+</div>
+
+<div class="jb-fx-overlay" id="jbFxOverlay">
+<div class="jb-fx-banner" id="jbFxBanner">
+<div class="jb-kanji" id="jbFxKanji">占領</div>
+<div class="jb-sub" id="jbFxSub">守備軍の土地を占領した</div>
+</div>
 </div>
 
 </div>
@@ -485,6 +636,281 @@ document.getElementById('calcTracker').addEventListener('click',()=>{
   +(reachedAt ? '' : '<p style="margin:10px 0 0">この見込みでは到達しません。蔵の上限を超えて受け取れる報酬を増やすか、毎時産出量を見直してください。</p>')
   +'</div>';
 });
+</script>
+
+<script>
+// ================= 自爆部隊 戦法演習 =================
+(function(){
+"use strict";
+
+var GARRISON_MIN = 2500;
+var GARRISON_MAX = 7000;
+var ICHIGUN_TROOPS = 3200;
+var DEFAULT_JIBAKU_TROOPS = 100;
+var SKILL_NAME = "乗勝追撃";
+var MAX_LEVEL = 10;
+var BONUS_PER_LEVEL = 0.10;
+
+var state = null;
+var el = {};
+[
+ "jbSetup","jbBattle","jbResult","jbStartBtn",
+ "jbReportToggle","jbReportBadge","jbReportLog",
+ "jbCard","jbCount","jbWounded","jbSlot","jbTroops",
+ "jbSetTroops","jbDispatch","jbEquip","jbLevelup","jbUnequip","jbHint",
+ "jbIchigunTroops","jbIchigunSlot","jbIchigunEquip","jbIchigunLevelup","jbIchigunDispatch","jbIchigunHint",
+ "jbLog","jbRetryBtn",
+ "jbFxOverlay","jbFxBanner","jbFxKanji","jbFxSub"
+].forEach(function(id){ el[id] = document.getElementById(id); });
+
+if (el.jbStartBtn) {
+
+function fmt(n){ return Math.round(n).toLocaleString("ja-JP"); }
+function randInt(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+
+function newGame(){
+ var garrisonMax = randInt(GARRISON_MIN, GARRISON_MAX);
+ state = {
+  garrisonMax: garrisonMax, garrison: garrisonMax,
+  skill: { level:1, equippedOn:null },
+  jibakuTroops: DEFAULT_JIBAKU_TROOPS,
+  jibakuSorties: 0, totalDamage: 0,
+  reports: [], reportUnseen: false,
+  ichigun: { troops: ICHIGUN_TROOPS, troopsMax: ICHIGUN_TROOPS, losses:0, battled:false },
+  phase: "battle", outcome: null
+ };
+ el.jbLog.innerHTML = "";
+ el.jbReportLog.innerHTML = "";
+ el.jbReportLog.style.display = "none";
+ addLog("守備軍の土地へ侵攻を開始する。戦法「" + SKILL_NAME + "」はまだどの部隊にも装備されていない。", "jb-sys");
+ render();
+}
+
+function addLog(text, cls){
+ var d = document.createElement("div");
+ d.className = "jb-entry" + (cls ? " " + cls : "");
+ d.textContent = text;
+ el.jbLog.appendChild(d);
+}
+
+function addReport(text){
+ var d = document.createElement("div");
+ d.className = "jb-entry";
+ d.textContent = text;
+ el.jbReportLog.appendChild(d);
+}
+
+function showWarning(unitKey, message){
+ var hintEl = unitKey === "jibaku" ? el.jbHint : el.jbIchigunHint;
+ hintEl.textContent = message;
+ hintEl.classList.remove("jb-shake");
+ void hintEl.offsetWidth;
+ hintEl.classList.add("jb-shake");
+}
+
+function setJibakuTroopsToOne(){
+ if (state.jibakuSorties > 0 || state.jibakuTroops === 1) return;
+ state.jibakuTroops = 1;
+ addLog("自爆部隊の兵力を1に設定した。", "jb-sys");
+ render();
+}
+
+function dispatchJibaku(){
+ if (state.phase !== "battle" || state.jibakuSorties > 0 || state.garrison <= 0 || state.jibakuTroops !== 1) return;
+ if (state.skill.equippedOn !== "jibaku") { showWarning("jibaku", "戦法をつけていません"); return; }
+ var damage = randInt(100, 500);
+ damage = Math.min(damage, state.garrison);
+ state.garrison -= damage;
+ state.totalDamage += damage;
+ state.jibakuSorties += 1;
+ state.reports.push({ n: state.jibakuSorties, damage: damage });
+ state.reportUnseen = true;
+
+ addLog("自爆部隊、出撃。守備軍と交戦し全滅（詳細は戦報で確認）。武将は重傷を負いながらも主城へ生還した。");
+ addReport("第" + state.jibakuSorties + "回 自爆：守備兵に " + fmt(damage) + " の損害");
+ render();
+ playWoundFx();
+}
+
+function playWoundFx(){
+ var card = el.jbCard;
+ card.classList.remove("jb-wound-fx");
+ void card.offsetWidth;
+ card.classList.add("jb-wound-fx");
+}
+
+function ownerName(owner){ return owner === "jibaku" ? "自爆部隊" : "１軍部隊"; }
+
+function equipSkill(owner){
+ if (state.skill.equippedOn !== null) return;
+ state.skill.equippedOn = owner;
+ addLog("主城にて、" + ownerName(owner) + "に戦法「" + SKILL_NAME + "」を付けた。", "jb-sys");
+ render();
+}
+
+function unequipSkill(owner){
+ if (state.skill.equippedOn !== owner) return;
+ state.skill.equippedOn = null;
+ state.skill.level = 1;
+ addLog("主城にて、" + ownerName(owner) + "から戦法「" + SKILL_NAME + "」を外した（Lvは1に戻った）。", "jb-sys");
+ render();
+}
+
+function levelUpSkill(owner){
+ if (state.skill.equippedOn !== owner || state.skill.level >= MAX_LEVEL) return;
+ state.skill.level += 1;
+ render();
+}
+
+function skillBonus(owner){
+ if (state.skill.equippedOn !== owner) return 0;
+ return (state.skill.level - 1) * BONUS_PER_LEVEL;
+}
+
+function dispatchIchigun(){
+ if (state.phase !== "battle" || state.ichigun.battled) return;
+ if (state.skill.equippedOn !== "ichigun") { showWarning("ichigun", "戦法をつけていません"); return; }
+ var bonus = skillBonus("ichigun");
+ var power = state.ichigun.troops * (1 + bonus);
+ var defense = state.garrison * 2.2;
+ var outcome, losses, text;
+ if (power >= defense) {
+  outcome = "win";
+  losses = Math.round(state.ichigun.troops * 0.25 * (0.8 + Math.random() * 0.3));
+  text = "１軍部隊、完全勝利。守備軍を撃破し土地を制圧した。";
+ } else if (power >= state.garrison) {
+  outcome = "win";
+  losses = Math.round(state.ichigun.troops * 0.55 * (0.8 + Math.random() * 0.3));
+  text = "１軍部隊、辛勝。大きな損害を出しながらも守備軍を打ち破った。";
+ } else {
+  outcome = "lose";
+  losses = state.ichigun.troops;
+  var dealt = Math.round(state.ichigun.troops * 0.4);
+  state.garrison = Math.max(0, state.garrison - dealt);
+  text = "１軍部隊、敗退。守備軍の兵力がなお上回っていた。";
+ }
+ state.ichigun.losses = losses;
+ state.ichigun.troops = Math.max(0, state.ichigun.troops - losses);
+ if (outcome === "win") state.garrison = 0;
+
+ addLog("１軍部隊、出撃。" + text + "（戦法補正 +" + Math.round(bonus * 100) + "%）", "jb-main");
+ state.ichigun.battled = true;
+ state.phase = "result";
+ state.outcome = outcome;
+ render();
+ playOutcomeFx(outcome);
+}
+
+function playOutcomeFx(outcome){
+ var overlay = el.jbFxOverlay;
+ var banner = el.jbFxBanner;
+ banner.className = "jb-fx-banner" + (outcome === "lose" ? " jb-lose" : "");
+ el.jbFxKanji.textContent = outcome === "win" ? "占領" : "撃退";
+ el.jbFxSub.textContent = outcome === "win" ? "守備軍の土地を占領した" : "１軍部隊は退けられた";
+
+ var old = overlay.querySelectorAll(".jb-spark");
+ old.forEach(function(s){ s.remove(); });
+ if (outcome === "win") {
+  for (var i = 0; i < 14; i++) {
+   var s = document.createElement("span");
+   s.className = "jb-spark";
+   var angle = (Math.PI * 2 * i) / 14;
+   var dist = 90 + Math.random() * 40;
+   s.style.setProperty("--dx", Math.cos(angle) * dist + "px");
+   s.style.setProperty("--dy", Math.sin(angle) * dist + "px");
+   overlay.appendChild(s);
+  }
+ }
+ overlay.classList.add("jb-show");
+ setTimeout(function(){
+  overlay.classList.remove("jb-show");
+  showResult();
+ }, 1700);
+}
+
+function render(){
+ var atMax = state.skill.level >= MAX_LEVEL;
+ var lvText = "Lv." + state.skill.level;
+
+ el.jbCount.textContent = "出撃 " + state.jibakuSorties + " 回";
+ el.jbWounded.style.display = state.jibakuSorties > 0 ? "" : "none";
+ el.jbCard.classList.toggle("jb-wounded", state.jibakuSorties > 0);
+
+ if (state.skill.equippedOn === "jibaku") {
+  el.jbSlot.className = "jb-skill-slot jb-filled";
+  el.jbSlot.innerHTML = "戦法：" + SKILL_NAME + " <span class='jb-lv'>" + lvText + "</span>";
+ } else {
+  el.jbSlot.className = "jb-skill-slot";
+  el.jbSlot.textContent = "戦法：未装備";
+ }
+ el.jbTroops.textContent = "兵力 " + fmt(state.jibakuTroops);
+ el.jbSetTroops.disabled = state.jibakuTroops === 1 || state.jibakuSorties > 0;
+ el.jbDispatch.disabled = state.phase !== "battle" || state.garrison <= 0 || state.jibakuSorties > 0 || state.jibakuTroops !== 1;
+ el.jbDispatch.textContent = state.jibakuSorties > 0 ? "出撃済み（重傷で動けない）" : "出撃させる";
+ el.jbEquip.disabled = state.skill.equippedOn !== null;
+ el.jbLevelup.disabled = state.skill.equippedOn !== "jibaku" || atMax;
+ el.jbLevelup.textContent = (state.skill.equippedOn === "jibaku" && atMax) ? "戦法Lv 最大（Lv.10）" : "戦法Lvを上げる（" + lvText + "）";
+ el.jbUnequip.disabled = state.skill.equippedOn !== "jibaku";
+ if (state.jibakuSorties === 0) {
+  el.jbHint.textContent = state.jibakuTroops !== 1 ? "先に兵力を1に設定してください。" : "";
+ }
+
+ el.jbIchigunTroops.textContent = "兵力 " + fmt(state.ichigun.troops);
+ if (state.skill.equippedOn === "ichigun") {
+  el.jbIchigunSlot.className = "jb-skill-slot jb-filled";
+  el.jbIchigunSlot.innerHTML = "戦法：" + SKILL_NAME + " <span class='jb-lv'>" + lvText + "</span>";
+ } else {
+  el.jbIchigunSlot.className = "jb-skill-slot";
+  el.jbIchigunSlot.textContent = "戦法：未装備";
+ }
+ el.jbIchigunEquip.disabled = state.skill.equippedOn !== null;
+ el.jbIchigunHint.textContent = (state.skill.equippedOn === null)
+  ? "自爆部隊から戦法を外すと、ここに付け替えられます。" : "";
+ el.jbIchigunLevelup.disabled = state.skill.equippedOn !== "ichigun" || atMax;
+ el.jbIchigunLevelup.textContent = (state.skill.equippedOn === "ichigun" && atMax) ? "戦法Lv 最大（Lv.10）" : "戦法Lvを上げる（" + lvText + "）";
+ el.jbIchigunDispatch.disabled = state.phase !== "battle" || state.ichigun.battled;
+
+ el.jbReportBadge.style.display = state.reportUnseen ? "" : "none";
+}
+
+function toggleReports(){
+ var open = el.jbReportLog.style.display === "none";
+ el.jbReportLog.style.display = open ? "flex" : "none";
+ if (open) {
+  state.reportUnseen = false;
+  el.jbReportBadge.style.display = "none";
+ }
+}
+
+function showResult(){
+ el.jbBattle.style.display = "none";
+ el.jbResult.style.display = "block";
+}
+
+el.jbStartBtn.addEventListener("click", function(){
+ newGame();
+ el.jbSetup.style.display = "none";
+ el.jbResult.style.display = "none";
+ el.jbBattle.style.display = "block";
+});
+
+el.jbSetTroops.addEventListener("click", setJibakuTroopsToOne);
+el.jbDispatch.addEventListener("click", dispatchJibaku);
+el.jbEquip.addEventListener("click", function(){ equipSkill("jibaku"); });
+el.jbLevelup.addEventListener("click", function(){ levelUpSkill("jibaku"); });
+el.jbUnequip.addEventListener("click", function(){ unequipSkill("jibaku"); });
+el.jbIchigunEquip.addEventListener("click", function(){ equipSkill("ichigun"); });
+el.jbIchigunLevelup.addEventListener("click", function(){ levelUpSkill("ichigun"); });
+el.jbIchigunDispatch.addEventListener("click", dispatchIchigun);
+el.jbReportToggle.addEventListener("click", toggleReports);
+
+el.jbRetryBtn.addEventListener("click", function(){
+ el.jbResult.style.display = "none";
+ el.jbSetup.style.display = "block";
+});
+
+}
+})();
 </script>
 </body>
 </html>
