@@ -478,7 +478,7 @@ function recalcAll(){
    return String(a).localeCompare(String(b));
   });
   groupKeys.forEach(key=>{
-   const list = groups[key].slice().sort((a,b)=>a.maxSpeed-b.maxSpeed);
+   const list = groups[key]; // CSVの並び順（土地難易度一覧の簡単→困難順）のまま表示
    const title = (key==='その他') ? '敵大将との比較' : 'Lv'+key+'土地攻略との比較';
    html += '<div class="result-box info"><strong>'+title+'</strong><table class="summary-table"><tr><th>守備軍大将</th><th>最大速度</th>';
    slotData.forEach(s=>{ html += '<th>'+s.label+'</th>'; });
