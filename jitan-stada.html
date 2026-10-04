@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<meta content="#1f3443" name="theme-color"/>
+<title>時短スタダ</title>
+<meta content="スタダを行う時間が足りない方に向けた、効率的にスタダを進めるためのガイドです。" name="description"/>
+<style>
+:root{--paper:#f6f3ed;--surface:#fff;--ink:#202a30;--muted:#68747b;--navy:#1f3443;--navy2:#29495d;--gold:#b38a45;--gold-soft:#f1e8d7;--line:#dde2df;--warn:#9c443b;--warn-bg:#fff4f1;--ok:#3c6a56;--ok-bg:#eff7f3;--shadow:0 12px 30px rgba(24,39,48,.08)}
+*{box-sizing:border-box;min-width:0}
+html{overflow-x:hidden;scroll-padding-top:76px}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Hiragino Sans","Yu Gothic UI","Yu Gothic",Meiryo,sans-serif;line-height:1.8;-webkit-text-size-adjust:100%}
+a{color:var(--navy2)}
+.topbar{position:sticky;top:0;z-index:20;background:rgba(31,52,67,.97);color:#fff;padding-top:env(safe-area-inset-top);box-shadow:0 2px 14px rgba(0,0,0,.15)}
+.topbar-inner{max-width:820px;margin:auto;height:60px;padding:0 16px;display:flex;align-items:center;gap:12px}
+.back-link{color:#fff;text-decoration:none;font-size:13px;display:flex;align-items:center;gap:6px;white-space:nowrap}
+.topbar-title{font-weight:900;font-size:15px;flex:1}
+.layout{max-width:820px;margin:auto;padding:20px 14px 80px}
+.hero{background:linear-gradient(145deg,#1f3443,#31546a);color:#fff;border-radius:22px;padding:clamp(20px,4vw,34px);box-shadow:var(--shadow);margin-bottom:16px}
+.hero .eyebrow{font-size:11px;letter-spacing:.12em;color:#e3c58a;font-weight:800}
+.hero h1{margin:6px 0 8px;font-size:clamp(26px,5vw,36px);line-height:1.25}
+.hero p{margin:0 0 8px;font-size:14px;color:#e8eef1}
+.hero p:last-child{margin-bottom:0}
+.hero a{color:#fff}
+.last-updated{font-size:11px;color:#cfd9df}
+.toc{background:#fff;border:1px solid var(--line);border-radius:18px;padding:14px 16px;margin-bottom:14px}
+.toc strong{display:block;font-size:13px;margin-bottom:6px}
+.toc ol{margin:0;padding-left:0;list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:2px 14px}
+.toc a{font-size:12.5px;text-decoration:none;color:var(--ink);display:block;padding:3px 0}
+.toc a span{color:var(--gold);font-weight:900;margin-right:4px}
+@media(max-width:560px){.toc ol{grid-template-columns:1fr}}
+.card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:0 7px 22px rgba(28,42,49,.045);margin-bottom:14px}
+.card h2{margin:0 0 10px;font-size:17px;display:flex;align-items:baseline;gap:8px;line-height:1.45}
+.card h2 .num{flex:none;background:var(--navy);color:#fff;border-radius:999px;font-size:11px;font-weight:900;padding:2px 10px}
+.card p{margin:0 0 10px;font-size:14.5px}
+.card p:last-child{margin-bottom:0}
+.card ol.steps{margin:0 0 10px;padding-left:22px;font-size:14.5px}
+.card ol.steps li{margin-bottom:4px}
+.note{background:var(--gold-soft);color:#7e6234;border-radius:12px;padding:10px 12px;font-size:13.5px}
+.warn-note{background:var(--warn-bg);color:var(--warn);border-radius:12px;padding:10px 12px;font-size:13.5px}
+.page-nav{display:flex;justify-content:center;margin-top:20px}
+.page-nav a{display:inline-block;border:1px solid var(--line);background:#fff;border-radius:12px;padding:10px 18px;font-weight:800;font-size:13px;text-decoration:none;color:var(--ink)}
+</style>
+</head>
+<body>
+<header class="topbar">
+<div class="topbar-inner">
+<a class="back-link" href="index.html">&larr; ガイドへ</a>
+<div class="topbar-title">時短スタダ</div>
+</div>
+</header>
+<div class="layout">
+
+<section class="hero">
+<div class="eyebrow">TIME-SAVING START DASH</div>
+<h1>時短スタダ</h1>
+<p class="last-updated">最終更新: 2026-10-05</p>
+<p>時短スタダは時間を節約する代わりに頭を酷使するスタダです。</p>
+<p>基本の方針は<a href="index.html">スタダナビゲーション</a>に従います。毎時の獲得資源から必要資源量がいつ溜まり、体力がいつ満タン近くまで回復するかという計算を行うことで、最小のログイン時間で最大効率のスタダを目指します。</p>
+</section>
+
+<nav class="toc" aria-label="時短の心得 一覧">
+<strong>時短の心得</strong>
+<ol>
+<li><a href="#k1"><span>1</span>育てるのは1部隊のみ</a></li>
+<li><a href="#k2"><span>2</span>できることは事前にやっておく</a></li>
+<li><a href="#k3"><span>3</span>初動軍の体力節約術を使うかの判断</a></li>
+<li><a href="#k4"><span>4</span>小判を惜しまない</a></li>
+<li><a href="#k5"><span>5</span>真に忙しいのは最初の10分or60分だけ</a></li>
+<li><a href="#k6"><span>6</span>自爆部隊を使うかどうかの判断</a></li>
+<li><a href="#k7"><span>7</span>体力回復アイテムは余裕ができてから</a></li>
+<li><a href="#k8"><span>8</span>偵察はひたすら回す</a></li>
+<li><a href="#k9"><span>9</span>標記追加を活用する</a></li>
+<li><a href="#k10"><span>10</span>旦那・嫁に許可をもらう</a></li>
+</ol>
+</nav>
+
+<section class="card" id="k1">
+<h2><span class="num">その1</span>育てるのは1部隊のみ</h2>
+<p>体力を消費する時間がないので、動かすのは1部隊のみです。</p>
+<p>その代わり、1軍の体力が溢れないようにだけ、体力管理を徹底します。体力管理さえできれば、スタダは失敗しません。</p>
+<p>体力管理を行うと、最初にスタダ部隊の体力を使ってからの48時間、スタダ部隊の体力が100になることはありません。</p>
+<p>これは夜中に起きろとかそういうことではないので、簡単に説明します。</p>
+<p>体力は5分で1回復します。つまり、1回の占領につき、50分の自由時間が生まれます。</p>
+<p>2回占領しておけば、100分の時間的猶予があなたに与えられます。</p>
+<p>体力をすべて使い切れば、500分、つまり次に真戦を開くのは8時間後でも構わないということです。</p>
+<p>そう考えると、体力の消費はそれほど苦ではないはずです。体力回復アイテムを使っているからずっとプレイができるだけで、本来はそれくらいの時間的余裕があります。</p>
+<p class="note">ただし、何時何分に体力が全回復するのかは常に把握しておいてください。</p>
+</section>
+
+<section class="card" id="k2">
+<h2><span class="num">その2</span>できることは事前にやっておく</h2>
+<p>スタダ部隊の編成・戦法は必ず決めておいてください。時間に余裕があればガチャを引いてもよいですが、そこで引いた武将をいきなり使うのもやめておきましょう。</p>
+<p>次に、スタダ開始の流れを把握するため、<a href="index.html">スタダナビゲーション</a>を序盤の流れをよく読んでいただきたいのですが、スタダナビゲーションを見ながらデモプレイを行っていただくのが最も良い予行練習になります。30鯖ではPK1シーズンが9/26に始まっており、新規キャラクターの作成をすることができます。武将配布のイベントなどもないので、★5武将なし、銀銭で回して★4武将すら出なければ、★3武将のみで開拓を進めるという悲惨さですが、それでもスタダナビの序盤の流れは確認できます。</p>
+<p>どうせメインの鯖でやることはほぼないのですから、時間のある今、新たなキャラクターを30鯖なりで作成し、スタダの予行練習をしてください。私はスタダナビゲーションの作成にあたり、3キャラで予行演習と再確認をしました笑</p>
+</section>
+
+<section class="card" id="k3">
+<h2><span class="num">その3</span>初動軍の体力節約術を使うかどうかの判断</h2>
+<p>実は、思ってるよりも体力はすぐ使い切れます。だって、部隊レベルが8になるまでは、Lv3土地を8回占領するだけですから。自爆部隊も使いませんし、占領が終わるのをじっと待ってるわけでもなく、隙間時間にポイッと兵種を合わせてLv3土地に投げるだけです。</p>
+<p>なので、初動軍の体力節約術を使うかどうかの判断基準を以下で説明します。</p>
+<p>まず<a href="index.html#stamina-saving-tip">体力節約術</a>の手順の確認ですが、いちばん最初のLv3土地攻略はスタダ部隊で行います。その後、初動軍を使って7個の土地を占領しますが、これを50分以内にやらないといけないと考えると、時間のない方にとってかなり厳しいことがわかります。</p>
+<p>しかしながら、初動軍の代わりにスタダ部隊で体力を70使うと、回復に350分（約6時間）かかります。これは、6時間以内に初動軍の占領を終えてスタダ部隊に戻せるなら、体力的にはお得、と考えることができます。</p>
+<p>本当は初動軍の7つの占領を50分以内に終わらせ、スタダ部隊に戻すのが最高効率でのスタダではあります。なので、真に忙しい時間を1時間、最初にまとめて取れるのなら、体力節約術は必ず実施したほうがよいですし、仮に終わらせられなくても通常は回復に6時間ということを考えると、初動軍は使ったほうがお得ではあると思います。部隊入れ替えの手間が1回だけ発生しますが、思ってるよりも体力が足りないことのほうが多いからです。</p>
+<p>とはいえ時間が経てば経つほど、スタダ部隊の溢れた体力が無駄ではありますし、初動軍を使用しての占領を行うならできるだけ早く終わらせるに越したことはありません。そういう意味では、スタダの開始を1時間だけまとめて時間が取れるタイミングで始めるのも良いと思います。</p>
+</section>
+
+<section class="card" id="k4">
+<h2><span class="num">その4</span>小判を惜しまない</h2>
+<p>時短にあたっては、時間を小判で買うことになります。</p>
+<p>戦法経験値の購入、施設の即時完了は時短に限らずですが、時短スタダでは部隊の即時帰還も序盤から使うことがあります。体力を使える時間があるときに使わないといけないですから、部隊がトロトロ帰ってきているのを待つ時間がないこともあります。10分後に再度触れるなら放置でよいですし、次に触れるのが50分後になるなら即時帰還して体力をあと10使っておくなど、臨機応変な対応が求められます。</p>
+</section>
+
+<section class="card" id="k5">
+<h2><span class="num">その5</span>真に忙しいのは最初の10分or60分だけ</h2>
+<p>最序盤は施設のレベルが数秒で上がり、占領したくても偵察を待つ時間があります。結構無駄です。なので最初に偵察をしておきます。</p>
+<ol class="steps">
+<li>ゲーム開始後、Lv3土地に対して偵察を回してください。</li>
+<li>戦法経験値を勲功商店で購入。心得を戦法経験値に変換します。(戦法経験値のために焦って銀銭がちゃをまわすと、変換の銀銭が不足するので注意！)</li>
+<li>スタダ部隊をセットし、戦法をつけ、戦法レベルを上げます。</li>
+<li>徴兵を回してください。体力の回復のほうが時間がかかりますので焦らなくても構いませんが、予備兵が切れるとせっかく時間があっても回せなくなります。機会を逃さないように、徴兵は自動で回しておいてください。<a href="index.html#land-resource-ratio">資源比率</a>を守っていれば、米が不足して徴兵が止まり、木や鉄が余ってきます。</li>
+</ol>
+<p>偵察は終わってるはずです。</p>
+<p>また別のLv3土地に偵察を回し、兵種を合わせてLv3土地占領へ、レッツゴーです。</p>
+<p>これであなたには50分の猶予が与えられました。</p>
+<p>初動軍を使う方は、部隊を入れ替えて、Lv3土地の占領を開始します。</p>
+<p>使わない方は、50分後にまた会いましょう。</p>
+</section>
+
+<section class="card" id="k6">
+<h2><span class="num">その6</span>自爆部隊を使うかどうかの判断</h2>
+<p>時短スタダでは<a href="index.html#self-destruct">自爆部隊</a>にかかる手間はかなり厳しいといえます。</p>
+<p class="warn-note">しかしながら、武将レベル8における最初のLv4土地攻略、レベル16~18における最初のLv5土地攻略、ここだけは必ず使いたいです。失敗のリスク、損失兵力のリスクが大きいからです。</p>
+</section>
+
+<section class="card" id="k7">
+<h2><span class="num">その7</span>体力回復アイテムを使うのは、時間に余裕ができてから</h2>
+<p>理想のスタダでは、体力は速攻消費し、体力回復アイテムもすぐ使って、土地枠をまずすべて埋め切ります。そうすることで時間あたりの獲得資源量が増加し、あとあと有利になるからです。</p>
+<p>しかし、時短スタダではそれはできません。まず体力を使い切ること自体が目標になるからです。</p>
+<p>まずは体力を使い切り、時間に余裕ができたとき、はじめて体力回復アイテムを使ってください。</p>
+</section>
+
+<section class="card" id="k8">
+<h2><span class="num">その8</span>偵察はひたすら回す</h2>
+<p>偵察は朝方の5時頃？リセットされます。つまり、今日偵察した土地は、今日のうちはずっと有効なのです。仮に夜の22時からしかまともにプレイできなかったとしても、朝に実行した偵察はそのときに役に立ちます。</p>
+<p>まずはLv3土地を8個。Lv4土地に失敗することも想定すると、10個くらいは偵察しておいてよいです。</p>
+<p>それ以降、Lv4土地とLv5土地については、隙間時間に偵察だけは進めておいてください。いざ時間ができたとき、偵察して部隊が判明するまでの待機時間は無駄です。スマホで時計を見たならば、そのとき偵察1回は回せるはずです。</p>
+</section>
+
+<section class="card" id="k9">
+<h2><span class="num">その9</span>標記追加を活用する</h2>
+<p>偵察したあと、占領の行軍時間など隙間時間があれば、守備軍が弱かったり攻略しやすい土地に標記を追加します。</p>
+<p>標記追加を行うことで、偵察しまくってある土地のうち、どこが次に突撃するべき土地なのか、見分けやすくなります。手間なので標記の文言は変えなくてよいです。</p>
+</section>
+
+<section class="card" id="k10">
+<h2><span class="num">その10</span>旦那・嫁に許可をもらう</h2>
+<p>「ゲームの大事な時期だから、2日間だけはいつもより頻繁にスマホ触るけど、怒らないでください」とお許しをもらってください。協力なくしてベストスタダは成り立ちません。2日間は無理でも、スタダ最初の10分くらいは手に入れたいです。</p>
+<p>それすら許されないなら、もう私はなんだかお腹が痛くなってきた気がします。</p>
+</section>
+
+<div class="page-nav"><a href="index.html">&larr; スタダナビゲーションへ戻る</a></div>
+
+</div>
+</body>
+</html>
