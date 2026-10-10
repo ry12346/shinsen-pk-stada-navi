@@ -339,7 +339,7 @@ async function loadBuiltinData(){
  try{
   const res = await fetch('data/tactics.csv');
   const rows = parseCSV(await res.text());
-  BUILTIN_TACTICS = rows.filter(r=>r.name).map(r=>({ name:r.name, bonus:Number(r.bonus||0) }));
+  BUILTIN_TACTICS = rows.filter(r=>r.name).map(r=>({ name:r.name, bonus:Number(r.bonus||0), scope:(r.scope==='self'?'self':'army') }));
  }catch(e){ BUILTIN_TACTICS = []; }
  try{
   const res = await fetch('data/enemy_generals.csv');
@@ -357,7 +357,7 @@ function computeSpeed(gen, targetLevel, dupe){
 
 function bonusSelectHTML(prefix){
  let opts = '<option value="">戦法なし</option>';
- BUILTIN_TACTICS.forEach((t,ti)=>{ opts += '<option value="'+ti+'">'+t.name+' (+'+t.bonus+')</option>'; });
+ BUILTIN_TACTICS.forEach((t,ti)=>{ opts += '<option value="'+ti+'">'+t.name+' (+'+t.bonus+(t.scope==='self'?'・装備者のみ':'')+')</option>'; });
  opts += '<option value="custom">カスタム入力…</option>';
  return '<select class="bonusSelect" data-slotprefix="'+prefix+'">'+opts+'</select><input class="custom-bonus" data-slotprefix="'+prefix+'" placeholder="速度ボーナス" style="display:none" type="number"/>';
 }
@@ -439,14 +439,14 @@ function recalcAll(){
   const dupe = Number(slot.querySelector('.dupeSelect').value || 0);
   const base = computeSpeed(gen, targetLevel, dupe);
   const bonusSel = slot.querySelector('.bonusSelect');
-  let bonus = 0;
+  let bonus = 0, selfOnly = false;
   if(bonusSel.value==='custom'){
    bonus = Number(slot.querySelector('.custom-bonus').value || 0);
   }else if(bonusSel.value!==''){
    const t = BUILTIN_TACTICS[Number(bonusSel.value)];
-   if(t) bonus = t.bonus;
+   if(t){ bonus = t.bonus; selfOnly = t.scope==='self'; }
   }
-  rawSlots.push({label:labels[i], name:gen.name, level:targetLevel, dupe, base, bonus});
+  rawSlots.push({label:labels[i], name:gen.name, level:targetLevel, dupe, base, bonus, selfOnly});
  });
 
  if(rawSlots.length===0){
@@ -454,12 +454,13 @@ function recalcAll(){
   return;
  }
 
- // 戦法は自軍全体の速度に効果があるため、誰が持っていても全員の速度に加算する
+ // 戦法は原則、自軍全体の速度に効果があるため誰が持っていても全員に加算する。
+ // ただし百戦錬磨・百錬成鋼など装備者のみに効く戦法（scope=self）は、装備している本人にだけ加算する
  const round2 = n => Math.round(n*100)/100;
- const armyBonus = round2(rawSlots.reduce((sum,s)=>sum+s.bonus, 0));
- const slotData = rawSlots.map(s=>({label:s.label, name:s.name, level:s.level, dupe:s.dupe, total:round2(s.base+armyBonus)}));
+ const armyBonus = round2(rawSlots.reduce((sum,s)=>sum+(s.selfOnly?0:s.bonus), 0));
+ const slotData = rawSlots.map(s=>({label:s.label, name:s.name, level:s.level, dupe:s.dupe, selfBonus:(s.selfOnly?s.bonus:0), total:round2(s.base+armyBonus+(s.selfOnly?s.bonus:0))}));
 
- let html = '<div class="result-box ok"><strong>あなたの武将の速度</strong>（戦法ボーナス合計 +'+armyBonus+' を全員に加算）<table class="summary-table"><tr><th>枠</th><th>武将</th><th>Lv/凸</th><th>合計速度</th></tr>';
+ let html = '<div class="result-box ok"><strong>あなたの武将の速度</strong>（全体効果の戦法 +'+armyBonus+' を全員に加算、装備者のみの戦法は本人にだけ加算）<table class="summary-table"><tr><th>枠</th><th>武将</th><th>Lv/凸</th><th>合計速度</th></tr>';
  slotData.forEach(s=>{ html += '<tr><td>'+s.label+'</td><td>'+s.name+'</td><td>Lv'+s.level+' / '+s.dupe+'凸</td><td>'+s.total+'</td></tr>'; });
  html += '</table></div>';
 
