@@ -441,7 +441,7 @@ function recalcAll(){
   const bonusSel = slot.querySelector('.bonusSelect');
   let bonus = 0, selfOnly = false;
   if(bonusSel.value==='custom'){
-   bonus = Number(slot.querySelector('.custom-bonus').value || 0);
+   bonus = Number(slot.querySelector('.custom-bonus').value || 0); selfOnly = true;
   }else if(bonusSel.value!==''){
    const t = BUILTIN_TACTICS[Number(bonusSel.value)];
    if(t){ bonus = t.bonus; selfOnly = t.scope==='self'; }
